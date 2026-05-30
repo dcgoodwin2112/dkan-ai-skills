@@ -126,7 +126,7 @@ invalidateReferencerCacheTags(string $schemaId, string $referenceId, string $pro
 import(string $identifier, bool $deferred = false, $version = null): array
 importDeferred(string $identifier, $version = null): array
 drop(string $identifier, ?string $version = null, bool $remove_local_resource = true): void
-summary(string $identifier): array  // $identifier is full resource ID (identifier__version format); parses internally
+summary($identifier)  // untyped arg; accepts full uid, identifier__version, OR distribution UUID (delegates to getIdentifierAndVersion()). Returns a TableSummary object
 getStorage(string $identifier, $version = null): DatabaseTable
 getImportService(DataResource $resource): ImportService
 getDataDictionaryFields(?string $identifier = null): ?array

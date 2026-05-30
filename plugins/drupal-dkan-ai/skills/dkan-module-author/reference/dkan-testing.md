@@ -43,7 +43,7 @@ A custom module can run its unit tests without a Drupal bootstrap for fast execu
 |---|---|---|
 | `MetastoreService.php` | `Drupal\dkan_metastore` | `get(string, string, bool): RootedJsonData`, `getAll(string, ?int, ?int, bool): array`, `count(string, bool): int`, `post(string, RootedJsonData): string` |
 | `DatastoreService.php` | `Drupal\dkan_datastore` | `getStorage(string, ?string): DatabaseTableInterface`, `summary(string)`, `import(...)`, `drop(...)` |
-| `Query.php` (QueryService) | `Drupal\dkan_datastore\Service` | `runQuery(DatastoreQuery)` |
+| `QueryService.php` (declares `class Query`) | `Drupal\dkan_datastore\Service` | `runQuery(DatastoreQuery)` |
 | `DatastoreQuery.php` | `Drupal\dkan_datastore\Service` | `__construct(string $json, $rows_limit = NULL)`, `__toString()` |
 | `DatabaseTableInterface.php` | `Drupal\dkan_common\Storage` | `getSchema(): array`, `getTableName(): string` |
 | `DatasetInfo.php` | `Drupal\dkan_common` | `gather(string $uuid): array` |

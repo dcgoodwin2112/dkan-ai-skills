@@ -32,8 +32,9 @@ Run `composer show drupal/ai`. Refuse on `2.x` ("breaking provider lifecycle cha
 
 Ensure these exist:
 - `ai:ai`
-- `key:key`
 - `configure: <module_name>.settings_form` at the top level so the module's "Configure" link in the modules page points to your provider settings.
+
+Optional hardening: `key:key`. Providers store the API credential as a Key entity, but the bundled `ai_provider_anthropic` does NOT declare `key:key` in its `info.yml` (it relies on `ai`/`key` already being present). Declaring it is a defensible explicit dependency, not a requirement — add it only if you want the module to fail installation when `key` is absent.
 
 ### 4. Generate `definitions/api_defaults.yml`
 
@@ -310,5 +311,5 @@ Expected: prints the provider class FQN. `NOT FOUND` means the attribute didn't 
 - [ ] `definitions/api_defaults.yml` is keyed by operation type (NOT by `models`), with `input` / `authentication` / `configuration` sub-keys per op.
 - [ ] No raw secrets in `config/install/*.yml`.
 - [ ] Plugin path is exactly `src/Plugin/AiProvider/` (PascalCase, singular).
-- [ ] `<module_name>.info.yml` includes `ai:ai`, `key:key`, and a `configure:` line pointing to the settings form route.
+- [ ] `<module_name>.info.yml` includes `ai:ai` and a `configure:` line pointing to the settings form route (`key:key` is optional hardening — the bundled Anthropic provider omits it).
 - [ ] `drush cr` ran without error.

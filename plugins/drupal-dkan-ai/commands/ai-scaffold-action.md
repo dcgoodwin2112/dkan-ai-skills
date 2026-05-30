@@ -129,11 +129,21 @@ class <ActionName> extends AiAssistantActionBase {
    * {@inheritdoc}
    */
   public function provideFewShotLearningExample(): array {
+    // Each example pairs a natural-language description with the structured
+    // action the assistant should emit. Shape matches RagAction: a `description`
+    // plus a `schema.actions` list, where each action carries `action` (one of
+    // listActions() ids), `plugin` (this plugin id), and your parameters.
     return [
       [
-        'user' => 'TODO: Example user prompt that should trigger this action.',
-        'action' => 'do_thing',
-        'parameters' => [],
+        'description' => 'TODO: Describe the situation that should trigger this action.',
+        'schema' => [
+          'actions' => [
+            [
+              'action' => 'do_thing',
+              'plugin' => '<plugin_id>',
+            ],
+          ],
+        ],
       ],
     ];
   }

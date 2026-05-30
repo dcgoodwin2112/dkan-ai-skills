@@ -1,6 +1,6 @@
 {
   "name": "drupal-dkan-ai",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Skills and slash commands for authoring custom Drupal modules that extend DKAN 4.x and the Drupal AI module (drupal/ai, ai_agents). Auto-loading reference docs plus scaffolding commands.",
   "author": {
     "name": "dcgoodwin2112"

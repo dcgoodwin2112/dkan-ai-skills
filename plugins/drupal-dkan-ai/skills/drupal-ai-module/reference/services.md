@@ -6,7 +6,7 @@ Service IDs to inject when writing custom AI module code, with classes and key m
 
 | Service ID | Class | Key methods |
 |---|---|---|
-| `ai.provider` | `Drupal\ai\AiProviderPluginManager` | `createInstance($id)`, `hasProvidersForOperationType($op, $require_setup = TRUE)`, `getDefaultProviderForOperationType($op)`, `getSimpleProviderModelOptions($op)`, `loadProviderFromSimpleOption($value)` |
+| `ai.provider` | `Drupal\ai\AiProviderPluginManager` | `createInstance($id)`, `hasProvidersForOperationType($op, $setup = TRUE)`, `getDefaultProviderForOperationType($op)`, `getSimpleProviderModelOptions($op)`, `loadProviderFromSimpleOption($value)` |
 | `plugin.manager.ai.function_calls` | `Drupal\ai\Service\FunctionCalling\FunctionCallPluginManager` | `createInstance($id)`, `getDefinitions()`, `clearCachedDefinitions()` |
 | `plugin.manager.ai_agents` | `Drupal\ai_agents\PluginManager\AiAgentManager` | `createInstance($id)` — then `setChatInput()` → `determineSolvability()` → `solve()` |
 | `ai_assistant_api.action_plugin.manager` | `Drupal\ai_assistant_api\AiAssistantActionPluginManager` | `createInstance($id)`, `getDefinitions()`. Note the singular `ai_assistant_api` and the unconventional service ID (not `plugin.manager.*`). |
@@ -17,7 +17,7 @@ Service IDs to inject when writing custom AI module code, with classes and key m
 
 | Service ID | Class | Use for |
 |---|---|---|
-| `ai.form_helper` | `Drupal\ai\Service\AiProviderFormHelper` | Standardized provider/model selectors in config forms — call `getAiProvidersOptions($op)` for a `<select>` source, `loadProviderFromSimpleOption($selected_value)` to resolve a saved value back to a configured provider instance |
+| `ai.form_helper` | `Drupal\ai\Service\AiProviderFormHelper` | Standardized provider/model selectors in config forms — `getAiProvidersOptions($op)` for a `<select>` source, `generateAiProvidersForm(...)` to render the selector subform, `generateAiProviderFromFormSubmit(...)` to resolve the submitted value into a configured provider instance. (To resolve a plain saved value, use `ai.provider`'s `loadProviderFromSimpleOption()`.) |
 | `key.repository` | resolves to `Drupal\key\KeyRepository`; typehint as `Drupal\key\KeyRepositoryInterface` | Resolve API key references — `getKey($key_id)->getKeyValue()`. Always inject when a plugin uses an API key. **Never store raw keys** in config. |
 | `logger.factory` | `LoggerChannelFactoryInterface` | Inject and call `->get('<channel_name>')` to obtain a `LoggerInterface`. **`logger.channel.ai` does NOT exist** as a registered service. Provider/agent base classes already inject this and expose `$this->loggerFactory`; custom services should follow the same pattern (e.g. `$this->loggerFactory->get('my_module')`). The `ai_logging` (now `ai_observability`) submodule subscribes to events to capture per-call data — no special channel needed. |
 | `event_dispatcher` | `Symfony\Component\EventDispatcher\EventDispatcherInterface` | Dispatch/listen to `Drupal\ai\Event\PreGenerateResponseEvent`, `PostGenerateResponseEvent` |
