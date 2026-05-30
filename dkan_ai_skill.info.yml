@@ -1,7 +1,0 @@
-name: DKAN AI Skill
-description: Claude Code skill and slash commands for scaffolding modules built on the Drupal AI module.
-type: module
-core_version_requirement: ^10.2 || ^11
-package: DKAN
-dependencies:
-  - drupal:system

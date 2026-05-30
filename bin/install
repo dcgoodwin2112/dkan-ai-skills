@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Fallback installer: symlink the plugin's commands/ and skills/ into a target
+# .claude/ directory, for setups that don't use the Claude Code plugin system.
+#
+# PREFERRED install is the plugin marketplace (see README):
+#   claude plugin marketplace add <this repo>
+#   claude plugin install drupal-dkan-ai@dkan-ai-skills
+#
+# Usage:
+#   bin/install [target-dir]
+#
+# target-dir defaults to "$PWD/.claude" (per-project). Pass "$HOME/.claude" to
+# make the skills/commands available to every project on the machine. The script
+# creates <target>/commands/ and <target>/skills/, then symlinks each command .md
+# and each skill directory using absolute paths. Existing symlinks pointing at
+# this repo are replaced; existing non-symlink entries are left alone and reported.
+
+set -euo pipefail
+
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+target="${1:-$PWD/.claude}"
+
+commands_src="$repo_root/plugins/drupal-dkan-ai/commands"
+skills_src="$repo_root/plugins/drupal-dkan-ai/skills"
+
+if [[ ! -d "$commands_src" || ! -d "$skills_src" ]]; then
+  echo "error: expected $commands_src and $skills_src to exist" >&2
+  exit 1
+fi
+
+mkdir -p "$target/commands" "$target/skills"
+
+link_one() {
+  local src="$1" dest="$2"
+  if [[ -L "$dest" ]]; then
+    local current
+    current="$(readlink "$dest")"
+    if [[ "$current" == "$src" ]]; then
+      echo "  ok      $dest"
+      return 0
+    fi
+    ln -sfn "$src" "$dest"
+    echo "  relink  $dest"
+    return 0
+  fi
+  if [[ -e "$dest" ]]; then
+    echo "  skip    $dest (exists, not a symlink)" >&2
+    return 0
+  fi
+  ln -s "$src" "$dest"
+  echo "  link    $dest"
+}
+
+echo "Installing into $target"
+echo "Commands:"
+shopt -s nullglob
+for f in "$commands_src"/*.md; do
+  link_one "$f" "$target/commands/$(basename "$f")"
+done
+
+echo "Skills:"
+for d in "$skills_src"/*/; do
+  name="$(basename "$d")"
+  link_one "${d%/}" "$target/skills/$name"
+done
+
+echo "Done."

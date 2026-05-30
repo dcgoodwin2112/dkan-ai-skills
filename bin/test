@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+# Test bin/install: fresh install, idempotent re-run, conflict handling,
+# repointing of stale symlinks, and custom target argument.
+#
+# Each test creates a fresh tmp dir and asserts on the script's output
+# and the resulting filesystem state. Prints "PASS" / "FAIL" per case
+# and exits non-zero on any failure.
+
+set -uo pipefail
+
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+install="$repo_root/bin/install"
+
+fails=0
+tmp_dirs=()
+
+cleanup() {
+  for d in ${tmp_dirs[@]+"${tmp_dirs[@]}"}; do
+    [[ -d "$d" ]] && rm -rf "$d"
+  done
+}
+trap cleanup EXIT
+
+fresh_tmp() {
+  local d
+  d="$(mktemp -d)"
+  tmp_dirs+=("$d")
+  echo "$d"
+}
+
+assert() {
+  local label="$1" cond="$2"
+  if eval "$cond"; then
+    echo "  PASS  $label"
+  else
+    echo "  FAIL  $label  [$cond]"
+    fails=$((fails + 1))
+  fi
+}
+
+count_commands() { find "$repo_root/plugins/drupal-dkan-ai/commands" -maxdepth 1 -name '*.md' | wc -l | tr -d ' '; }
+count_skills()   { find "$repo_root/plugins/drupal-dkan-ai/skills" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' '; }
+
+expected_cmds=$(count_commands)
+expected_skills=$(count_skills)
+
+echo "Test 1: fresh install into default target (\$PWD/.claude)"
+target="$(fresh_tmp)"
+(cd "$target" && "$install" >/tmp/install.out 2>&1)
+actual_cmds=$(find "$target/.claude/commands" -maxdepth 1 -type l | wc -l | tr -d ' ')
+actual_skills=$(find "$target/.claude/skills" -maxdepth 1 -type l | wc -l | tr -d ' ')
+assert "creates .claude/commands with all command symlinks" "[[ $actual_cmds -eq $expected_cmds ]]"
+assert "creates .claude/skills with all skill symlinks"     "[[ $actual_skills -eq $expected_skills ]]"
+assert "symlinks resolve to repo files"                    "[[ \"$(readlink "$target/.claude/commands/validate-module.md")\" == \"$repo_root/plugins/drupal-dkan-ai/commands/validate-module.md\" ]]"
+assert "symlink target file is readable through the link"  "[[ -f \"$target/.claude/commands/validate-module.md\" ]]"
+
+echo "Test 2: idempotent re-run prints only 'ok'"
+"$install" "$target/.claude" >/tmp/install.out 2>&1
+assert "no 'link' lines on second run"   "! grep -q '^  link '   /tmp/install.out"
+assert "no 'relink' lines on second run" "! grep -q '^  relink ' /tmp/install.out"
+assert "no 'skip' lines on second run"   "! grep -q '^  skip '   /tmp/install.out"
+assert "has 'ok' lines on second run"    "grep -q '^  ok ' /tmp/install.out"
+
+echo "Test 3: custom target arg"
+parent="$(fresh_tmp)"
+alt="$parent/alt-dir"
+"$install" "$alt" >/dev/null
+actual_cmds=$(find "$alt/commands" -maxdepth 1 -type l | wc -l | tr -d ' ')
+assert "custom target gets all commands" "[[ $actual_cmds -eq $expected_cmds ]]"
+assert "default .claude was NOT created next to alt" "[[ ! -d \"$parent/.claude\" ]]"
+
+echo "Test 4: non-symlink conflict is skipped, not overwritten"
+target="$(fresh_tmp)"
+mkdir -p "$target/.claude/commands"
+echo "user content" > "$target/.claude/commands/validate-module.md"
+"$install" "$target/.claude" >/tmp/install.out 2>&1
+assert "real file is not overwritten" "[[ \"\$(cat \"$target/.claude/commands/validate-module.md\")\" == 'user content' ]]"
+assert "skip line printed to stderr"   "grep -q 'skip.*validate-module.md.*exists, not a symlink' /tmp/install.out"
+assert "other commands still linked"   "[[ -L \"$target/.claude/commands/ai-scaffold-tool.md\" ]]"
+
+echo "Test 5: stale symlink is repointed"
+target="$(fresh_tmp)"
+mkdir -p "$target/.claude/commands"
+ln -s "/nonexistent/old/path/validate-module.md" "$target/.claude/commands/validate-module.md"
+"$install" "$target/.claude" >/tmp/install.out 2>&1
+assert "stale symlink was relinked" "grep -q '^  relink .*validate-module.md' /tmp/install.out"
+assert "new target points at repo"  "[[ \"\$(readlink "$target/.claude/commands/validate-module.md")\" == \"$repo_root/plugins/drupal-dkan-ai/commands/validate-module.md\" ]]"
+
+echo "Test 6: missing source directories exits with error"
+broken="$(mktemp -d)"
+mkdir -p "$broken/bin"
+cp "$install" "$broken/bin/install"
+chmod +x "$broken/bin/install"
+out_file=$(mktemp)
+set +e
+"$broken/bin/install" "$broken/.claude" >"$out_file" 2>&1
+rc=$?
+set -e
+assert "exits non-zero when plugins/drupal-dkan-ai/commands and skills missing" "[[ $rc -ne 0 ]]"
+assert "prints error to stderr"                                    "grep -q 'expected' \"$out_file\""
+rm -rf "$broken" "$out_file"
+
+echo
+if [[ $fails -eq 0 ]]; then
+  echo "All tests passed."
+  exit 0
+else
+  echo "$fails test(s) failed."
+  exit 1
+fi
