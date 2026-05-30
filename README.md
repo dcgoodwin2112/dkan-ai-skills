@@ -1,69 +1,99 @@
-# dkan_ai_skill
+# dkan-ai-skills
 
-Claude Code skills, slash commands, and DKAN/Drupal reference docs for writing and scaffolding custom modules that extend [DKAN](https://github.com/GetDKAN/dkan) and the [Drupal AI module](https://www.drupal.org/project/ai). The Drupal module itself ships no runtime code — it exists as a packaging surface for the [`claude-skills/`](claude-skills/) and [`claude-commands/`](claude-commands/) directories which are symlinked into `.claude/skills/` and `.claude/commands/`.
+A Claude Code **plugin** of skills, slash commands, and reference docs for writing custom Drupal modules that extend [DKAN](https://github.com/GetDKAN/dkan) 4.x and the [Drupal AI module](https://www.drupal.org/project/ai) (`drupal/ai`, `ai_agents`).
 
-## What ships
+Ships **no runtime PHP code** — it packages auto-loading skills and slash commands for Claude Code. The reference docs are verified against DKAN `4.x` and `drupal/ai 1.3.x`.
 
-### Skills
+## Layout
 
-Two auto-loading skills under [`claude-skills/`](claude-skills/):
-
-- **`drupal-ai-module`** (`claude-skills/drupal-ai-module/`) — auto-loads when Claude is working with `drupal/ai`, `drupal/ai_agents`, or the `ai_assistant_api` submodule of `drupal/ai`. Provides a plugin-type decision tree, top pitfalls, and pointers to the reference chunks in `claude-skills/drupal-ai-module/reference/`.
-- **`dkan-module-author`** (`claude-skills/dkan-module-author/`) — auto-loads when editing files under `web/modules/custom/` or working with `Drupal\dkan\*`, `Drupal\metastore\*`, `Drupal\datastore\*`, `Drupal\harvest\*`, or `Drupal\common\*` namespaces. Surfaces the half-dozen DKAN-specific concepts that are non-obvious from the code alone, and routes to the bundled reference docs at `claude-skills/dkan-module-author/reference/` (DKAN architecture, services, REST API, workflows, testing, plus a Drupal patterns cheat sheet).
-
-### Slash commands
-
-#### Drupal AI scaffolding
-
-| Command | Generates |
-|---|---|
-| `/ai-scaffold-provider <module> <ProviderName>` | AI Provider plugin (LLM backend) — class, settings form, route, `definitions/api_defaults.yml`, info.yml deps, schema, permissions, unit test stub |
-| `/ai-scaffold-tool <module> <ToolName>` | FunctionCall plugin (AI tool) — class with attribute and `execute()` / `setOutput()` stubs, unit test stub |
-| `/ai-scaffold-agent <module> <AgentName>` | AiAgent plugin — class with the real `parent::create()` pattern, `agentsCapabilities()` / `agentsNames()` / `answerQuestion()` / `determineSolvability()` / `solve()` stubs, YAML prompt directory, unit test stub |
-| `/ai-scaffold-action <module> <ActionName>` | AiAssistantAction plugin — class extending `AiAssistantActionBase` with `listActions()` / `triggerAction()` / `provideFewShotLearningExample()` stubs |
-
-All commands target Drupal AI **`^1.3`** by default and refuse to scaffold against `2.0.x` (breaking provider lifecycle changes). Tool and agent commands work against 1.2.x as well.
-
-#### General Drupal scaffolding
-
-| Command | Generates |
-|---|---|
-| `/scaffold-drupal-service <module_path> <ServiceName>` | A Drupal service class with constructor injection, `services.yml` entry, and unit test stub |
-| `/add-event-subscriber <module_path> <EventName>` | An EventSubscriber class for a DKAN/Drupal event with tagged service registration |
-| `/add-drupal-route <module_path> <path> [permission]` | A route + controller + permission entry (and the permission definition if needed) |
-| `/validate-module <module_path>` | Runs phpcs, phpunit, permission audit, and cache rebuild against a custom module |
-
-## Install
-
-The skill and command files are loaded by Claude Code via symlinks; the Drupal module itself does not need to be enabled or required by Composer (it ships no runtime PHP code). A path-repo entry exists in the project's root `composer.json` so the module can be required later if it ever grows runtime code.
-
-Symlink skills and commands into `.claude/`:
-
-```bash
-# Skills (one symlink per skill directory)
-for d in web/modules/custom/dkan_ai_skill/claude-skills/*/; do
-  name="$(basename "$d")"
-  ln -s "../../$d" ".claude/skills/$name"
-done
-
-# Commands (one symlink per .md file)
-for f in web/modules/custom/dkan_ai_skill/claude-commands/*.md; do
-  ln -s "../../$f" ".claude/commands/$(basename "$f")"
-done
+```
+.claude-plugin/marketplace.json   # local marketplace listing the plugin
+plugins/drupal-dkan-ai/
+  .claude-plugin/plugin.json       # plugin manifest
+  skills/                          # auto-loading skills (SKILL.md + reference/)
+  commands/                        # slash commands
+bin/install, bin/test              # fallback symlink installer (non-plugin setups)
 ```
 
-## References
+## Install (recommended: plugin marketplace)
 
-### Drupal AI module
-- Plugin types, attributes, base classes: [claude-skills/drupal-ai-module/reference/plugin-types.md](claude-skills/drupal-ai-module/reference/plugin-types.md)
-- Common pitfalls: [claude-skills/drupal-ai-module/reference/pitfalls.md](claude-skills/drupal-ai-module/reference/pitfalls.md)
-- Service IDs and DI patterns: [claude-skills/drupal-ai-module/reference/services.md](claude-skills/drupal-ai-module/reference/services.md)
+Set up once, available across every project on the machine:
+
+```bash
+git clone https://github.com/dcgoodwin2112/dkan-ai-skills.git ~/src/dkan-ai-skills
+claude plugin marketplace add ~/src/dkan-ai-skills
+claude plugin install drupal-dkan-ai@dkan-ai-skills
+```
+
+Validate changes with `claude plugin validate ~/src/dkan-ai-skills/plugins/drupal-dkan-ai`.
+
+**Updating:** Claude Code caches an installed plugin by version. After `git pull` (or local edits), bump `version` in `plugins/drupal-dkan-ai/.claude-plugin/plugin.json`, then `claude plugin update drupal-dkan-ai`. For quick local iteration without a version bump, force-refresh the cache:
+
+```bash
+claude plugin uninstall drupal-dkan-ai@dkan-ai-skills
+claude plugin marketplace remove dkan-ai-skills && claude plugin marketplace add ~/src/dkan-ai-skills
+claude plugin install drupal-dkan-ai@dkan-ai-skills
+```
+
+When installed as a plugin, skills auto-load by their `description` and commands are namespaced — e.g. `/drupal-dkan-ai:scaffold-dkan-module`.
+
+## Install (fallback: symlinks)
+
+For setups that don't use the plugin system, `bin/install` symlinks the skills/commands into a `.claude/` directory:
+
+```bash
+~/src/dkan-ai-skills/bin/install              # into $PWD/.claude (per-project)
+~/src/dkan-ai-skills/bin/install ~/.claude    # into ~/.claude (all projects)
+```
+
+Re-running is safe: matching symlinks are left alone, stale ones repointed, non-symlink files skipped. `bin/test` exercises the installer. Commands installed this way are invoked without the plugin namespace (e.g. `/scaffold-dkan-module`).
+
+## Skills
+
+Two auto-loading skills under `plugins/drupal-dkan-ai/skills/`:
+
+- **`drupal-ai-module`** — loads when working with `drupal/ai`, `ai_agents`, or `ai_assistant_api`. Plugin-type decision tree, always-true rules, pitfalls, testing, and RAG. Note `drupal/ai 1.3.x` requires Drupal `^10.5 || ^11.2`.
+- **`dkan-module-author`** — loads when editing files under `web/modules/custom/` or `docroot/modules/custom/`, or working with `Drupal\dkan_metastore\*`, `Drupal\dkan_datastore\*`, `Drupal\dkan_harvest\*`, or `Drupal\dkan_common\*` namespaces. Targets DKAN 4.x on Drupal `^10.2 || ^11`.
+
+Example paths in the docs use `<webroot>/modules/...`; substitute your Drupal web root (`docroot/` in DKAN's recommended-project, `web/` elsewhere).
+
+## Slash commands
+
+### Scaffolding
+| Command | Generates |
+|---|---|
+| `/scaffold-dkan-module <name>` | Complete DKAN 4.x module skeleton — info.yml (correct `dkan:dkan_*` deps), services.yml, composer.json, optional standalone test harness |
+| `/ai-scaffold-provider <module> <ProviderName>` | AI Provider plugin (LLM backend) — class, settings form, route, `api_defaults.yml`, deps, schema, test stub |
+| `/ai-scaffold-tool <module> <ToolName>` | FunctionCall plugin (AI tool) — class with attribute and `execute()`/`setOutput()` stubs, test stub |
+| `/ai-scaffold-agent <module> <AgentName>` | AiAgent plugin — `parent::create()` pattern, lifecycle stubs, YAML prompt dir, test stub |
+| `/ai-scaffold-action <module> <ActionName>` | AiAssistantAction plugin extending `AiAssistantActionBase` |
+| `/scaffold-drupal-service <module> <ServiceName>` | Drupal service with DI, `services.yml` entry, unit test |
+| `/add-event-subscriber <module> [event]` | EventSubscriber for a DKAN/Drupal event, tagged in `services.yml` |
+| `/add-drupal-route <module> <path> [perm]` | Route + controller + permission entry |
+
+The AI scaffold commands target Drupal AI `^1.3` and refuse `2.0.x` (breaking provider lifecycle changes).
+
+### Validation
+| Command | Runs |
+|---|---|
+| `/validate-module <module>` | phpcs, phpunit, permission audit, cache rebuild |
+
+## Reference docs
+
+### DKAN authoring (`plugins/drupal-dkan-ai/skills/dkan-module-author/reference/`)
+- `dkan-overview.md` — architecture, data model, distributions/references/perspectives, data dictionaries
+- `dkan-services.md` — service IDs, classes, method signatures for DI
+- `dkan-api.md` — REST API endpoints and query DTO
+- `dkan-workflows.md` — CSV import pipeline, event system, harvest ETL, publish flow
+- `dkan-harvest.md` — authoring custom harvest extractors/transformers/loaders (ETL class-strings)
+- `dkan-drush.md` — every DKAN drush command (datastore, harvest, metastore, sample content)
+- `dkan-testing.md` — unit/kernel/functional patterns, mock-chain, standalone stubs
+- `drupal-patterns.md` — Drupal 10/11 conventions (DI, render arrays, routing, custom entities)
+
+### Drupal AI (`plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/`)
+- `plugin-types.md` — base classes, attributes, required methods, paths per plugin type
+- `services.md` — service IDs, classes, key methods
+- `pitfalls.md` — failure modes with symptoms, causes, fixes
+- `testing-ai-plugins.md` — unit-testing tools, asserting tool dispatch, golden-case eval, mocking `ai.provider`
+- `ai-search-rag.md` — RAG, embeddings, VdbProvider authoring, ai_search Search API backend
 - Upstream docs: https://project.pages.drupalcode.org/ai/
-
-### DKAN authoring
-- Architecture overview: [claude-skills/dkan-module-author/reference/dkan-overview.md](claude-skills/dkan-module-author/reference/dkan-overview.md)
-- Service IDs + method signatures: [claude-skills/dkan-module-author/reference/dkan-services.md](claude-skills/dkan-module-author/reference/dkan-services.md)
-- REST API: [claude-skills/dkan-module-author/reference/dkan-api.md](claude-skills/dkan-module-author/reference/dkan-api.md)
-- End-to-end workflows: [claude-skills/dkan-module-author/reference/dkan-workflows.md](claude-skills/dkan-module-author/reference/dkan-workflows.md)
-- Testing patterns: [claude-skills/dkan-module-author/reference/dkan-testing.md](claude-skills/dkan-module-author/reference/dkan-testing.md)
-- Drupal core conventions: [claude-skills/dkan-module-author/reference/drupal-patterns.md](claude-skills/dkan-module-author/reference/drupal-patterns.md)
