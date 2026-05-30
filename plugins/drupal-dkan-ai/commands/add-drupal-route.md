@@ -5,11 +5,13 @@ argument-hint: <module_path> <path> [permission]
 
 Add a route with controller and permission to a Drupal module.
 
+See [reference/drupal-patterns.md](../skills/dkan-module-author/reference/drupal-patterns.md) for controller/DI conventions.
+
 ## Input
 
 $ARGUMENTS should be: `<module_path> <path> [permission]`
 
-- `module_path`: Path to the module (e.g., `dkan_query_tools`)
+- `module_path`: Path to the module, resolved under `<webroot>/modules/custom/` (e.g., `dkan_query_tools`)
 - `path`: URL path (e.g., `/admin/dkan/my-page` or `/api/my-endpoint/{id}`)
 - `permission`: Optional permission machine name. If omitted, defaults to `access content` for public routes or `administer site configuration` for `/admin/*` paths.
 
@@ -17,7 +19,7 @@ $ARGUMENTS should be: `<module_path> <path> [permission]`
 
 1. **Locate the module**: Read its `.info.yml` to confirm the machine name and namespace.
 
-2. **Check permission conflicts**: If a custom permission is provided, call `list_permissions` MCP tool to verify it doesn't conflict with an existing DKAN/Drupal permission. If it does conflict, inform the user and ask how to proceed.
+2. **Check permission conflicts**: If a custom permission is provided, verify it doesn't conflict with an existing DKAN/Drupal permission. If a Drupal MCP server (e.g. `dkan_mcp`) is connected, use its `list_permissions` tool; otherwise grep the codebase's `*.permissions.yml` files (e.g. `<webroot>/modules/contrib/dkan/**/*.permissions.yml` and core) for the permission machine name. If it conflicts, inform the user and ask how to proceed.
 
 3. **Derive names**:
    - Route name: `{module_name}.{descriptive_name}` (e.g., `dkan_query_tools.preview`)
@@ -45,6 +47,7 @@ $ARGUMENTS should be: `<module_path> <path> [permission]`
      - Example pattern:
        ```php
        use Drupal\Core\Controller\ControllerBase;
+       use Drupal\dkan_metastore\MetastoreService;
        use Symfony\Component\DependencyInjection\ContainerInterface;
 
        class ReportsController extends ControllerBase {

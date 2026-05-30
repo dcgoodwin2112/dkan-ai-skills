@@ -129,22 +129,40 @@ Response: `{"result": [{...}]}`
 
 | Method | Path | Permission | Description |
 |---|---|---|---|
-| GET | `/api/1/datastore/imports` | datastore_api_import | List all imports |
+| GET | `/api/1/datastore/imports` | datastore_api_import | List all imports (per-resource job status) |
 | POST | `/api/1/datastore/imports` | datastore_api_import | Import resource(s) (body: `{resource_id}` or `{resource_ids: [...]}`) |
-| GET | `/api/1/datastore/imports/{id}` | access content | Import summary |
+| GET | `/api/1/datastore/imports/{id}` | access content | Datastore table summary (`{id}` = resource ID, `identifier__version`, or distribution UUID) |
 | DELETE | `/api/1/datastore/imports/{id}` | datastore_api_drop | Drop datastore table |
 | DELETE | `/api/1/datastore/imports` | datastore_api_drop | Drop multiple (body: `{resource_ids: [...]}`) |
 
-**Summary response**:
+**List response** (`GET /api/1/datastore/imports`): keyed by resource ID, each value an `ImportInfo` item:
 ```json
 {
-  "distribution_id": "uuid",
-  "table_name": "identifier__version",
-  "headers": ["col1", "col2"],
-  "status": "completed|processing|error",
-  "records_count": 1000
+  "{identifier}__{version}": {
+    "fileName": "data.csv",
+    "fileFetcherStatus": "done",
+    "fileFetcherBytes": 12345,
+    "fileFetcherPercentDone": 100,
+    "importerStatus": "done",
+    "importerBytes": 12345,
+    "importerPercentDone": 100,
+    "importerError": null
+  }
 }
 ```
+Status values come from `Procrastinator\Result` (`waiting`, `in_progress`, `done`, `error`, `stopped`).
+
+**Summary response** (`GET /api/1/datastore/imports/{id}`): a `TableSummary` (`DatastoreService::summary()` → `DatabaseTable::getSummary()`). Empty/null fields are dropped by `array_filter`:
+```json
+{
+  "numOfColumns": 3,
+  "columns": ["col1", "col2", "col3"],
+  "indexes": [],
+  "fulltextIndexes": [],
+  "numOfRows": 1000
+}
+```
+The backing datastore table is named `datastore_<md5>` (md5 of `{identifier}__{version}__{perspective}`), never `identifier__version`.
 
 ## Harvest API
 

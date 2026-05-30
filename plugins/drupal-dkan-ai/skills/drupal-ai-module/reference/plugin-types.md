@@ -108,13 +108,14 @@ Autonomous worker that runs a sequence of LLM-driven steps to fulfill a goal —
 - **Attribute**: `#[AiAgent(id: 'my_agent', label: new TranslatableMarkup('My Agent'), module_dependencies: [])]` — class `Drupal\ai_agents\Attribute\AiAgent`. Fields: `id`, `label`, optional `deriver`, optional `module_dependencies`. **There is NO `description` field on the attribute** — describe the agent in `agentsCapabilities()` instead.
 - **Plugin ID rule**: due to a known bug, the plugin ID must either equal its "group" or be prefixed with `<group>:`. In practice, use a single underscore-cased ID (e.g. `field_type_agent`).
 - **Path**: `src/Plugin/AiAgent/MyAgent.php` (class name typically does NOT include "Agent" suffix — see built-ins `FieldType.php`, `ContentType.php`, `TaxonomyAgent.php`)
-- **Required methods to override** (the base class declares everything but leaves these abstract):
-  - `getId(): string` — return the plugin ID. Base's `getId()` is implemented but most agents override to hard-code the ID for clarity.
-  - `agentsNames(): array` — array of human-readable names. **Abstract in base — must implement.**
-  - `answerQuestion()` — interactive Q&A handler. **Abstract in base — must implement.** Return a string; if the agent isn't interactive, return a placeholder like `'Not interactive.'`.
+- **Required overrides** (declared on `AiAgentInterface`, absent from the base — fatal if not implemented; see [pitfalls.md](pitfalls.md) #15):
+  - `agentsNames(): array` — array of human-readable names. **Must implement.**
+  - `answerQuestion()` — interactive Q&A handler. **Must implement.** Return a string; if the agent isn't interactive, return a placeholder like `'Not interactive.'`.
+- **Override to customize** (base provides a stub/default implementation):
+  - `getId(): string` — return the plugin ID. Base implements it; most agents override to hard-code the ID for clarity.
   - `agentsCapabilities(): array` — keyed by plugin ID; each entry has `name`, `description`, `usage_instructions`, `inputs[]` (each: `name`, `type`, `description`, `default_value`, `required`), `outputs[]` (each: `description`, `type`). This is what the orchestration framework reads to route tasks to your agent. Base provides a stub but always override for real agents.
-  - `determineSolvability(): int` — return one of the JOB constants on `AiAgentInterface`: `JOB_NOT_SOLVABLE = 0`, `JOB_SOLVABLE = 1`, `JOB_NEEDS_ANSWERS = 2`, `JOB_SHOULD_ANSWER_QUESTION = 3`, `JOB_INFORMS = 4`. **No `JOB_NEEDS_MORE_INFO`** — common AI hallucination.
-  - `solve()` — main work; typically calls `$this->runAiProvider($prompt, $images, $strip_tags, $promptFile)` or `$this->runSubAgent($file, $context, $module, $subDirectory)` from the base class. Return type undeclared; convention is `string`.
+  - `determineSolvability(): int` — return one of the JOB constants on `AiAgentInterface`: `JOB_NOT_SOLVABLE = 0`, `JOB_SOLVABLE = 1`, `JOB_NEEDS_ANSWERS = 2`, `JOB_SHOULD_ANSWER_QUESTION = 3`, `JOB_INFORMS = 4`. **No `JOB_NEEDS_MORE_INFO`** — common AI hallucination. Base provides a default; override for real logic.
+  - `solve()` — main work; typically calls `$this->runAiProvider($prompt, $images, $strip_tags, $promptFile)` or `$this->runSubAgent($file, $context, $module, $subDirectory)` from the base class. Return type undeclared; convention is `string`. Base provides a stub.
 - **Prompts**: per-operation YAML files at `prompts/<plugin_id>/<operationName>.yml` — **NOT** `system.txt`/`task.txt`. Each YAML file is a structured prompt with placeholders the framework fills in. See `<webroot>/modules/contrib/ai_agents/prompts/field_type_agent/` for examples (e.g. `determineFieldTask.yml`, `answerQuestion.yml`). Loaded by `actionYamlPrompts()` and `runSubAgent()`.
 - **Plugin manager**: `plugin.manager.ai_agents` (class `Drupal\ai_agents\PluginManager\AiAgentManager`)
 - **Reference implementations**: `ai_agents` built-ins — `FieldType` (id `field_type_agent`), `ContentType` (id `node_content_type_agent`), `TaxonomyAgent` (id `taxonomy_agent`) under `<webroot>/modules/contrib/ai_agents/src/Plugin/AiAgent/`
@@ -126,9 +127,9 @@ A capability the AI Assistant API can invoke as part of a chat session — perfo
 - **Module name**: `ai_assistant_api` (singular — the project's machine name, despite the human-readable name "AI Assistant API")
 - **Base class**: `Drupal\ai_assistant_api\Base\AiAssistantActionBase`
 - **Interface**: `Drupal\ai_assistant_api\AiAssistantActionInterface` (top-level, not in `PluginInterfaces/`)
-- **Attribute**: `#[AiAssistantAction(id: 'rag_action', label: new TranslatableMarkup('RAG'))]` — class `Drupal\ai_assistant_api\Attribute\AiAssistantAction`. Fields: `id`, `label`, optional `deriver`. **No `description` field.**
+- **Attribute**: `#[AiAssistantAction(id: 'my_action', label: new TranslatableMarkup('My Action'))]` — class `Drupal\ai_assistant_api\Attribute\AiAssistantAction`. Fields: `id`, `label`, optional `deriver`. **No `description` field.** (The shipped RAG plugin uses `label: new TranslatableMarkup('RAG Actions')`.)
 - **Plugin ID rule**: same group/prefix bug as `AiAgent` — use a single underscore-cased ID.
-- **Path**: `src/Plugin/AiAssistantAction/RagAction.php`
+- **Path**: `src/Plugin/AiAssistantAction/MyAction.php`
 - **Base constructor**: `(array $configuration, PrivateTempStoreFactory $tempStoreFactory)`. Subclasses can extend with extra services — call `parent::__construct($configuration, $tmpStore)`.
 - **Required methods to override**:
   - `listActions(): array` — array of action descriptors with `id`, `label`, `description`. The LLM sees these to choose which action to invoke.
@@ -157,7 +158,7 @@ Auto-populates a custom field from an LLM prompt.
 
 New backend for AI Search (Milvus, Pinecone, Qdrant, etc.).
 
-- **Attribute**: `#[VdbProvider(id: 'milvus', label: ...)]`
+- **Attribute**: `#[AiVdbProvider(id: 'milvus', label: ...)]` — class `Drupal\ai\Attribute\AiVdbProvider`
 - **Path**: `src/Plugin/VdbProvider/MilvusProvider.php`
 - **Module**: `ai_search`
 

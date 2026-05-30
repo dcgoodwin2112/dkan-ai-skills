@@ -9,7 +9,7 @@ Create a new Drupal service class with constructor injection, register it in ser
 
 $ARGUMENTS should be: `<module_path> <ServiceName> [dependency_service_ids...]`
 
-- `module_path`: Path to the module (e.g., `dkan_query_tools`)
+- `module_path`: Path to the module, resolved under `<webroot>/modules/custom/` (e.g., `dkan_query_tools`)
 - `ServiceName`: PascalCase class name (e.g., `DataProcessor`)
 - `dependency_service_ids`: Optional DKAN/Drupal service IDs to inject (e.g., `dkan.metastore.service dkan.datastore.service`)
 
@@ -17,16 +17,18 @@ $ARGUMENTS should be: `<module_path> <ServiceName> [dependency_service_ids...]`
 
 1. **Locate the module**: Read its `.info.yml` to confirm the machine name and derive the namespace (`Drupal\{module_name}\`).
 
-2. **Resolve dependencies**: For each dependency service ID, call the `get_service_info` MCP tool to get:
+2. **Resolve dependencies**: For each dependency service ID, find:
    - The fully qualified class name (for the type hint)
    - Public method signatures (for reference when writing the service logic)
 
-   If a service ID is a Drupal core service (e.g., `http_client`, `request_stack`), use known type hints (`ClientInterface`, `RequestStack`, etc.) without calling MCP.
+   If a Drupal MCP server (e.g. `dkan_mcp`) is connected, use its `get_service_info` tool. Otherwise, locate the service definition by grepping the `*.services.yml` files (e.g. `<webroot>/modules/contrib/dkan/**/*.services.yml`) for the service ID to get its `class:`, then read that class file for public method signatures.
+
+   If a service ID is a Drupal core service (e.g., `http_client`, `request_stack`), use known type hints (`ClientInterface`, `RequestStack`, etc.) without further lookup.
 
 3. **Generate the service class** at `src/Service/{ServiceName}.php`:
    - Namespace: `Drupal\{module_name}\Service`
    - Use PHP 8.1 constructor-promoted properties
-   - Type-hint each dependency using the class from `get_service_info` output
+   - Type-hint each dependency using the class resolved in step 2
    - Follow Drupal coding standards (class docblock, no `@param` tags on promoted constructors)
    - Example pattern:
      ```php
@@ -55,3 +57,5 @@ $ARGUMENTS should be: `<module_path> <ServiceName> [dependency_service_ids...]`
    - Add one placeholder test method for the primary functionality
 
 6. **Lint**: Run `ddev exec vendor/bin/phpcs --standard=Drupal,DrupalPractice` on the generated files. Fix any violations.
+
+7. **Clear cache**: Run `ddev drush cr` so the new service definition is registered in the container. Verify no errors.

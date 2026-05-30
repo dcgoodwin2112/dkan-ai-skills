@@ -5,11 +5,13 @@ argument-hint: <module_path> [event_name]
 
 Add an EventSubscriber to a Drupal module that listens to DKAN events.
 
+See [reference/dkan-services.md](../skills/dkan-module-author/reference/dkan-services.md) for DKAN service and event conventions.
+
 ## Input
 
 $ARGUMENTS should be: `<module_path> [event_name]`
 
-- `module_path`: Path to the module (e.g., `dkan_query_tools`)
+- `module_path`: Path to the module, resolved under `<webroot>/modules/custom/` (e.g., `dkan_query_tools`)
 - `event_name`: Optional event name string (e.g., `dkan_metastore_dataset_update`). If omitted, present available events for the user to choose.
 
 ## Steps
@@ -17,8 +19,8 @@ $ARGUMENTS should be: `<module_path> [event_name]`
 1. **Locate the module**: Read its `.info.yml` to confirm the machine name and namespace.
 
 2. **Discover events**:
-   - If no event name provided, call `list_events` MCP tool. Present the results as a numbered list showing: constant name, event string, declaring class, module. Ask the user which event(s) to subscribe to.
-   - If event name provided, call `get_event_info` MCP tool on it to see the declaring class and existing subscribers. Note existing subscribers so the new one doesn't duplicate behavior.
+   - If no event name provided: when a Drupal MCP server (e.g. `dkan_mcp`) is connected, call its `list_events` tool. Otherwise, grep DKAN source for event constants: `grep -rn "const EVENT_" <webroot>/modules/contrib/dkan/modules/*/src/`. Present the results as a numbered list showing: constant name, event string, declaring class, module. Ask the user which event(s) to subscribe to.
+   - If event name provided: when the MCP server is connected, call its `get_event_info` tool to see the declaring class and existing subscribers. Otherwise, grep DKAN source for the event string and its `EVENT_` constant to find the declaring class, and grep for `getSubscribedEvents` referencing it to find existing subscribers. Note existing subscribers so the new one doesn't duplicate behavior.
 
 3. **Generate the subscriber class** at `src/EventSubscriber/{Name}Subscriber.php`:
    - Namespace: `Drupal\{module_name}\EventSubscriber`
@@ -32,7 +34,10 @@ $ARGUMENTS should be: `<module_path> [event_name]`
      use Drupal\dkan_metastore\MetastoreService;
      use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-     class DatasetUpdateSubscriber implements EventSubscriberInterface {
+     // Example subscribes to MetastoreService::EVENT_DATA_GET (a real DKAN
+     // constant resolving to 'dkan_metastore_data_get'). Keep the class name,
+     // handler name, and constant referring to the same event.
+     class DataGetSubscriber implements EventSubscriberInterface {
 
        public static function getSubscribedEvents(): array {
          return [
@@ -61,3 +66,5 @@ $ARGUMENTS should be: `<module_path> [event_name]`
    - Test the handler method can be called without error (with mocked event if needed)
 
 6. **Lint**: Run `ddev exec vendor/bin/phpcs --standard=Drupal,DrupalPractice` on the generated files. Fix any violations.
+
+7. **Clear cache**: Run `ddev drush cr` so the new tagged `event_subscriber` service is registered. Verify no errors.

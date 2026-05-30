@@ -149,9 +149,11 @@ class <AgentName> extends AiAgentBase implements ContainerFactoryPluginInterface
    * {@inheritdoc}
    */
   public function solve() {
-    // Typical pattern: load a YAML prompt and dispatch.
-    // $context = ['user_input' => $this->getTask()->getDescription()];
-    // $result = $this->runSubAgent('determineTask.yml', $context, '<module_name>', '<plugin_id>');
+    // Typical pattern: load a YAML prompt and dispatch via the agent helper.
+    // The prompt file is referenced by name without the .yml extension; the
+    // helper resolves the module and prompts/<plugin_id>/ directory for you.
+    // $context = ['User request' => $this->getTask()->getDescription()];
+    // $result = $this->agentHelper->runSubAgent('determineTask', $context);
     // Branch on $result, mutate state as needed, return a string summary.
     return 'TODO: implement <AgentName>::solve()';
   }
@@ -169,21 +171,35 @@ class <AgentName> extends AiAgentBase implements ContainerFactoryPluginInterface
   ```yaml
   # Initial task analysis prompt loaded by runSubAgent().
   # See <webroot>/modules/contrib/ai_agents/prompts/field_type_agent/ for real examples.
-  prompt: |
-    You are <AgentName> Agent. Your job is TODO: describe role.
-
-    User request: {{ user_input }}
-
-    Respond in JSON with the following structure:
-    {
-      "action": "<action_id>",
-      "summary": "<short summary>"
-    }
-  output_schema:
-    type: object
-    properties:
-      action: { type: string }
-      summary: { type: string }
+  #
+  # AiAgentBase::actionYamlPrompts() reads the NESTED keys below. It builds the
+  # system prompt from prompt.introduction, then appends each prompt.formats entry
+  # (JSON-encoded) as the required RFC8259 response shape, the optional
+  # prompt.possible_actions list, and optional one_shot_learning_examples. There is
+  # no flat `prompt:` string and no `output_schema:` key — those are not read.
+  preferred_model: gpt-4o
+  preferred_llm: openai
+  is_triage: true
+  weight: 0
+  name: Determine <AgentName> Task
+  description: |
+    TODO: One-paragraph description of what this sub-agent decides and which
+    follow-up sub-agents each action routes to.
+  prompt:
+    introduction: >
+      You are <AgentName> Agent. Your job is TODO: describe role. Based on the
+      task description and comments, decide which action to take.
+    possible_actions:
+      do_thing: The user wants the agent to perform its primary action.
+      information: You need more information from the end user.
+    formats:
+      - action: action id from the list above, so do_thing or information.
+        summary: A short human-readable summary of what you decided.
+    one_shot_learning_examples:
+      - action: do_thing
+        summary: TODO example summary for a do_thing decision.
+      - action: information
+        summary: TODO example asking the user for the missing detail.
   ```
 
 The exact YAML schema varies by use case — read `<webroot>/modules/contrib/ai_agents/prompts/field_type_agent/answerQuestion.yml` and `determineFieldTask.yml` to see real patterns before filling in.

@@ -251,7 +251,7 @@ class MetastoreService {
 }
 ```
 
-Add one stub per DKAN class your code type-hints (e.g. `Drupal\dkan_common\DatasetInfo`, `Drupal\dkan_datastore\Service`), each in its real 4.x namespace. See the full set in `<webroot>/modules/custom/dkan_query_tools/tests/stubs/`.
+Add one stub per DKAN class your code type-hints (e.g. `Drupal\dkan_common\DatasetInfo`, `Drupal\dkan_datastore\DatastoreService`), each in its real 4.x namespace. See the full set in `<webroot>/modules/custom/dkan_query_tools/tests/stubs/`.
 
 `tests/src/Unit/ExampleTest.php` — sample unit test (namespace `Drupal\Tests\<module_name>\Unit`):
 
