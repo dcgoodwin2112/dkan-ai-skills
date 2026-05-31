@@ -100,6 +100,19 @@ assert "exits non-zero when plugins/drupal-dkan-ai/commands and skills missing" 
 assert "prints error to stderr"                                    "grep -q 'expected' \"$out_file\""
 rm -rf "$broken" "$out_file"
 
+echo "Test 7: committed adapters are not stale (bin/build-adapters output matches)"
+build="$repo_root/bin/build-adapters"
+gen="$(fresh_tmp)"
+"$build" "$gen" >/dev/null 2>&1
+stale=0
+while IFS= read -r rel; do
+  if ! diff -q "$repo_root/$rel" "$gen/$rel" >/dev/null 2>&1; then
+    echo "    drift: $rel" >&2
+    stale=$((stale + 1))
+  fi
+done < <(cd "$gen" && find AGENTS.md .github -type f | sort)
+assert "generated adapters match committed (run bin/build-adapters)" "[[ $stale -eq 0 ]]"
+
 echo
 if [[ $fails -eq 0 ]]; then
   echo "All tests passed."
