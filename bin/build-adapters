@@ -51,10 +51,11 @@ md_body() {
 # curated here — keep in sync when adding a skill).
 skill_glob() {
   case "$1" in
-    dkan-module-author) echo '**/modules/custom/**,**/modules/contrib/dkan/**' ;;
-    drupal-ai-module)   echo '**/modules/custom/**' ;;
-    drupal-mcp-server)  echo '**/modules/custom/**,**/modules/contrib/mcp_server/**' ;;
-    *)                  echo '**' ;;
+    dkan-module-author)    echo '**/modules/custom/**,**/modules/contrib/dkan/**' ;;
+    dkan-core-contributor) echo '**/modules/contrib/dkan/**,**/dkan/modules/dkan_*/**' ;;
+    drupal-ai-module)      echo '**/modules/custom/**' ;;
+    drupal-mcp-server)     echo '**/modules/custom/**,**/modules/contrib/mcp_server/**' ;;
+    *)                     echo '**' ;;
   esac
 }
 
@@ -68,7 +69,7 @@ agents="$out/AGENTS.md"
   echo "# AGENTS.md"
   echo
   echo "Reference and scaffolding guidance for writing custom Drupal modules that extend"
-  echo "DKAN 4.x, the Drupal AI module, and the MCP Server module. This repo's canonical source is a Claude Code"
+  echo "DKAN 4.x, the Drupal AI module, and the MCP Server module — plus contributing to DKAN core itself. This repo's canonical source is a Claude Code"
   echo "plugin under \`$plugin_rel/\`; the guidance below is tool-neutral and applies to any"
   echo "coding agent (Codex, Cursor, Gemini CLI, Aider, Zed, …)."
   echo
@@ -117,11 +118,12 @@ copilot="$out/.github/copilot-instructions.md"
 {
   echo "$gen_marker"
   echo
-  echo "# Copilot instructions: DKAN 4.x + Drupal AI + MCP Server module authoring"
+  echo "# Copilot instructions: DKAN 4.x + Drupal AI + MCP Server authoring + DKAN core contribution"
   echo
   echo "This repository packages skills, reference docs, and scaffolding procedures for"
   echo "writing custom Drupal modules that extend DKAN 4.x, the Drupal AI module"
-  echo "(\`drupal/ai\`, \`ai_agents\`), and the MCP Server module (\`drupal/mcp_server\`)."
+  echo "(\`drupal/ai\`, \`ai_agents\`), and the MCP Server module (\`drupal/mcp_server\`),"
+  echo "plus contributing to DKAN core itself (the \`drupal/dkan\` package)."
   echo "Canonical source lives under \`$plugin_rel/\`."
   echo
   echo "Path-scoped instructions in \`.github/instructions/\` auto-attach when you edit"
