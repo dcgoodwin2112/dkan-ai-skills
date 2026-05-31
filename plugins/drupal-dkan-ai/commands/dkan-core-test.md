@@ -1,0 +1,174 @@
+---
+description: Scaffold an in-repo PHPUnit test for DKAN core (correct suite, base class, traits, @group)
+argument-hint: <module> <ClassName> [--type unit|kernel|functional]
+---
+
+Scaffold a PHPUnit test **inside the DKAN core package** (`drupal/dkan`), in the right
+module/suite with the correct base class, DKAN traits, and `@group` annotations so it
+runs locally *and* in CI.
+
+Read [SKILL.md](../skills/dkan-core-contributor/SKILL.md) and
+[reference/testing-core.md](../skills/dkan-core-contributor/reference/testing-core.md)
+first. This is the **in-repo** harness (`ddev phpunit`, real Drupal kernel) — NOT the
+standalone-stub harness from `/scaffold-dkan-module`. Pick a real sibling test in the
+target module and match it exactly.
+
+## Input
+
+`$ARGUMENTS` should be: `<module> <ClassName> [--type unit|kernel|functional]`
+
+- `module`: a DKAN core module machine name (`dkan_common`, `dkan_metastore`,
+  `dkan_datastore`, `dkan_harvest`, or a submodule like `dkan_metastore_search`).
+- `ClassName`: PascalCase, ending in `Test` (e.g. `ReferencerEdgeCaseTest`).
+- `--type`: `kernel` (default — real services + DB), `unit` (pure logic), or
+  `functional` (full-site HTTP/UI).
+
+## Gotchas (do not skip)
+
+- **This is for DKAN core, not a custom module.** If the target is under
+  `modules/custom/`, stop and use `/scaffold-dkan-module --with-tests` instead.
+- **No DKAN stubs.** Inside core you use the real classes/services; never stub a DKAN
+  class here.
+- **Functional tests need `@group functionalN`** (0–3) or CI's split skips them.
+- **Async work needs the queue drained** — add `QueueRunnerTrait` when the code under
+  test imports/harvests.
+
+## Steps
+
+### 1. Resolve the target module and suite
+
+Locate `<dkan>/modules/<module>/` (or the nested submodule path). Refuse if it doesn't
+exist or is a custom module. Map `--type` → directory + base class:
+
+| `--type` | Dir | Base class | Bootstrap |
+|---|---|---|---|
+| `unit` | `tests/src/Unit/` | `Drupal\Tests\UnitTestCase` | none |
+| `kernel` | `tests/src/Kernel/` | `Drupal\KernelTests\KernelTestBase` (or `ConfigFormTestBase` for config forms) | container + DB |
+| `functional` | `tests/src/Functional/` | `Drupal\Tests\dkan_common\Functional\Api1TestBase` (API) or `Drupal\Tests\BrowserTestBase` | full site |
+
+Namespace is `Drupal\Tests\<module>\<Type>`.
+
+### 2. Inspect a sibling test
+
+List existing tests in that suite dir and open one. Copy its `$modules` list, trait
+usage, and `setUp()` shape — those encode what the module needs to boot. Note which
+`@group functionalN` siblings use to keep CI nodes balanced.
+
+### 3. Generate the test
+
+**Kernel (default):**
+
+```php
+<?php
+
+namespace Drupal\Tests\<module>\Kernel;
+
+use Drupal\KernelTests\KernelTestBase;
+// use Drupal\Tests\dkan_common\Traits\QueueRunnerTrait;  // if the code under test queues work
+// use Drupal\Tests\dkan_common\Traits\CleanUp;           // if it creates datasets/tables
+
+/**
+ * @group dkan
+ * @coversDefaultClass \Drupal\<module>\TODO_ClassUnderTest
+ */
+class <ClassName> extends KernelTestBase {
+
+  // use QueueRunnerTrait;
+
+  /**
+   * Modules to enable (copy from a sibling test).
+   */
+  protected static $modules = [
+    'dkan_common',
+    // 'dkan_metastore', 'dkan_datastore', 'node', 'user', ...
+  ];
+
+  protected function setUp(): void {
+    parent::setUp();
+    // installEntitySchema / installConfig / installSchema as a sibling does.
+  }
+
+  public function testTODO(): void {
+    $service = $this->container->get('TODO.service.id');
+    // exercise it; if it enqueues work: $this->runQueues(['datastore_import']);
+    $this->assertTrue(TRUE, 'TODO: replace with a real assertion.');
+  }
+
+}
+```
+
+**Unit:**
+
+```php
+<?php
+
+namespace Drupal\Tests\<module>\Unit;
+
+use Drupal\Tests\UnitTestCase;
+
+/**
+ * @group dkan
+ * @coversDefaultClass \Drupal\<module>\TODO_ClassUnderTest
+ */
+class <ClassName> extends UnitTestCase {
+
+  public function testTODO(): void {
+    // Construct the class with mocked collaborators; assert on the return.
+    $this->assertTrue(TRUE, 'TODO: replace with a real assertion.');
+  }
+
+}
+```
+
+**Functional (API):** extend `Api1TestBase`, and **set both groups**:
+
+```php
+<?php
+
+namespace Drupal\Tests\<module>\Functional;
+
+use Drupal\Tests\dkan_common\Functional\Api1TestBase;
+
+/**
+ * @group dkan
+ * @group functional0
+ */
+class <ClassName> extends Api1TestBase {
+
+  // Api1TestBase (extends BrowserTestBase) provides $this->httpClient (Guzzle),
+  // a post() helper, getSampleDataset(), and assertJsonIsValid().
+
+  /**
+   * The endpoint under test — Api1TestBase requires this abstract method.
+   */
+  public function getEndpoint(): string {
+    return 'api/1/metastore/schemas/dataset/items';
+  }
+
+  public function testTODO(): void {
+    $response = $this->httpClient->request('GET', 'api/1/metastore/schemas');
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
+}
+```
+
+(Choose `functional0`–`functional3` to balance with siblings; for non-API browser tests
+extend `BrowserTestBase` instead. `getEndpoint()` is abstract on `Api1TestBase` — a
+subclass that omits it won't instantiate.)
+
+### 4. Show the run command
+
+```bash
+ddev phpunit --filter <ClassName>
+```
+
+## Pitfall checks before reporting done
+
+- [ ] Target is a **core** module under `<dkan>/modules/`, not `modules/custom/`.
+- [ ] Base class + suite dir match `--type`; namespace is `Drupal\Tests\<module>\<Type>`.
+- [ ] `@group dkan` present; functional tests also have a `@group functionalN`.
+- [ ] `QueueRunnerTrait` added (and queues drained) if the code under test imports/harvests.
+- [ ] `$modules` / `setUp()` copied from a real sibling — the test actually boots.
+- [ ] Facts verified against the target branch (`git show 4.x:<path>`), not the checkout.
+- [ ] No DKAN classes stubbed (this is the in-repo harness).

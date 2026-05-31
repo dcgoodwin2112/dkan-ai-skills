@@ -1,6 +1,6 @@
 # dkan-ai-skills
 
-A Claude Code **plugin** of skills, slash commands, and reference docs for writing custom Drupal modules that extend [DKAN](https://github.com/GetDKAN/dkan) 4.x, the [Drupal AI module](https://www.drupal.org/project/ai) (`drupal/ai`, `ai_agents`), and the [MCP Server module](https://www.drupal.org/project/mcp_server) (`drupal/mcp_server`).
+A Claude Code **plugin** of skills, slash commands, and reference docs for writing custom Drupal modules that extend [DKAN](https://github.com/GetDKAN/dkan) 4.x, the [Drupal AI module](https://www.drupal.org/project/ai) (`drupal/ai`, `ai_agents`), and the [MCP Server module](https://www.drupal.org/project/mcp_server) (`drupal/mcp_server`) — and for contributing to DKAN core itself.
 
 Ships **no runtime PHP code** — it packages auto-loading skills and slash commands for Claude Code. The reference docs are verified against DKAN `4.x`, `drupal/ai 1.3.x`, and `mcp_server` v2.x-dev (pre-release; `mcp/sdk` 0.6 API).
 
@@ -80,10 +80,11 @@ This symlinks the skills+commands under `.ai/dkan-ai-skills/` and writes `AGENTS
 
 ## Skills
 
-Three auto-loading skills under `plugins/drupal-dkan-ai/skills/`:
+Four auto-loading skills under `plugins/drupal-dkan-ai/skills/`:
 
 - **`drupal-ai-module`** — loads when working with `drupal/ai`, `ai_agents`, or `ai_assistant_api`. Plugin-type decision tree, always-true rules, pitfalls, testing, and RAG. Note `drupal/ai 1.3.x` requires Drupal `^10.5 || ^11.2`.
 - **`dkan-module-author`** — loads when editing files under `web/modules/custom/` or `docroot/modules/custom/`, or working with `Drupal\dkan_metastore\*`, `Drupal\dkan_datastore\*`, `Drupal\dkan_harvest\*`, or `Drupal\dkan_common\*` namespaces. Targets DKAN 4.x on Drupal `^10.2 || ^11`.
+- **`dkan-core-contributor`** — loads when working *inside* DKAN core: editing the `drupal/dkan` package source (`modules/contrib/dkan/` or a `dkan/` checkout), changing `Drupal\dkan_*` core classes, or touching DKAN's tests/CI. Internals at modification depth (storage factories, schema validation, reference lifecycle, queues), the in-repo PHPUnit harness, and the contribution/CI workflow. For *using* DKAN from a custom module, use `dkan-module-author` instead. Targets DKAN 4.x (GitHub `GetDKAN/dkan`).
 - **`drupal-mcp-server`** — loads when authoring `#[Tool]`/`#[ResourceProvider]`/prompt/notification plugins for the contrib `mcp_server` module, working with `Drupal\mcp_server\*` or `mcp/sdk`, or editing `dkan_mcp`. Extension-point decision table, the unenforced-`checkAccess` gotcha, and the DKAN MCP migration. Targets `mcp_server` v2.x-dev on the `mcp/sdk` 0.6 API — **pre-release and volatile**.
 
 Example paths in the docs use `<webroot>/modules/...`; substitute your Drupal web root (`docroot/` in DKAN's recommended-project, `web/` elsewhere).
@@ -94,6 +95,7 @@ Example paths in the docs use `<webroot>/modules/...`; substitute your Drupal we
 | Command | Generates |
 |---|---|
 | `/scaffold-dkan-module <name>` | Complete DKAN 4.x module skeleton — info.yml (correct `dkan:dkan_*` deps), services.yml, composer.json, optional standalone test harness |
+| `/dkan-core-test <module> <ClassName> [--type unit\|kernel\|functional]` | In-repo PHPUnit test for DKAN **core** — correct suite + base class (`Api1TestBase`/kernel/unit), DKAN traits (`QueueRunnerTrait`), and `@group dkan`/`functionalN` so it runs in CI |
 | `/ai-scaffold-provider <module> <ProviderName>` | AI Provider plugin (LLM backend) — class, settings form, route, `api_defaults.yml`, deps, schema, test stub |
 | `/ai-scaffold-tool <module> <ToolName>` | FunctionCall plugin (AI tool) — class with attribute and `execute()`/`setOutput()` stubs, test stub |
 | `/ai-scaffold-agent <module> <AgentName>` | AiAgent plugin — `parent::create()` pattern, lifecycle stubs, YAML prompt dir, test stub |
@@ -121,6 +123,13 @@ The AI scaffold commands target Drupal AI `^1.3` and refuse `2.0.x` (breaking pr
 - `dkan-drush.md` — every DKAN drush command (datastore, harvest, metastore, sample content)
 - `dkan-testing.md` — unit/kernel/functional patterns, mock-chain, standalone stubs
 - `drupal-patterns.md` — Drupal 10/11 conventions (DI, render arrays, routing, custom entities)
+
+### DKAN core contribution (`plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/`)
+- `core-overview.md` — contributor orientation: package vs. built site, module tree, branches, the `getdkan/*` dependency surface
+- `core-internals.md` — storage/factory indirection, schema validation, the reference lifecycle, queues/jobs
+- `extending-core.md` — adding a built-in plugin (DatasetInfo, DkanApiDocs, ResourceProcessor), harvest ETL class, queue worker, or metastore schema
+- `testing-core.md` — the in-repo PHPUnit harness (vs. the standalone one), base classes, DKAN traits, `@group`, Cypress, update-path fixtures
+- `contributing-and-ci.md` — DDEV setup, phpcs/Qlty standards, update hooks, the CircleCI matrix, PR requirements
 
 ### Drupal AI (`plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/`)
 - `plugin-types.md` — base classes, attributes, required methods, paths per plugin type

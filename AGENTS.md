@@ -3,7 +3,7 @@
 # AGENTS.md
 
 Reference and scaffolding guidance for writing custom Drupal modules that extend
-DKAN 4.x, the Drupal AI module, and the MCP Server module. This repo's canonical source is a Claude Code
+DKAN 4.x, the Drupal AI module, and the MCP Server module — plus contributing to DKAN core itself. This repo's canonical source is a Claude Code
 plugin under `plugins/drupal-dkan-ai/`; the guidance below is tool-neutral and applies to any
 coding agent (Codex, Cursor, Gemini CLI, Aider, Zed, …).
 
@@ -12,6 +12,18 @@ docs before writing code — they carry DKAN/Drupal-AI specifics that aren't obv
 from the code alone.
 
 ## Skills
+
+### dkan-core-contributor
+
+Reference and decision support for contributing to DKAN core itself — modifying the drupal/dkan package source (dkan_common, dkan_metastore, dkan_datastore, dkan_harvest), its internals, tests, and CI. Loads when editing files under modules/contrib/dkan/ or a dkan/ package checkout, changing Drupal\dkan_common\*, Drupal\dkan_metastore\*, Drupal\dkan_datastore\*, or Drupal\dkan_harvest\* core classes, adding/altering DKAN core PHPUnit/Cypress tests, or working on DKAN's phpcs/CircleCI setup. For building custom modules that *use* DKAN, use dkan-module-author instead. Targets DKAN 4.x (GitHub GetDKAN/dkan) on Drupal ^10.2 || ^11.
+
+- Guide: [`plugins/drupal-dkan-ai/skills/dkan-core-contributor/SKILL.md`](plugins/drupal-dkan-ai/skills/dkan-core-contributor/SKILL.md)
+- Reference docs:
+  - [`contributing-and-ci.md`](plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/contributing-and-ci.md)
+  - [`core-internals.md`](plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/core-internals.md)
+  - [`core-overview.md`](plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/core-overview.md)
+  - [`extending-core.md`](plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/extending-core.md)
+  - [`testing-core.md`](plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/testing-core.md)
 
 ### dkan-module-author
 
@@ -68,6 +80,7 @@ command file and follow its steps with the given arguments.
 | Scaffold an AI Agent plugin (ai_agents determine/solve framework) | `<module_path> <AgentName>` | [`ai-scaffold-agent.md`](plugins/drupal-dkan-ai/commands/ai-scaffold-agent.md) |
 | Scaffold an AI Provider plugin (LLM backend) for Drupal AI | `<module_path> <ProviderName> [base] [operation_types...]` | [`ai-scaffold-provider.md`](plugins/drupal-dkan-ai/commands/ai-scaffold-provider.md) |
 | Scaffold a FunctionCall (AI tool) plugin for Drupal AI | `<module_path> <ToolName> [context_args...]` | [`ai-scaffold-tool.md`](plugins/drupal-dkan-ai/commands/ai-scaffold-tool.md) |
+| Scaffold an in-repo PHPUnit test for DKAN core (correct suite, base class, traits, @group) | `<module> <ClassName> [--type unit|kernel|functional]` | [`dkan-core-test.md`](plugins/drupal-dkan-ai/commands/dkan-core-test.md) |
 | Scaffold a Tool plugin for the contrib MCP Server module (drupal/mcp_server) | `<module_path> <ToolName> [--write]` | [`mcp-scaffold-tool.md`](plugins/drupal-dkan-ai/commands/mcp-scaffold-tool.md) |
 | Scaffold a complete custom DKAN 4.x module skeleton | `<module_name> [--with-tests] [--service <ServiceName>]` | [`scaffold-dkan-module.md`](plugins/drupal-dkan-ai/commands/scaffold-dkan-module.md) |
 | Create a Drupal service with DI, services.yml entry, and unit test | `<module_path> <ServiceName> [dependency_service_ids...]` | [`scaffold-drupal-service.md`](plugins/drupal-dkan-ai/commands/scaffold-drupal-service.md) |

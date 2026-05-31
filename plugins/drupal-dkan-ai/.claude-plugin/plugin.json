@@ -1,7 +1,7 @@
 {
   "name": "drupal-dkan-ai",
-  "version": "0.2.0",
-  "description": "Skills and slash commands for authoring custom Drupal modules that extend DKAN 4.x, the Drupal AI module (drupal/ai, ai_agents), and the MCP Server module (drupal/mcp_server). Auto-loading reference docs plus scaffolding commands.",
+  "version": "0.3.0",
+  "description": "Skills and slash commands for authoring custom Drupal modules that extend DKAN 4.x, the Drupal AI module (drupal/ai, ai_agents), and the MCP Server module (drupal/mcp_server), and for contributing to DKAN core itself. Auto-loading reference docs plus scaffolding commands.",
   "author": {
     "name": "dcgoodwin2112"
   },
