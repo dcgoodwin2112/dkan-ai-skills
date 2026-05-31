@@ -24,6 +24,7 @@ If the `dkan_mcp` module is installed, prefer its MCP tools over manual code-spe
 | Writing a custom harvest extractor / transformer / loader | [reference/dkan-harvest.md](reference/dkan-harvest.md) — ETL class-strings (NOT plugins), plan JSON, HarvestService API |
 | Listening to harvest events / managing plans+runs | [reference/dkan-services.md#harvest-module](reference/dkan-services.md#harvest-module) + [reference/dkan-workflows.md#harvest-etl](reference/dkan-workflows.md#harvest-etl) |
 | Debugging imports/harvests/datastore from the CLI | [reference/dkan-drush.md](reference/dkan-drush.md) — every DKAN drush command |
+| Diagnosing a sick site (logs, stuck queues, permission misconfig) | [reference/dkan-diagnostics.md](reference/dkan-diagnostics.md) |
 | Writing a unit / kernel test that touches DKAN classes | [reference/dkan-testing.md](reference/dkan-testing.md) — mock-chain patterns, standalone-stub conventions, base classes |
 | Scaffolding a new DKAN module from scratch | run `/scaffold-dkan-module`; see [reference/dkan-services.md](reference/dkan-services.md) + [reference/dkan-testing.md](reference/dkan-testing.md) |
 | Standard Drupal 10/11 conventions (DI, render arrays, routing, entities) | [reference/drupal-patterns.md](reference/drupal-patterns.md) |
@@ -48,7 +49,7 @@ The five most expensive mistakes when writing against DKAN. Each has a one-line 
 
 1. **Looking up a resource by `md5($downloadURL)`.** Symptom: `resourceMapper->get(md5($url), 'source')` returns null even though the dataset shows the file. Cause: the identifier is computed from the *file path* the resource was registered with, which may differ from the canonical `downloadURL` (e.g. host rewriting, internal URLs). Fix: read `%Ref:downloadURL[0]['data']['identifier']` from the dereferenced dataset JSON instead of recomputing.
 2. **Forgetting to publish.** Symptom: `MetastoreService::get('dataset', $uuid)` works in tests but a public API call returns 404. Cause: `post()` creates a draft; you also need `publish()` for the dataset to be visible to anonymous users. Fix: see [reference/dkan-workflows.md#publish](reference/dkan-workflows.md#publish).
-3. **Custom event subscriber never fires.** Symptom: tagged `event_subscriber` service registered, `getSubscribedEvents()` returns the right constant, but the listener never runs. Cause: most likely subscribed to the wrong event constant (DKAN events live on multiple classes — `MetastoreService::EVENT_DATASET_UPDATE`, `Search::EVENT_SEARCH`, etc., not a single namespace), or the event has been fired before the subscriber's module was enabled (cache). Fix: cross-reference the constant in [reference/dkan-services.md#event-constants](reference/dkan-services.md#event-constants), confirm tagging in `*.services.yml`, `drush cr`.
+3. **Custom event subscriber never fires.** Symptom: tagged `event_subscriber` service registered, `getSubscribedEvents()` returns the right constant, but the listener never runs. Cause: most likely subscribed to the wrong event constant (DKAN events live on multiple classes — `LifeCycle::EVENT_DATASET_UPDATE`, `Search::EVENT_SEARCH`, etc., not a single namespace), or the event has been fired before the subscriber's module was enabled (cache). Fix: cross-reference the constant in [reference/dkan-services.md#event-constants](reference/dkan-services.md#event-constants), confirm tagging in `*.services.yml`, `drush cr`.
 4. **Assuming an array shape from `MetastoreService::get()`.** Symptom: `Cannot use object of type RootedJsonData as array` or `Trying to access array offset on value of type object`. Fix: `$data = json_decode((string) $rooted, TRUE)` first. Same goes for `Query::runQuery()`'s return — it's `RootedJsonData`, not an array.
 5. **Test with mock-chain that breaks on a DKAN refactor.** Symptom: phpunit was green; after a `composer update`, mock-chain throws `MethodCallNotInChain`. Cause: the underlying class added or renamed a method. Fix: see [reference/dkan-testing.md#mock-chain-library](reference/dkan-testing.md#mock-chain-library) for the correct invocation pattern; for behavior tests prefer kernel tests against real services.
 
@@ -73,9 +74,9 @@ Full table with method signatures: [reference/dkan-services.md](reference/dkan-s
 The MCP server is the right surface when the task is "discover or manipulate live data," not "write code that runs in production":
 
 - Auditing the catalog before a migration → `list_datasets`, `get_dataset_info`, `search_datasets`
-- Debugging a failing import → `get_import_status`, log queries via `LogTools`
+- Debugging a failing import → `get_import_status`, `get_queue_status` (for watchdog logs use `drush watchdog:show` — see [reference/dkan-diagnostics.md](reference/dkan-diagnostics.md))
 - Reproducing a query a user reported → `query_datastore`, `get_datastore_schema`
-- Permission check / route check while reasoning about a controller → `check_permissions`, `get_route_info`
+- Permission / route checks while reasoning about a controller → `drush` + [reference/dkan-diagnostics.md](reference/dkan-diagnostics.md) (the generic Drupal-introspection MCP tools were removed; `dkan_mcp` is now DKAN-data-focused)
 
 For the full tool list, see `<webroot>/modules/custom/dkan_mcp/docs/tools.md` (when the `dkan_mcp` module is installed). Skill content directs to MCP tools deliberately; do not duplicate their parameter schemas here.
 
