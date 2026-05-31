@@ -1,8 +1,8 @@
 # dkan-ai-skills
 
-A Claude Code **plugin** of skills, slash commands, and reference docs for writing custom Drupal modules that extend [DKAN](https://github.com/GetDKAN/dkan) 4.x and the [Drupal AI module](https://www.drupal.org/project/ai) (`drupal/ai`, `ai_agents`).
+A Claude Code **plugin** of skills, slash commands, and reference docs for writing custom Drupal modules that extend [DKAN](https://github.com/GetDKAN/dkan) 4.x, the [Drupal AI module](https://www.drupal.org/project/ai) (`drupal/ai`, `ai_agents`), and the [MCP Server module](https://www.drupal.org/project/mcp_server) (`drupal/mcp_server`).
 
-Ships **no runtime PHP code** — it packages auto-loading skills and slash commands for Claude Code. The reference docs are verified against DKAN `4.x` and `drupal/ai 1.3.x`.
+Ships **no runtime PHP code** — it packages auto-loading skills and slash commands for Claude Code. The reference docs are verified against DKAN `4.x`, `drupal/ai 1.3.x`, and `mcp_server` v2.x-dev (pre-release; `mcp/sdk` 0.6 API).
 
 Claude Code is the primary target, but the same content is also published as tool-neutral adapters (`AGENTS.md`, `.github/` for Copilot) so it works with other coding agents — see [Use with other agents](#use-with-other-agents-copilot-codex-cursor-).
 
@@ -80,10 +80,11 @@ This symlinks the skills+commands under `.ai/dkan-ai-skills/` and writes `AGENTS
 
 ## Skills
 
-Two auto-loading skills under `plugins/drupal-dkan-ai/skills/`:
+Three auto-loading skills under `plugins/drupal-dkan-ai/skills/`:
 
 - **`drupal-ai-module`** — loads when working with `drupal/ai`, `ai_agents`, or `ai_assistant_api`. Plugin-type decision tree, always-true rules, pitfalls, testing, and RAG. Note `drupal/ai 1.3.x` requires Drupal `^10.5 || ^11.2`.
 - **`dkan-module-author`** — loads when editing files under `web/modules/custom/` or `docroot/modules/custom/`, or working with `Drupal\dkan_metastore\*`, `Drupal\dkan_datastore\*`, `Drupal\dkan_harvest\*`, or `Drupal\dkan_common\*` namespaces. Targets DKAN 4.x on Drupal `^10.2 || ^11`.
+- **`drupal-mcp-server`** — loads when authoring `#[Tool]`/`#[ResourceProvider]`/prompt/notification plugins for the contrib `mcp_server` module, working with `Drupal\mcp_server\*` or `mcp/sdk`, or editing `dkan_mcp`. Extension-point decision table, the unenforced-`checkAccess` gotcha, and the DKAN MCP migration. Targets `mcp_server` v2.x-dev on the `mcp/sdk` 0.6 API — **pre-release and volatile**.
 
 Example paths in the docs use `<webroot>/modules/...`; substitute your Drupal web root (`docroot/` in DKAN's recommended-project, `web/` elsewhere).
 
@@ -97,11 +98,12 @@ Example paths in the docs use `<webroot>/modules/...`; substitute your Drupal we
 | `/ai-scaffold-tool <module> <ToolName>` | FunctionCall plugin (AI tool) — class with attribute and `execute()`/`setOutput()` stubs, test stub |
 | `/ai-scaffold-agent <module> <AgentName>` | AiAgent plugin — `parent::create()` pattern, lifecycle stubs, YAML prompt dir, test stub |
 | `/ai-scaffold-action <module> <ActionName>` | AiAssistantAction plugin extending `AiAssistantActionBase` |
+| `/mcp-scaffold-tool <module> <ToolName> [--write]` | MCP Server `#[Tool]` plugin — attribute (schema + annotations), `create()` DI, `execute(array, ClientGateway)` + `defaultConfiguration()` stubs, optional `checkAccess()` gate, test stub |
 | `/scaffold-drupal-service <module> <ServiceName>` | Drupal service with DI, `services.yml` entry, unit test |
 | `/add-event-subscriber <module> [event]` | EventSubscriber for a DKAN/Drupal event, tagged in `services.yml` |
 | `/add-drupal-route <module> <path> [perm]` | Route + controller + permission entry |
 
-The AI scaffold commands target Drupal AI `^1.3` and refuse `2.0.x` (breaking provider lifecycle changes).
+The AI scaffold commands target Drupal AI `^1.3` and refuse `2.0.x` (breaking provider lifecycle changes). `/mcp-scaffold-tool` targets `mcp_server` v2.x-dev on the `mcp/sdk` 0.6 API and version-gates before scaffolding.
 
 ### Validation
 | Command | Runs |
@@ -127,3 +129,12 @@ The AI scaffold commands target Drupal AI `^1.3` and refuse `2.0.x` (breaking pr
 - `testing-ai-plugins.md` — unit-testing tools, asserting tool dispatch, golden-case eval, mocking `ai.provider`
 - `ai-search-rag.md` — RAG, embeddings, VdbProvider authoring, ai_search Search API backend
 - Upstream docs: https://project.pages.drupalcode.org/ai/
+
+### MCP Server (`plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/`)
+- `mcp-overview.md` — architecture (SDK bridge + Drupal plugins/config entities), extension-point map, transports, submodules, version landscape
+- `tool-plugins.md` — `#[Tool]` attribute, `ToolPluginBase`, `execute(array, ClientGateway)`, `ToolDefinition`, derivers, schemas, enablement
+- `resources-prompts-notifications.md` — resource providers/templates, `McpPromptConfig` + completion providers, notification stub
+- `auth-and-access.md` — `RequestEvent` gating, `McpAuthorizationDeniedException`, the unenforced-`checkAccess` gotcha, OAuth submodule, CORS, sessions
+- `dkan-integration.md` — `dkan_mcp` today vs. the `mcp_server`-based target, tool mapping, permission model, client config
+- `testing.md` — what to test (and not), unit + kernel patterns, standalone stubs
+- Upstream: https://www.drupal.org/project/mcp_server (GitLab issues/MRs — use `glab`)

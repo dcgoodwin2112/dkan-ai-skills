@@ -3,7 +3,7 @@
 # AGENTS.md
 
 Reference and scaffolding guidance for writing custom Drupal modules that extend
-DKAN 4.x and the Drupal AI module. This repo's canonical source is a Claude Code
+DKAN 4.x, the Drupal AI module, and the MCP Server module. This repo's canonical source is a Claude Code
 plugin under `plugins/drupal-dkan-ai/`; the guidance below is tool-neutral and applies to any
 coding agent (Codex, Cursor, Gemini CLI, Aider, Zed, …).
 
@@ -41,6 +41,19 @@ Reference and decision support for writing custom modules that extend the Drupal
   - [`services.md`](plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/services.md)
   - [`testing-ai-plugins.md`](plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/testing-ai-plugins.md)
 
+### drupal-mcp-server
+
+Reference and decision support for writing custom modules that extend the contrib MCP Server module (drupal/mcp_server) — the bridge that exposes Drupal/DKAN capabilities to AI assistants over the Model Context Protocol (mcp/sdk). Loads when authoring #[Tool], #[ResourceProvider], #[ResourceTemplateProvider], #[PromptArgumentCompletionProvider], or #[Notification] plugins; working with Drupal\mcp_server\* namespaces, the mcp/sdk, or RequestEvent authorization; or editing under modules/contrib/mcp_server or a module that depends on mcp_server:mcp_server (including DKAN's dkan_mcp). Targets mcp_server v2.x-dev on the mcp/sdk 0.6 (dev-main) API — pre-release and volatile.
+
+- Guide: [`plugins/drupal-dkan-ai/skills/drupal-mcp-server/SKILL.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/SKILL.md)
+- Reference docs:
+  - [`auth-and-access.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md)
+  - [`dkan-integration.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md)
+  - [`mcp-overview.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/mcp-overview.md)
+  - [`resources-prompts-notifications.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/resources-prompts-notifications.md)
+  - [`testing.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/testing.md)
+  - [`tool-plugins.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/tool-plugins.md)
+
 ## Scaffolding & validation procedures
 
 These are reusable procedures (Claude slash commands; mirrored as Copilot prompt
@@ -55,6 +68,7 @@ command file and follow its steps with the given arguments.
 | Scaffold an AI Agent plugin (ai_agents determine/solve framework) | `<module_path> <AgentName>` | [`ai-scaffold-agent.md`](plugins/drupal-dkan-ai/commands/ai-scaffold-agent.md) |
 | Scaffold an AI Provider plugin (LLM backend) for Drupal AI | `<module_path> <ProviderName> [base] [operation_types...]` | [`ai-scaffold-provider.md`](plugins/drupal-dkan-ai/commands/ai-scaffold-provider.md) |
 | Scaffold a FunctionCall (AI tool) plugin for Drupal AI | `<module_path> <ToolName> [context_args...]` | [`ai-scaffold-tool.md`](plugins/drupal-dkan-ai/commands/ai-scaffold-tool.md) |
+| Scaffold a Tool plugin for the contrib MCP Server module (drupal/mcp_server) | `<module_path> <ToolName> [--write]` | [`mcp-scaffold-tool.md`](plugins/drupal-dkan-ai/commands/mcp-scaffold-tool.md) |
 | Scaffold a complete custom DKAN 4.x module skeleton | `<module_name> [--with-tests] [--service <ServiceName>]` | [`scaffold-dkan-module.md`](plugins/drupal-dkan-ai/commands/scaffold-dkan-module.md) |
 | Create a Drupal service with DI, services.yml entry, and unit test | `<module_path> <ServiceName> [dependency_service_ids...]` | [`scaffold-drupal-service.md`](plugins/drupal-dkan-ai/commands/scaffold-drupal-service.md) |
 | Run phpcs, phpunit, permission audit, and cache rebuild on a module | `<module_path>` | [`validate-module.md`](plugins/drupal-dkan-ai/commands/validate-module.md) |
