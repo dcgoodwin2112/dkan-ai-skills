@@ -4,16 +4,23 @@ A Claude Code **plugin** of skills, slash commands, and reference docs for writi
 
 Ships **no runtime PHP code** — it packages auto-loading skills and slash commands for Claude Code. The reference docs are verified against DKAN `4.x` and `drupal/ai 1.3.x`.
 
+Claude Code is the primary target, but the same content is also published as tool-neutral adapters (`AGENTS.md`, `.github/` for Copilot) so it works with other coding agents — see [Use with other agents](#use-with-other-agents-copilot-codex-cursor-).
+
 ## Layout
 
 ```
 .claude-plugin/marketplace.json   # local marketplace listing the plugin
-plugins/drupal-dkan-ai/
+plugins/drupal-dkan-ai/            # CANONICAL SOURCE
   .claude-plugin/plugin.json       # plugin manifest
   skills/                          # auto-loading skills (SKILL.md + reference/)
   commands/                        # slash commands
-bin/install, bin/test              # fallback symlink installer (non-plugin setups)
+AGENTS.md                          # generated: broad cross-tool guidance
+.github/                           # generated: Copilot instructions + prompts
+bin/build-adapters                 # regenerates AGENTS.md + .github/ from the source
+bin/install, bin/test              # symlink installer (non-plugin setups) + test suite
 ```
+
+The skills/commands under `plugins/drupal-dkan-ai/` are the single source of truth. `AGENTS.md` and `.github/` are **generated** by `bin/build-adapters` and committed; don't edit them by hand (`bin/test` fails if they drift from the source).
 
 ## Install (recommended: plugin marketplace)
 
@@ -47,6 +54,29 @@ For setups that don't use the plugin system, `bin/install` symlinks the skills/c
 ```
 
 Re-running is safe: matching symlinks are left alone, stale ones repointed, non-symlink files skipped. `bin/test` exercises the installer. Commands installed this way are invoked without the plugin namespace (e.g. `/scaffold-dkan-module`).
+
+## Use with other agents (Copilot, Codex, Cursor, …)
+
+The same skills, reference docs, and scaffolding procedures are published as tool-neutral adapters, generated from the canonical source and committed at the repo root:
+
+- **`AGENTS.md`** — read by Codex, Cursor, Gemini CLI, Aider, Zed, and other agents that honor the [AGENTS.md](https://agents.md) convention.
+- **`.github/copilot-instructions.md`** — repo-wide GitHub Copilot instructions.
+- **`.github/instructions/*.instructions.md`** — path-scoped Copilot instructions (`applyTo` globs) that auto-attach when editing DKAN/Drupal-AI module code.
+- **`.github/prompts/*.prompt.md`** — the scaffolding commands as Copilot prompt files, invoked `/scaffold-dkan-module` etc.
+
+The skill adapters are thin: they point at the canonical `reference/*.md` docs so those stay single-sourced.
+
+**Working in this repo:** the adapters resolve as-is; any agent picks them up.
+
+**Vendoring into your own Drupal project:** run the installer with `--adapters` from your project root:
+
+```bash
+~/src/dkan-ai-skills/bin/install --adapters
+```
+
+This symlinks the skills+commands under `.ai/dkan-ai-skills/` and writes `AGENTS.md` + `.github/` into the project with pointers rewritten to that vendored location. Existing non-generated files are never overwritten.
+
+**Regenerating:** after editing any `SKILL.md` or command, run `bin/build-adapters` and commit the result (`bin/test` enforces this).
 
 ## Skills
 
