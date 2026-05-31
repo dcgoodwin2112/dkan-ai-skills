@@ -147,8 +147,7 @@ getQueryStorageMap(DatastoreQuery $datastoreQuery): array  // Storage objects by
 ### ResourceLocalizer
 
 ```php
-localizeTask(string $identifier, string $version, bool $deferred = false): void
-localize(string $identifier, string $version): void
+localizeTask(string $identifier, ?string $version = null, bool $deferred = false): Result  // public; localize() itself is protected
 ```
 
 **Events**: `EVENT_RESOURCE_LOCALIZED`
@@ -205,3 +204,18 @@ validateHarvestPlan(object $plan): bool
 | `EVENT_DATASTORE_PRE_DROP` | `dkan_datastore_pre_drop` | DatastoreService |
 | `EVENT_DATASTORE_DROPPED` | `dkan_datastore_dropped` | DatastoreService |
 | `EVENT_RUN_QUERY` | `dkan_datastore_sql_run_query` | SqlEndpoint\WebServiceApi |
+
+### Dispatch payload types
+
+DKAN metastore events use the generic `Drupal\dkan_common\Events\Event`, whose
+`getData()` return type is `mixed`. For subscribers, the concrete type passed at the
+dispatch site is more useful than `mixed`. Verified against 4.x `LifeCycle`:
+
+| Event value | `getData()` payload | Dispatch site |
+|---|---|---|
+| `dkan_metastore_dataset_update` | `Drupal\dkan_metastore\MetastoreItemInterface` | `LifeCycle::datasetUpdate()` |
+| `dkan_metastore_metadata_pre_reference` | `Drupal\dkan_metastore\MetastoreItemInterface` | `LifeCycle::preReference()` |
+
+`MetastoreItemInterface` exposes `getIdentifier()`, `getSchemaId()`, `getMetadata()`.
+Datastore events instead extend `DatastoreEventBase` and carry a `DataResource` (see
+[dkan-workflows.md#event-system](dkan-workflows.md#event-system)).
