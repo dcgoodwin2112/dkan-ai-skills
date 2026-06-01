@@ -3,7 +3,7 @@
 # AGENTS.md
 
 Reference and scaffolding guidance for writing custom Drupal modules that extend
-DKAN 4.x, the Drupal AI module, and the MCP Server module — plus contributing to DKAN core and authoring DCAT-US / open-data metadata. This repo's canonical source is a Claude Code
+DKAN 4.x, the Drupal AI module, and the MCP Server module — plus contributing to DKAN core, authoring DCAT-US / open-data metadata, and working with DKAN's decoupled JavaScript frontend. This repo's canonical source is a Claude Code
 plugin under `plugins/drupal-dkan-ai/`; the guidance below is tool-neutral and applies to any
 coding agent (Codex, Cursor, Gemini CLI, Aider, Zed, …).
 
@@ -24,6 +24,16 @@ Reference and decision support for contributing to DKAN core itself — modifyin
   - [`core-overview.md`](plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/core-overview.md)
   - [`extending-core.md`](plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/extending-core.md)
   - [`testing-core.md`](plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/testing-core.md)
+
+### dkan-frontend
+
+Integration reference for DKAN's decoupled JavaScript frontend — how Drupal serves a React single-page app and how that app consumes DKAN's APIs. Loads when working with the dkan_js_frontend Drupal module or its dkan_js_frontend.config, the React app served from the docroot /frontend (data-catalog-app), a DKAN React component library (cmsds-open-data-components / data-catalog-components), the ddev dkan-frontend-install/build commands, or asking how the React UI talks to DKAN or how Drupal serves the SPA. This is the integration/architecture layer; for DKAN backend PHP see dkan-module-author and dkan-core-contributor, for the metadata spec see open-data-dcat, and for deep React component detail see the component library's own agent-docs.
+
+- Guide: [`plugins/drupal-dkan-ai/skills/dkan-frontend/SKILL.md`](plugins/drupal-dkan-ai/skills/dkan-frontend/SKILL.md)
+- Reference docs:
+  - [`architecture.md`](plugins/drupal-dkan-ai/skills/dkan-frontend/reference/architecture.md)
+  - [`build-deploy-customize.md`](plugins/drupal-dkan-ai/skills/dkan-frontend/reference/build-deploy-customize.md)
+  - [`dkan-js-frontend-module.md`](plugins/drupal-dkan-ai/skills/dkan-frontend/reference/dkan-js-frontend-module.md)
 
 ### dkan-module-author
 

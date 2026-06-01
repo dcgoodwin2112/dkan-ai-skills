@@ -56,6 +56,7 @@ skill_glob() {
     drupal-ai-module)      echo '**/modules/custom/**' ;;
     drupal-mcp-server)     echo '**/modules/custom/**,**/modules/contrib/mcp_server/**' ;;
     open-data-dcat)        echo '**/schema/collections/**,**/data.json' ;;
+    dkan-frontend)         echo '**/dkan_js_frontend/**,**/data-catalog-app/**,**/cmsds-open-data-components/**,**/data-catalog-components/**' ;;
     *)                     echo '**' ;;
   esac
 }
@@ -70,7 +71,7 @@ agents="$out/AGENTS.md"
   echo "# AGENTS.md"
   echo
   echo "Reference and scaffolding guidance for writing custom Drupal modules that extend"
-  echo "DKAN 4.x, the Drupal AI module, and the MCP Server module — plus contributing to DKAN core and authoring DCAT-US / open-data metadata. This repo's canonical source is a Claude Code"
+  echo "DKAN 4.x, the Drupal AI module, and the MCP Server module — plus contributing to DKAN core, authoring DCAT-US / open-data metadata, and working with DKAN's decoupled JavaScript frontend. This repo's canonical source is a Claude Code"
   echo "plugin under \`$plugin_rel/\`; the guidance below is tool-neutral and applies to any"
   echo "coding agent (Codex, Cursor, Gemini CLI, Aider, Zed, …)."
   echo
@@ -119,13 +120,14 @@ copilot="$out/.github/copilot-instructions.md"
 {
   echo "$gen_marker"
   echo
-  echo "# Copilot instructions: DKAN 4.x + Drupal AI + MCP Server + DKAN core + open-data/DCAT-US metadata"
+  echo "# Copilot instructions: DKAN 4.x + Drupal AI + MCP Server + DKAN core + open-data/DCAT-US metadata + decoupled frontend"
   echo
   echo "This repository packages skills, reference docs, and scaffolding procedures for"
   echo "writing custom Drupal modules that extend DKAN 4.x, the Drupal AI module"
   echo "(\`drupal/ai\`, \`ai_agents\`), and the MCP Server module (\`drupal/mcp_server\`),"
-  echo "plus contributing to DKAN core itself (the \`drupal/dkan\` package) and authoring"
-  echo "open-data metadata (DCAT-US / Project Open Data)."
+  echo "plus contributing to DKAN core itself (the \`drupal/dkan\` package), authoring"
+  echo "open-data metadata (DCAT-US / Project Open Data), and DKAN's decoupled"
+  echo "JavaScript frontend (the \`dkan_js_frontend\` module + React catalog app)."
   echo "Canonical source lives under \`$plugin_rel/\`."
   echo
   echo "Path-scoped instructions in \`.github/instructions/\` auto-attach when you edit"
