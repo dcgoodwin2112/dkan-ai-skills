@@ -2,7 +2,8 @@
 
 # AGENTS.md
 
-Reference and scaffolding guidance for writing custom Drupal modules that extend
+Reference and scaffolding guidance for general Drupal 10.2+ / 11 module development
+and for writing custom Drupal modules that extend
 DKAN 4.x, the Drupal AI module, and the MCP Server module — plus contributing to DKAN core, authoring DCAT-US / open-data metadata, and working with DKAN's decoupled JavaScript frontend. This repo's canonical source is a Claude Code
 plugin under `plugins/drupal-dkan-ai/`; the guidance below is tool-neutral and applies to any
 coding agent (Codex, Cursor, Gemini CLI, Aider, Zed, …).
@@ -49,7 +50,6 @@ Reference and decision support for writing custom Drupal modules that extend DKA
   - [`dkan-services.md`](plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-services.md)
   - [`dkan-testing.md`](plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-testing.md)
   - [`dkan-workflows.md`](plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-workflows.md)
-  - [`drupal-patterns.md`](plugins/drupal-dkan-ai/skills/dkan-module-author/reference/drupal-patterns.md)
 
 ### drupal-ai-module
 
@@ -75,6 +75,19 @@ Reference and decision support for writing custom modules that extend the contri
   - [`resources-prompts-notifications.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/resources-prompts-notifications.md)
   - [`testing.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/testing.md)
   - [`tool-plugins.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/tool-plugins.md)
+
+### drupal-module-dev
+
+Conventions and decision support for writing or modifying any custom/contrib Drupal module — .module/.install/*.info.yml/*.services.yml/*.routing.yml, plugins (src/Plugin/**), forms, controllers, hooks (src/Hook/**), event subscribers, entities, config schema, or module tests — and questions about Drupal 10/11 APIs, conventions, or deprecations (dependency injection, render arrays, #[Hook], plugin attributes vs annotations, config validation, hook_update_N vs post_update, PHPUnit base classes). Targets Drupal 10.2+ / 11. This is the general Drupal layer; for DKAN specifics see dkan-module-author, for drupal/ai plugins see drupal-ai-module, for mcp_server plugins see drupal-mcp-server.
+
+- Guide: [`plugins/drupal-dkan-ai/skills/drupal-module-dev/SKILL.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/SKILL.md)
+- Reference docs:
+  - [`config-and-entities.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/config-and-entities.md)
+  - [`hooks-events-plugins.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/hooks-events-plugins.md)
+  - [`module-lifecycle.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/module-lifecycle.md)
+  - [`routing-forms-rendering.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/routing-forms-rendering.md)
+  - [`services-and-di.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/services-and-di.md)
+  - [`testing-and-standards.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/testing-and-standards.md)
 
 ### open-data-dcat
 

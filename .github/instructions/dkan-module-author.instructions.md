@@ -19,6 +19,5 @@ Before writing or modifying code here, read the canonical guide and its detail d
 - `plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-services.md`
 - `plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-testing.md`
 - `plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-workflows.md`
-- `plugins/drupal-dkan-ai/skills/dkan-module-author/reference/drupal-patterns.md`
 
 These docs are the single source of truth; do not restate their contents here.
