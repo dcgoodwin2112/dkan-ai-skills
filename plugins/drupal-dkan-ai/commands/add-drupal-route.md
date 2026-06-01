@@ -5,7 +5,7 @@ argument-hint: <module_path> <path> [permission]
 
 Add a route with controller and permission to a Drupal module.
 
-See [reference/drupal-patterns.md](../skills/dkan-module-author/reference/drupal-patterns.md) for controller/DI conventions.
+See [routing-forms-rendering.md](../skills/drupal-module-dev/reference/routing-forms-rendering.md) for controller/DI conventions.
 
 ## Input
 

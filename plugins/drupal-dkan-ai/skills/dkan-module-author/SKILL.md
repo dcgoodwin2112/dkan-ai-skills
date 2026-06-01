@@ -27,7 +27,7 @@ If the `dkan_mcp` module is installed, prefer its MCP tools over manual code-spe
 | Diagnosing a sick site (logs, stuck queues, permission misconfig) | [reference/dkan-diagnostics.md](reference/dkan-diagnostics.md) |
 | Writing a unit / kernel test that touches DKAN classes | [reference/dkan-testing.md](reference/dkan-testing.md) — mock-chain patterns, standalone-stub conventions, base classes |
 | Scaffolding a new DKAN module from scratch | run `/scaffold-dkan-module`; see [reference/dkan-services.md](reference/dkan-services.md) + [reference/dkan-testing.md](reference/dkan-testing.md) |
-| Standard Drupal 10/11 conventions (DI, render arrays, routing, entities) | [reference/drupal-patterns.md](reference/drupal-patterns.md) |
+| Standard Drupal 10/11 conventions (DI, render arrays, routing, entities, hooks, config, testing) | [`drupal-module-dev`](../drupal-module-dev/SKILL.md) |
 
 If your question is "what data exists right now?" — that's a `dkan_mcp` query, not a docs lookup.
 
