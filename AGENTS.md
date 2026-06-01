@@ -3,7 +3,7 @@
 # AGENTS.md
 
 Reference and scaffolding guidance for writing custom Drupal modules that extend
-DKAN 4.x, the Drupal AI module, and the MCP Server module — plus contributing to DKAN core itself. This repo's canonical source is a Claude Code
+DKAN 4.x, the Drupal AI module, and the MCP Server module — plus contributing to DKAN core and authoring DCAT-US / open-data metadata. This repo's canonical source is a Claude Code
 plugin under `plugins/drupal-dkan-ai/`; the guidance below is tool-neutral and applies to any
 coding agent (Codex, Cursor, Gemini CLI, Aider, Zed, …).
 
@@ -66,6 +66,17 @@ Reference and decision support for writing custom modules that extend the contri
   - [`testing.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/testing.md)
   - [`tool-plugins.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/tool-plugins.md)
 
+### open-data-dcat
+
+Domain reference for open-data metadata — the DCAT-US / Project Open Data (POD) v1.1 spec that DKAN implements. Loads when working with dataset or distribution metadata, editing schema/collections/*.json or a data.json catalog, authoring/validating/harvesting catalog records, or asking what a metadata field means, whether it is required, or its allowed values (accessLevel, accrualPeriodicity, downloadURL vs accessURL, contactPoint, publisher, theme/keyword). This is the spec/domain layer; for DKAN PHP code see dkan-module-author and dkan-core-contributor. Targets POD / DCAT-US v1.1 as implemented by DKAN 4.x.
+
+- Guide: [`plugins/drupal-dkan-ai/skills/open-data-dcat/SKILL.md`](plugins/drupal-dkan-ai/skills/open-data-dcat/SKILL.md)
+- Reference docs:
+  - [`catalog-harvest-interop.md`](plugins/drupal-dkan-ai/skills/open-data-dcat/reference/catalog-harvest-interop.md)
+  - [`dataset-fields.md`](plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dataset-fields.md)
+  - [`dcat-us-overview.md`](plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dcat-us-overview.md)
+  - [`distributions-and-resources.md`](plugins/drupal-dkan-ai/skills/open-data-dcat/reference/distributions-and-resources.md)
+
 ## Scaffolding & validation procedures
 
 These are reusable procedures (Claude slash commands; mirrored as Copilot prompt
@@ -84,4 +95,5 @@ command file and follow its steps with the given arguments.
 | Scaffold a Tool plugin for the contrib MCP Server module (drupal/mcp_server) | `<module_path> <ToolName> [--write]` | [`mcp-scaffold-tool.md`](plugins/drupal-dkan-ai/commands/mcp-scaffold-tool.md) |
 | Scaffold a complete custom DKAN 4.x module skeleton | `<module_name> [--with-tests] [--service <ServiceName>]` | [`scaffold-dkan-module.md`](plugins/drupal-dkan-ai/commands/scaffold-dkan-module.md) |
 | Create a Drupal service with DI, services.yml entry, and unit test | `<module_path> <ServiceName> [dependency_service_ids...]` | [`scaffold-drupal-service.md`](plugins/drupal-dkan-ai/commands/scaffold-drupal-service.md) |
+| Validate dataset/distribution JSON against the DCAT-US / Project Open Data v1.1 rules | `<path-or-uuid> [--schema dataset|distribution]` | [`validate-dcat-metadata.md`](plugins/drupal-dkan-ai/commands/validate-dcat-metadata.md) |
 | Run phpcs, phpunit, permission audit, and cache rebuild on a module | `<module_path>` | [`validate-module.md`](plugins/drupal-dkan-ai/commands/validate-module.md) |
