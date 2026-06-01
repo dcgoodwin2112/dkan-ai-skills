@@ -1,6 +1,6 @@
 {
   "name": "dkan-ai-skills",
-  "description": "Local marketplace for the drupal-dkan-ai plugin: DKAN 4.x, Drupal AI, and MCP Server module authoring, plus DKAN core contribution — skills and commands.",
+  "description": "Local marketplace for the drupal-dkan-ai plugin: DKAN 4.x, Drupal AI, and MCP Server module authoring, DKAN core contribution, and DCAT-US / open-data metadata — skills and commands.",
   "owner": {
     "name": "dcgoodwin2112"
   },
@@ -8,7 +8,7 @@
     {
       "name": "drupal-dkan-ai",
       "source": "./plugins/drupal-dkan-ai",
-      "description": "Skills and slash commands for authoring custom Drupal modules that extend DKAN 4.x, the Drupal AI module, and the MCP Server module, and for contributing to DKAN core itself."
+      "description": "Skills and slash commands for authoring custom Drupal modules that extend DKAN 4.x, the Drupal AI module, and the MCP Server module, for contributing to DKAN core itself, and for the DCAT-US / open-data metadata specs DKAN implements."
     }
   ]
 }
