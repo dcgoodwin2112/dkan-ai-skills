@@ -34,6 +34,8 @@ claude plugin marketplace add ~/src/dkan-ai-skills
 claude plugin install drupal-dkan-ai@dkan-ai-skills
 ```
 
+The clone is a standalone tooling checkout — keep it anywhere outside your Drupal projects (the example uses `~/src/dkan-ai-skills`; substitute your own path). The marketplace registers it by absolute path and installs machine-wide, so it adds **nothing** to your Drupal site and is available in every project you open.
+
 Validate changes with `claude plugin validate ~/src/dkan-ai-skills/plugins/drupal-dkan-ai`.
 
 **Updating:** Claude Code caches an installed plugin by version. After `git pull` (or local edits), bump `version` in `plugins/drupal-dkan-ai/.claude-plugin/plugin.json`, then `claude plugin update drupal-dkan-ai`. For quick local iteration without a version bump, force-refresh the cache:
@@ -48,12 +50,14 @@ When installed as a plugin, skills auto-load by their `description` and commands
 
 ## Install (fallback: symlinks)
 
-For setups that don't use the plugin system, `bin/install` symlinks the skills/commands into a `.claude/` directory:
+For setups that don't use the plugin system, `bin/install` symlinks the skills/commands into a `.claude/` directory (using absolute paths back to the checkout, so the checkout can live anywhere):
 
 ```bash
 ~/src/dkan-ai-skills/bin/install              # into $PWD/.claude (per-project)
 ~/src/dkan-ai-skills/bin/install ~/.claude    # into ~/.claude (all projects)
 ```
+
+For a Drupal site, run the per-project form from the site's **Composer root** — the directory containing `composer.json`, above `docroot/`/`web/` — so `.claude/` lands at the project root where Claude Code looks for it, not inside the web root.
 
 Re-running is safe: matching symlinks are left alone, stale ones repointed, non-symlink files skipped. `bin/test` exercises the installer. Commands installed this way are invoked without the plugin namespace (e.g. `/scaffold-dkan-module`).
 
@@ -70,13 +74,14 @@ The skill adapters are thin: they point at the canonical `reference/*.md` docs s
 
 **Working in this repo:** the adapters resolve as-is; any agent picks them up.
 
-**Vendoring into your own Drupal project:** run the installer with `--adapters` from your project root:
+**Vendoring into your own Drupal project:** run the installer with `--adapters` from your Drupal project's **Composer root** (the directory with `composer.json`, not `docroot/`/`web/`):
 
 ```bash
+cd /path/to/your-drupal-site        # the Composer root
 ~/src/dkan-ai-skills/bin/install --adapters
 ```
 
-This symlinks the skills+commands under `.ai/dkan-ai-skills/` and writes `AGENTS.md` + `.github/` into the project with pointers rewritten to that vendored location. Existing non-generated files are never overwritten.
+This symlinks the skills+commands under `.ai/dkan-ai-skills/` and writes `AGENTS.md` + `.github/` into the current directory, with pointers rewritten to that vendored location. Run it from the Composer root so those files sit at the project root where agents look for them. Existing non-generated files are never overwritten.
 
 **Regenerating:** after editing any `SKILL.md` or command, run `bin/build-adapters` and commit the result (`bin/test` enforces this).
 
