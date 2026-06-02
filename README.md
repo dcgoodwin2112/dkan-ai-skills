@@ -18,6 +18,8 @@ AGENTS.md                          # generated: broad cross-tool guidance
 .github/                           # generated: Copilot instructions + prompts
 bin/build-adapters                 # regenerates AGENTS.md + .github/ from the source
 bin/install, bin/test              # symlink installer (non-plugin setups) + test suite
+skills-currency.yml                # version facts each skill pins + sources to verify
+.claude/commands/                  # repo-maintenance commands (not shipped in the plugin)
 ```
 
 The skills/commands under `plugins/drupal-dkan-ai/` are the single source of truth. `AGENTS.md` and `.github/` are **generated** by `bin/build-adapters` and committed; don't edit them by hand (`bin/test` fails if they drift from the source).
@@ -169,3 +171,12 @@ The AI scaffold commands target Drupal AI `^1.3` and refuse `2.0.x` (breaking pr
 - `architecture.md` — the three pieces (Drupal module, React app, component library), the data path, the two library lineages
 - `dkan-js-frontend-module.md` — the Drupal serving contract: `dkan_js_frontend.config`, config-driven routing, the Page controller, the SPA-as-frontend setup
 - `build-deploy-customize.md` — ddev install/build, the `extra.dkan-frontend` override, the `datastore_query_api` switch, local-dev version drift, customizing
+
+## Maintaining the skills (currency)
+
+The skills pin version-specific facts about fast-moving upstreams (Drupal core 10.2→11.x, `drupal/ai`, `mcp_server`/`mcp/sdk`, DKAN 4.x, the frontend libraries, DCAT-US). To keep them from drifting:
+
+- **`skills-currency.yml`** — the manifest of every pinned claim, the authoritative source to verify it against, and a `cadence`/`volatility`/`last_verified` per claim. Centralizes facts otherwise scattered across each `SKILL.md` "Version notes". Update it when you add or change a skill.
+- **`/check-skill-currency`** (`.claude/commands/`) — run in this repo to verify the manifest against upstream sources and get a drift-triage report. Report-only by default; `--write` bumps `last_verified` and applies confident, mechanical fixes. Scope by skill and `--cadence` (e.g. `monthly`).
+
+The command is report-first by design — doc judgment calls stay with a human reviewer. It can be wired to a monthly scheduled run (Claude Code's `/schedule`, or a GitHub Actions cron) that runs the check and opens an issue/PR with findings, but that trigger is intentionally not committed here.
