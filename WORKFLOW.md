@@ -19,15 +19,18 @@ Drupal/DKAN-specific bits are marked **Example** — swap them for your stack.
   after each phase (§12), so the loop compounds instead of relearning.
 - **Cheap verification beats trust.** Local lint/test gates, an independent plan
   review, an independent diff review, and an adversarial pass when confidence is
-  low — each catches a different class of error before it ships.
+  low — each catches a different class of error before it ships. The review is the
+  gate, not the reviewer: if the external reviewer is unavailable, warn and fall
+  back to the in-Claude review (§8/§9), never skip.
 
 ## The loop at a glance
 
 1. **Baseline** — measure the current state empirically; date it.
 2. **Plan** — write a phased plan doc (goal, scope fence, sequencing, per-phase
    "Done when", open decisions).
-3. **Review the plan** — independent reviewer (codex `review_plan`); fold findings
-   back in *before* writing code.
+3. **Review the plan** — independent reviewer (codex `review_plan`, or the
+   in-Claude fallback if codex is down); fold findings back in *before* writing
+   code.
 4. **Per phase** — branch → scaffold/implement → local gates → independent diff
    review → adversarial review if low-confidence → PR → merge → cleanup.
 5. **Refine docs** — drive doc reconciliation to a measurable end-state with
@@ -118,7 +121,11 @@ editing; let the human review context, adjust effort, or redirect first.
 Before any code, run the plan through an independent reviewer — the codex-reviewer
 MCP, `review_plan`. It catches sequencing errors, missing risks, and scope creep
 while they're still free to fix. Fold validated findings back into the plan doc
-(track that as its own step).
+(track that as its own step). **If codex is unavailable**, say so and stand in a
+fresh-context Claude critique — a subagent prompted to do the same job (sequencing
+errors, missing risks, scope creep); note the substitution in the plan doc rather
+than skip the gate. (`/code-review` reviews diffs, not plans, so it is not the
+stand-in here.)
 
 This is the highest-leverage review in the loop: a flaw caught here costs one doc
 edit; the same flaw caught after implementation costs a whole phase.
@@ -176,6 +183,14 @@ Run the codex-reviewer `review_diff` before each PR — `general` profile always
 `security` profile for anything touching auth, access, destructive ops, or a
 surface that exposes tools or data to an AI agent.
 
+- **Fallback when codex is unavailable.** If the codex MCP is down, rate-limited,
+  usage-exhausted, unconfigured, or erroring, **warn explicitly and do not skip the
+  review.** Fall back to the in-Claude path: the built-in **`/code-review`**
+  (correctness + cleanup), the **`plan-diff-reviewer`** subagent (diff-vs-plan), and
+  the **§9 adversarial pass** for anything risky. **Record in the PR** that the
+  external review was unavailable and what ran instead. The fallback is same-vendor,
+  so it loses codex's cross-family diversity: for high-risk / security changes,
+  escalate §9 (more lenses, `opus` + `sonnet`) and re-run codex once it is back.
 - **Verify the diff against the plan, not just for bugs.** Confirm *every* plan
   requirement landed and nothing out of scope crept in — codex `plan_vs_diff`,
   and/or the bundled `plan-diff-reviewer` subagent (a fresh-context Claude reviewer
@@ -191,8 +206,9 @@ surface that exposes tools or data to an AI agent.
 
 ## 9. Adversarial review in Claude when confidence is low
 
-An independent reviewer is one opinion. When a finding is **low-confidence**, or
-the change is **high-risk**, add a second, adversarial pass inside Claude:
+An independent reviewer is one opinion. When a finding is **low-confidence**, the
+change is **high-risk**, or **the external reviewer is unavailable**, add a second,
+adversarial pass inside Claude:
 
 - **Independent skeptics** — subagents prompted to *refute* the change; a
   majority-refute kills it.
