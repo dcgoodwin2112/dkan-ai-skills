@@ -111,6 +111,14 @@ scan_segment() {
     esac
   done
   [ "$i" -lt "$n" ] || return 1
+  # `python -m pip install ...` → treat pip as the manager.
+  case "${toks[$i]}" in
+    python|python2|python3|python3.*)
+      if [ "$((i + 2))" -lt "$n" ] && [ "${toks[$((i + 1))]}" = "-m" ]; then
+        case "${toks[$((i + 2))]}" in pip|pip3) i=$((i + 2)) ;; esac
+      fi
+      ;;
+  esac
   is_manager "${toks[$i]}" || return 1
   local mgr="${toks[$i]}"; i=$((i + 1))
   [ "$i" -lt "$n" ] || return 1
