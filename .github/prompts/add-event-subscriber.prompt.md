@@ -15,7 +15,7 @@ See [reference/dkan-services.md](../skills/dkan-module-author/reference/dkan-ser
 
 ${input:args} should be: `<module_path> [event_name]`
 
-- `module_path`: Path to the module, resolved under `<webroot>/modules/custom/` (e.g., `dkan_query_tools`)
+- `module_path`: Path to the target module — relative to the project root (e.g. `<webroot>/modules/custom/my_module`) or just the machine name (e.g. `dkan_query_tools`), resolved against the site's module directories.
 - `event_name`: Optional event name string (e.g., `dkan_metastore_dataset_update`). If omitted, present available events for the user to choose.
 
 ## Steps

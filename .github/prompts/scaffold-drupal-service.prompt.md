@@ -13,7 +13,7 @@ Create a new Drupal service class with constructor injection, register it in ser
 
 ${input:args} should be: `<module_path> <ServiceName> [dependency_service_ids...]`
 
-- `module_path`: Path to the module, resolved under `<webroot>/modules/custom/` (e.g., `dkan_query_tools`)
+- `module_path`: Path to the target module — relative to the project root (e.g. `<webroot>/modules/custom/my_module`) or just the machine name (e.g. `dkan_query_tools`), resolved against the site's module directories.
 - `ServiceName`: PascalCase class name (e.g., `DataProcessor`)
 - `dependency_service_ids`: Optional DKAN/Drupal service IDs to inject (e.g., `dkan.metastore.service dkan.datastore.service`)
 

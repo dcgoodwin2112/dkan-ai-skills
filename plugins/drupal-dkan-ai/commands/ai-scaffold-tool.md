@@ -11,7 +11,7 @@ Read [SKILL.md](../skills/drupal-ai-module/SKILL.md), [plugin-types.md](../skill
 
 `$ARGUMENTS` should be: `<module_path> <ToolName> [context_args...]`
 
-- `module_path`: Path to the target module relative to the project root, or just the machine name.
+- `module_path`: Path to the target module — relative to the project root (e.g. `<webroot>/modules/custom/my_module`) or just the machine name (e.g. `dkan_query_tools`), resolved against the site's module directories.
 - `ToolName`: PascalCase class name (e.g., `LoadDataset`, `GetWeather`).
 - `context_args`: Optional. Each is `<arg_name>:<type>` (e.g., `dataset_id:string count:integer`). Type values are Drupal TypedData plugin IDs — common ones: `string`, `integer`, `boolean`, `float`, `list` (for arrays), `map` (for keyed associative arrays), `email`, `uri`, `timestamp`. **Do NOT use `array`** — it's not a registered data type. See `<webroot>/modules/contrib/ai_agents/src/Plugin/AiFunctionCall/ListConfigEntities.php` for an example mixing `string`, `integer`, `list`. If no args provided, generate a single placeholder `input:string` context.
 

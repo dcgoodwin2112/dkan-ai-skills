@@ -51,10 +51,9 @@ dependencies:
   - dkan:dkan_metastore
   - dkan:dkan_datastore
   # Add only the DKAN subsystems you actually use. All take the dkan: project,
-  # dkan_-prefixed module form:
+  # dkan_-prefixed module form, e.g.:
   #   - dkan:dkan_common
-  #   - dkan:dkan_datastore
-  #   - dkan:dkan_metastore
+  #   - dkan:dkan_harvest
 ```
 
 ### 3. `<module_name>.services.yml`

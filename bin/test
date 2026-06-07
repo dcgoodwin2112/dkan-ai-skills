@@ -127,18 +127,53 @@ else
   for c in \
     'composer require drupal/foo' 'npm install left-pad' 'ddev composer require x/y' \
     'yarn add vue' 'pip install requests' 'python -m pip install requests' \
-    'python3 -m pip install flask' '"npm" install evil' 'bash -c "npm install evil"'; do
+    'python3 -m pip install flask' '"npm" install evil' 'bash -c "npm install evil"' \
+    'uv add ruff' 'uv pip install requests' 'uv tool install black' \
+    'poetry add flask' 'pipx install black' 'deno add npm:left-pad'; do
     assert "blocks: $c" "gate_verdict '$c' | grep -q 'WOULD GATE'"
   done
   # Lockfile-driven / non-install commands must pass.
   for c in \
     'composer install' 'npm install' 'npm install --prefix frontend' \
-    'pip install -r requirements.txt' 'go install ./...' 'git commit -m "npm install foo"'; do
+    'pip install -r requirements.txt' 'go install ./...' 'git commit -m "npm install foo"' \
+    'uv pip install -r requirements.txt' 'uv sync' 'poetry install' \
+    'pipx run black' 'deno install' 'deno task build'; do
     assert "allows: $c" "gate_verdict '$c' | grep -q 'would allow'"
   done
   assert "block returns exit 2"  "[[ \"\$(gate_exit 'composer require x/y')\" == 2 ]]"
   assert "allow returns exit 0"  "[[ \"\$(gate_exit 'composer install')\" == 0 ]]"
   assert "bypass returns exit 0" "[[ \"\$(gate_exit_bypass 'composer require x/y')\" == 0 ]]"
+fi
+
+echo "Test 9: commit-gate detection + scoping"
+cg="$repo_root/plugins/drupal-dkan-ai/hooks/commit-gate.sh"
+if ! command -v jq >/dev/null 2>&1; then
+  echo "  SKIP  jq not installed"
+elif ! command -v git >/dev/null 2>&1; then
+  echo "  SKIP  git not installed"
+else
+  cgrepo="$(fresh_tmp)"
+  (
+    cd "$cgrepo" || exit 1
+    git init -q
+    git config user.email t@t.t
+    git config user.name t
+    mkdir -p .ddev modules/custom/foo
+    printf 'name: x\n' > .ddev/config.yaml
+    printf '<?xml/>\n' > modules/custom/foo/phpcs.xml.dist
+    printf '<?php\n' > modules/custom/foo/foo.module
+    git add modules/custom/foo/foo.module
+  )
+  cg_dry()    { jq -nc --arg c "$1" --arg w "$cgrepo" '{tool_input:{command:$c},cwd:$w}' | CLAUDE_GATE_DRYRUN=1 bash "$cg" 2>&1; }
+  cg_bypass() { jq -nc --arg c "$1" --arg w "$cgrepo" '{tool_input:{command:$c},cwd:$w}' | CLAUDE_SKIP_COMMIT_GATE=1 bash "$cg" 2>&1; }
+  # Capture-then-match (not `| grep -q`): with pipefail, grep -q's early exit can
+  # SIGPIPE the producer and flip the pipeline status on an early-line match.
+  assert "gates a real commit"                "[[ \"\$(cg_dry 'git commit -m x')\" == *'would gate'* ]]"
+  assert "gate names the touched module"      "[[ \"\$(cg_dry 'git commit -m x')\" == *'modules/custom/foo'* ]]"
+  assert "ignores 'git status'"               "[[ \"\$(cg_dry 'git status')\" != *'would gate'* ]]"
+  assert "ignores 'git log --grep commit'"    "[[ \"\$(cg_dry 'git log --grep commit')\" != *'would gate'* ]]"
+  assert "ignores 'git commit-tree' plumbing" "[[ \"\$(cg_dry 'git commit-tree abc')\" != *'would gate'* ]]"
+  assert "bypass env skips the gate"          "[[ \"\$(cg_bypass 'git commit -m x')\" == *bypassed* ]]"
 fi
 
 echo
