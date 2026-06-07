@@ -25,20 +25,28 @@ Drupal/DKAN-specific bits are marked **Example** — swap them for your stack.
 
 ## The loop at a glance
 
+The sequence end to end. **Pause points for the human are called out; nothing
+commits until you ask.** Calibrate depth to the change (see Right-size below).
+
 1. **Baseline** — measure the current state empirically; date it.
 2. **Plan** — write a phased plan doc (goal, scope fence, sequencing, per-phase
-   "Done when", open decisions).
-3. **Review the plan** — independent reviewer (codex `review_plan`, or the
-   in-Claude fallback if codex is down); fold findings back in *before* writing
-   code.
-4. **Per phase** — branch → scaffold/implement → local gates → independent diff
-   review → adversarial review if low-confidence → PR → merge → cleanup.
-5. **Refine docs** — drive doc reconciliation to a measurable end-state with
-   `/goal`.
-6. **Maintain** — currency checks, CI drift detection, and writing each phase's
-   learnings back keep the toolkit honest and compounding.
+   "Done when", open decisions); present in plan mode, **pause after approval**.
+3. **Review the plan** — independent reviewer (codex `review_plan`, or the in-Claude
+   fallback if codex is down); fold findings back in *before* code.
+4. **Per phase**, in order: `/clear` & re-seed from the plan → branch →
+   scaffold/implement → **local gates** (lint + unit; eval if an AI surface) →
+   independent diff review → adversarial pass if low-confidence/high-risk → commit
+   (gate hook) → PR → merge → clean up → write learnings back. **Pause between
+   phases.**
+5. **Refine docs** — reconcile docs to a measurable end-state with `/goal`.
+6. **Maintain** — currency checks, CI drift detection, MCP/AI-surface contract
+   tests, and writing each phase's learnings back keep the toolkit compounding.
 
-Steps 2–4 pause for you between phases; nothing commits until you ask.
+**Right-size the loop.** The full ladder has overhead; match gate depth to change
+size. A typo or one-line fix skips the plan doc and phases (edit → local gates →
+commit); a substantive or risky change earns the whole sequence. The pieces scale
+independently — §9 already escalates the adversarial pass by risk; apply the same
+judgment to planning and phasing. When unsure on something risky, over-gate.
 
 ---
 
@@ -158,8 +166,11 @@ shipped as its own branch + PR.
   rebuild.
 - **AI surfaces add an eval gate.** If a change touches a prompt, agent, or tool
   schema, its **eval suite is a required gate** alongside lint and tests — behavior
-  is what regresses there, and only evals catch it. **Example:** `dkan-aiq:eval`
-  after a system-prompt or agent-routing change.
+  is what regresses there, and only evals catch it. **Calibrate before you trust it
+  as a gate:** an LLM-judged eval gates honestly only once its scores track human
+  ratings on a sample — an uncalibrated judge carries biases (length, position,
+  self-preference) that wave bad output through. **Example:** `dkan-aiq:eval` after a
+  system-prompt or agent-routing change.
 - **Make the must-run gates deterministic with a hook.** Advisory instructions
   get skipped; a hook does not (Anthropic's verification ladder — *CLAUDE.md is
   advisory, hooks are deterministic*). A `PreToolUse` hook on `git commit` that
@@ -215,19 +226,32 @@ adversarial pass inside Claude:
 - **Perspective-diverse lenses** — give each reviewer a distinct angle
   (correctness / security / does-it-actually-reproduce) so redundancy doesn't blind
   them all to the same miss.
-- **For an AI/agent surface, add a tool-I/O security lens.** Tool inputs *and*
-  outputs are untrusted — prompt injection arrives through call arguments *and*
-  through the data a tool returns, so never let returned content act as
-  instructions. Enforce **least privilege per tool** (a read tool must not reach a
-  destructive path). Vet **AI-suggested dependencies** before adding them — guard
-  against slopsquatting (confirm the package exists and is the one you meant), then
-  pin by hash. **Example:** an MCP server exposing dozens of tools, several of them
-  destructive writes, is the high-value target this guards.
+- **For an AI/agent surface, add a tool-I/O security lens.** Check the change
+  against the **lethal trifecta** — private-data access + exposure to untrusted
+  content + an exfiltration/write path; any two are survivable, all three is
+  exploitable — and break it by *design*, not by prompt. Tool inputs *and* outputs
+  are untrusted: indirect prompt injection arrives through call arguments *and*
+  through the data a tool returns (a catalog row, a dataset description, a harvest
+  error), so never let returned content act as instructions. Enforce **least
+  privilege per tool** (a read tool must not reach a destructive path) and keep
+  read-only and read-write tools on **separate, separately-credentialed surfaces**
+  (e.g. the `dkan-ro` / `dkan-rw` split) so text injected on the read path has no
+  write tool in reach. Keep destructive verbs (`delete`, `drop`, `unpublish`,
+  `publish`) **human-gated**, not autonomous. Vet **AI-suggested dependencies**
+  before adding them — guard against slopsquatting (confirm the package exists and
+  is the one you meant), then pin by hash. Anchor the pass to a maintained
+  checklist — **OWASP LLM Top 10** (LLM01 prompt injection, LLM05 improper output
+  handling, LLM06 excessive agency, LLM03 supply chain) and the **OWASP Agentic AI
+  Top 10** — so the lenses track named threats, not intuition. **Example:** an MCP
+  server exposing dozens of tools, several of them destructive writes, is the
+  high-value target this guards.
 - **Vary the model, not just the prompt.** Run the lenses under *different* models
   (e.g. one `opus`, one `sonnet` via the Agent tool's model option) and include the
   external codex reviewer — a different model family — so no single model's blind
-  spots dominate the panel (the agent-as-judge / CollabEval finding). The bundled
-  `plan-diff-reviewer` (§8) is a reusable fresh-context panelist.
+  spots dominate the panel (the agent-as-judge / CollabEval finding). Diversity is
+  the whole point: a same-family panel can *amplify* a shared bias instead of
+  cancelling it. The bundled `plan-diff-reviewer` (§8) is a reusable fresh-context
+  panelist.
 - **Escalate by risk:** a typo fix needs none; a destructive-write authorization
   path warrants 3–5 lenses.
 
@@ -276,7 +300,11 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   `AGENTS.md`/`CLAUDE.md` Gotchas or the relevant skill. Those gotchas and skills
   *are* the project's procedural memory; writing them back closes the
   compounding-knowledge loop, so the next session starts from the lesson instead
-  of re-deriving it. Pairs with currency: currency keeps *known* facts fresh,
+  of re-deriving it. **Two tiers:** a finding can rest in the harness's file-based
+  memory the moment it appears (cheap, session-spanning, not yet shared); *promote*
+  it to the committed `AGENTS.md`/skill once it recurs or proves durable — the
+  committed layer is shared and reviewed, so promoting (not every passing thought)
+  keeps it lean. Pairs with currency: currency keeps *known* facts fresh,
   procedural memory adds the *newly-learned* ones. **Example:** the
   unenforced-`checkAccess` gotcha, captured into the `drupal-mcp-server` skill so
   no later session rediscovers it.
@@ -293,6 +321,16 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   still exist, instantiate every plugin. It goes red the moment upstream breaks you,
   turning silent breakage into an early signal. **Example:** the `mcp_server` /
   `mcp/sdk` pin-bump job + `UpstreamContractTest` + `ToolDiscoveryTest`.
+- **MCP / AI-surface supply chain**: an MCP server you *consume* is a dependency
+  too — its tool descriptions, schemas, and return values are attacker-controllable
+  (tool poisoning), and a silent post-approval redefinition is a *rug pull*. Vet it
+  before trusting it; pin/snapshot its tool definitions so a changed scope trips a
+  diff. For a server you *build*, add a **tool-permission contract test** to the
+  suite above: snapshot each tool's `id` → access gate and fail the build if a
+  write/destructive tool is added without a `checkAccess` + subscriber gate, or an
+  existing one loses it (the excessive-agency / OWASP LLM06 guard). **Example:** the
+  DKAN MCP `ToolAccessSubscriber` + a snapshot over the read-only vs read-write
+  tool split.
 - **AI-surface regression**: prompts, agents, and tool schemas drift as models and
   dependencies change. Keep their **eval suite** as a standing regression gate —
   the behavioral analog of the contract tests above — and re-run it on every change
@@ -305,29 +343,27 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
 
 ## Generalizing to another project
 
-The loop is framework-neutral; only the toolkit and the gate commands change.
+The loop is framework-neutral; lift §1–§12 as-is. The sequence (baseline → plan →
+review-plan → per-phase gates → `/goal` cleanup → maintain), the review gates, the
+pause cadence, and the doc discipline are **universal**. Only three pieces are
+stack-specific — swap them:
 
-1. **Toolkit** — a skills/commands repo for your stack: decision-support docs keyed
-   to file globs, scaffolding procedures, a currency manifest, adapter regeneration
-   if you target multiple agents.
-2. **Contract** — an `AGENTS.md` per repo: build/test/lint commands, style, norms,
-   and a three-doc spine (README / ARCHITECTURE / ROADMAP) with an untracked-scratch
-   allowlist.
-3. **Baseline → plan → review-plan** — measure and date; phased plan doc with "Done
-   when" gates and a decisions section; independent plan review before code.
-4. **Per phase** — branch → scaffold → **local gates** → independent diff review →
-   adversarial pass if low-confidence/high-risk → PR → merge → cleanup.
-5. **`/goal` doc cleanup** — reconcile docs to a measurable end-state.
-6. **Maintain** — currency + CI drift detection + ROADMAP.
-
-**Universal vs. stack-specific:** the sequence, the review gates, the pause cadence,
-and the doc discipline are universal. Only the gate *commands* (phpcs/phpunit via
-DDEV here), the scaffolds, and the currency sources are Drupal/DKAN-specific — swap
-them for your stack's linter, test runner, and scaffolds.
+- **Toolkit** (§1) — a skills/commands repo for your stack: decision-support docs
+  keyed to file globs, scaffolding procedures, a currency manifest, adapter
+  regeneration if you target multiple agents.
+- **Contract** (§2) — an `AGENTS.md` per repo: build/test/lint commands, style,
+  norms, and the three-doc spine.
+- **Gate commands** (§7) — your linter, test runner, and eval harness in place of
+  phpcs/phpunit-via-DDEV; your scaffolds; your upstreams as the currency sources.
 
 **Scaling note:** the loop is sequential by design — the pause between phases is a
 feature, not a bottleneck. Genuinely independent work (separate repos, non-dependent
 phases) can parallelize across git worktrees, trading coordination and disk for
 throughput; confirm the work is *actually* independent first — modules with a
 dependency direction (a shared foundation the others build on) are not, and parallel
-edits there invite integration conflicts.
+edits there invite integration conflicts. **File isolation isn't enough:** worktrees
+separate source, but parallel agents that run tests still share one DDEV instance,
+database, and ports — concurrent kernel/functional runs corrupt each other. True
+parallelism needs per-agent runtime isolation (a separate DB/branch + ports), not
+just disjoint files. And the real ceiling is **human review throughput**: past a few
+concurrent agents the bottleneck is your attention at the gates, not agent speed.

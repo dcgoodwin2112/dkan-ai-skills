@@ -113,6 +113,34 @@ while IFS= read -r rel; do
 done < <(cd "$gen" && find AGENTS.md .github -type f | sort)
 assert "generated adapters match committed (run bin/build-adapters)" "[[ $stale -eq 0 ]]"
 
+echo "Test 8: dependency-gate hook decisions"
+hook="$repo_root/plugins/drupal-dkan-ai/hooks/dependency-gate.sh"
+if ! command -v jq >/dev/null 2>&1; then
+  echo "  SKIP  jq not installed"
+else
+  gate_verdict()     { jq -Rn --arg c "$1" '{tool_input:{command:$c}}' | CLAUDE_GATE_DRYRUN=1 bash "$hook" 2>&1; }
+  gate_exit()        { jq -Rn --arg c "$1" '{tool_input:{command:$c}}' | { bash "$hook" >/dev/null 2>&1; echo $?; }; }
+  gate_exit_bypass() { jq -Rn --arg c "$1" '{tool_input:{command:$c}}' | { CLAUDE_SKIP_DEP_GATE=1 bash "$hook" >/dev/null 2>&1; echo $?; }; }
+
+  # Package-adding commands must be gated (incl. wrapper, quoted, nested-shell,
+  # and `python -m pip` forms).
+  for c in \
+    'composer require drupal/foo' 'npm install left-pad' 'ddev composer require x/y' \
+    'yarn add vue' 'pip install requests' 'python -m pip install requests' \
+    'python3 -m pip install flask' '"npm" install evil' 'bash -c "npm install evil"'; do
+    assert "blocks: $c" "gate_verdict '$c' | grep -q 'WOULD GATE'"
+  done
+  # Lockfile-driven / non-install commands must pass.
+  for c in \
+    'composer install' 'npm install' 'npm install --prefix frontend' \
+    'pip install -r requirements.txt' 'go install ./...' 'git commit -m "npm install foo"'; do
+    assert "allows: $c" "gate_verdict '$c' | grep -q 'would allow'"
+  done
+  assert "block returns exit 2"  "[[ \"\$(gate_exit 'composer require x/y')\" == 2 ]]"
+  assert "allow returns exit 0"  "[[ \"\$(gate_exit 'composer install')\" == 0 ]]"
+  assert "bypass returns exit 0" "[[ \"\$(gate_exit_bypass 'composer require x/y')\" == 0 ]]"
+fi
+
 echo
 if [[ $fails -eq 0 ]]; then
   echo "All tests passed."
