@@ -139,17 +139,23 @@ The AI scaffold commands target Drupal AI `^1.3` and refuse `2.0.x` (breaking pr
 | `/validate-module <module>` | phpcs, phpunit, permission audit, cache rebuild |
 | `/validate-dcat-metadata <path-or-uuid>` | Checks dataset/distribution JSON against DCAT-US / POD v1.1 — required fields, `accessLevel`/`accrualPeriodicity` enums, URI/date formats, `contactPoint`/`publisher` shape; reports violations + fixes |
 
-## Commit-gate hook
+## Hooks
 
-The plugin ships a `PreToolUse` hook (`plugins/drupal-dkan-ai/hooks/`) that makes the local quality gates **deterministic**: before any `git commit`, it runs the committing module's phpcs + unit suite via DDEV and **blocks the commit if they fail** (Anthropic's verification ladder — *CLAUDE.md is advisory, hooks are deterministic*). It is fast local feedback; CI stays the authoritative gate.
+The plugin ships `PreToolUse` hooks (`plugins/drupal-dkan-ai/hooks/`) that make the local quality gates **deterministic** (Anthropic's verification ladder — *CLAUDE.md is advisory, hooks are deterministic*). They are fast local feedback; CI stays the authoritative gate. Both activate after `claude plugin update drupal-dkan-ai` and a **new session** (hooks load at session start), and ship via the plugin install path only, not the `bin/install` symlink fallback. Inspect/disable with `/hooks` or override in a project's `.claude/settings.local.json`; trace either with `CLAUDE_GATE_DEBUG=1`.
 
-Because plugin hooks fire in every project, the script is **self-scoping**: it no-ops unless the commit targets a DDEV-backed module carrying `phpcs.xml.dist` and/or `phpunit.xml`. Kernel/integration tests are left to CI.
+### commit-gate
+
+Before any `git commit`, runs the committing module's phpcs + unit suite via DDEV and **blocks the commit if they fail**. Because plugin hooks fire in every project, the script is **self-scoping**: it no-ops unless the commit targets a DDEV-backed module carrying `phpcs.xml.dist` and/or `phpunit.xml`. Kernel/integration tests are left to CI.
 
 - **DDEV not running →** warns and allows the commit (infra never hard-blocks).
-- **Bypass** an intentional WIP commit with `CLAUDE_SKIP_COMMIT_GATE=1`; trace decisions with `CLAUDE_GATE_DEBUG=1`.
-- **Inspect/disable:** run `/hooks`, or override the event in a project's `.claude/settings.local.json`.
+- **Bypass** an intentional WIP commit with `CLAUDE_SKIP_COMMIT_GATE=1`.
 
-Activates after `claude plugin update drupal-dkan-ai` and a **new session** (hooks load at session start). Shipped via the plugin install path only, not the `bin/install` symlink fallback.
+### dependency-gate
+
+Before a command that **adds a named package** — `composer require`, `npm install <pkg>` / `npm add`, `yarn add`, `pnpm add`, `pip install <pkg>`, and the common `cargo`/`go`/`gem` equivalents — **blocks** so a human vets the package first. This guards against **slopsquatting**: LLMs hallucinate plausible-but-nonexistent package names (~1 in 5 suggested packages) and attackers pre-register them. Supply-chain risk is universal, so this gate is **not** project-scoped.
+
+- Lockfile-driven installs (`composer install`, bare `npm install`, `npm ci`, `yarn install`, `pip install -r …`, `pip install -e .`) are **not** gated — they add nothing unreviewed.
+- **Bypass** with `CLAUDE_SKIP_DEP_GATE=1`; preview a command's verdict with `CLAUDE_GATE_DRYRUN=1`.
 
 ## Reviewer subagent
 

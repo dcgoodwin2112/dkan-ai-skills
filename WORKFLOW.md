@@ -351,4 +351,9 @@ feature, not a bottleneck. Genuinely independent work (separate repos, non-depen
 phases) can parallelize across git worktrees, trading coordination and disk for
 throughput; confirm the work is *actually* independent first — modules with a
 dependency direction (a shared foundation the others build on) are not, and parallel
-edits there invite integration conflicts.
+edits there invite integration conflicts. **File isolation isn't enough:** worktrees
+separate source, but parallel agents that run tests still share one DDEV instance,
+database, and ports — concurrent kernel/functional runs corrupt each other. True
+parallelism needs per-agent runtime isolation (a separate DB/branch + ports), not
+just disjoint files. And the real ceiling is **human review throughput**: past a few
+concurrent agents the bottleneck is your attention at the gates, not agent speed.
