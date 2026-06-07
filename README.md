@@ -6,6 +6,10 @@ Ships **no runtime PHP code** — it packages auto-loading skills and slash comm
 
 Claude Code is the primary target, but the same content is also published as tool-neutral adapters (`AGENTS.md`, `.github/` for Copilot) so it works with other coding agents — see [Use with other agents](#use-with-other-agents-copilot-codex-cursor-).
 
+## Development workflow
+
+These skills and commands plug into a repeatable, phased development loop — empirical baseline, plan doc + independent plan review, scoped branch-per-phase PRs with independent diff review (and an adversarial pass when confidence is low), then `/goal`-driven doc cleanup. See **[WORKFLOW.md](WORKFLOW.md)** for the full process, written generically enough to lift to other projects.
+
 ## Layout
 
 ```
@@ -122,6 +126,18 @@ The AI scaffold commands target Drupal AI `^1.3` and refuse `2.0.x` (breaking pr
 |---|---|
 | `/validate-module <module>` | phpcs, phpunit, permission audit, cache rebuild |
 | `/validate-dcat-metadata <path-or-uuid>` | Checks dataset/distribution JSON against DCAT-US / POD v1.1 — required fields, `accessLevel`/`accrualPeriodicity` enums, URI/date formats, `contactPoint`/`publisher` shape; reports violations + fixes |
+
+## Commit-gate hook
+
+The plugin ships a `PreToolUse` hook (`plugins/drupal-dkan-ai/hooks/`) that makes the local quality gates **deterministic**: before any `git commit`, it runs the committing module's phpcs + unit suite via DDEV and **blocks the commit if they fail** (Anthropic's verification ladder — *CLAUDE.md is advisory, hooks are deterministic*). It is fast local feedback; CI stays the authoritative gate.
+
+Because plugin hooks fire in every project, the script is **self-scoping**: it no-ops unless the commit targets a DDEV-backed module carrying `phpcs.xml.dist` and/or `phpunit.xml`. Kernel/integration tests are left to CI.
+
+- **DDEV not running →** warns and allows the commit (infra never hard-blocks).
+- **Bypass** an intentional WIP commit with `CLAUDE_SKIP_COMMIT_GATE=1`; trace decisions with `CLAUDE_GATE_DEBUG=1`.
+- **Inspect/disable:** run `/hooks`, or override the event in a project's `.claude/settings.local.json`.
+
+Activates after `claude plugin update drupal-dkan-ai` and a **new session** (hooks load at session start). Shipped via the plugin install path only, not the `bin/install` symlink fallback.
 
 ## Reference docs
 
