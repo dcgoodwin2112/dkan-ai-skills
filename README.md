@@ -152,7 +152,7 @@ Before any `git commit`, runs the committing module's phpcs + unit suite via DDE
 
 ### dependency-gate
 
-Before a command that **adds a named package** — `composer require`, `npm install <pkg>` / `npm add`, `yarn add`, `pnpm add`, `pip install <pkg>`, and the common `cargo`/`go`/`gem` equivalents — **blocks** so a human vets the package first. This guards against **slopsquatting**: LLMs hallucinate plausible-but-nonexistent package names (~1 in 5 suggested packages) and attackers pre-register them. Supply-chain risk is universal, so this gate is **not** project-scoped.
+Before a command that **adds a named package** — `composer require`, `npm install <pkg>` / `npm add`, `yarn add`, `pnpm add`, `bun add`, `pip install <pkg>`, and the common `cargo`/`go`/`gem` equivalents — **blocks** so a human vets the package first. This guards against **slopsquatting**: LLMs hallucinate plausible-but-nonexistent package names (~1 in 5 suggested packages) and attackers pre-register them. Supply-chain risk is universal, so this gate is **not** project-scoped.
 
 - Lockfile-driven installs (`composer install`, bare `npm install`, `npm ci`, `yarn install`, `pip install -r …`, `pip install -e .`) are **not** gated — they add nothing unreviewed.
 - **Bypass** with `CLAUDE_SKIP_DEP_GATE=1`; preview a command's verdict with `CLAUDE_GATE_DRYRUN=1`.

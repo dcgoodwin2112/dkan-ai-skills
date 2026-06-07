@@ -67,6 +67,33 @@ first_pip_target() {
   done
 }
 
+# npm-family: first real package target — skip value-consuming flags + their values
+# so a lockfile install with options (`npm install --prefix dir`) is not misread as
+# installing a package called "dir".
+first_npm_target() {
+  local skip=0 t
+  for t in "$@"; do
+    if [ "$skip" = 1 ]; then skip=0; continue; fi
+    case "$t" in
+      --prefix|--registry|-w|--workspace|--cache|--tag|--omit|--include|--userconfig|--globalconfig) skip=1 ;;
+      -*) ;;          # valueless flag
+      *) printf '%s' "$t"; return 0 ;;
+    esac
+  done
+}
+
+# go: first remote package target — skip flags and local paths (`.`, `./...`), so
+# `go install ./...` / `go build .` (local builds) are not treated as installs.
+first_go_target() {
+  local t
+  for t in "$@"; do
+    case "$t" in
+      .|./*|-*) ;;    # local path / flag
+      *) printf '%s' "$t"; return 0 ;;
+    esac
+  done
+}
+
 MATCH=""  # "<manager> <package>" when a gating install is found.
 
 # Decide whether one command segment adds a named package; set MATCH and return 0.
@@ -97,9 +124,9 @@ scan_segment() {
       ;;
     npm|pnpm|bun)
       case "$sub" in
-        add) MATCH="$mgr $(first_positional ${args[@]+"${args[@]}"})"; return 0 ;;
+        add) MATCH="$mgr $(first_npm_target ${args[@]+"${args[@]}"})"; return 0 ;;
         install|i)
-          p="$(first_positional ${args[@]+"${args[@]}"})"
+          p="$(first_npm_target ${args[@]+"${args[@]}"})"
           [ -n "$p" ] && { MATCH="$mgr $p"; return 0; } ;;
       esac
       ;;
@@ -120,7 +147,7 @@ scan_segment() {
     go)
       case "$sub" in
         get|install)
-          p="$(first_positional ${args[@]+"${args[@]}"})"
+          p="$(first_go_target ${args[@]+"${args[@]}"})"
           [ -n "$p" ] && { MATCH="go $p"; return 0; } ;;
       esac
       ;;
@@ -131,8 +158,14 @@ scan_segment() {
   return 1
 }
 
+# Normalize for detection only (we inspect, never execute this): strip quote chars
+# so a quoted manager token (`"npm"`) is seen, and unwrap a `bash -c` / `sh -lc`
+# wrapper so a nested install is seen. This gate is a speed-bump for the agent, not
+# a sandbox against a determined adversary.
+norm="$(printf '%s' "$cmd" | sed "s/[\"']//g")"
+norm="$(printf '%s' "$norm" | sed -E 's/(^|[;&|])[[:space:]]*(sudo[[:space:]]+)?(bash|sh|zsh)[[:space:]]+-[a-z]*c[a-z]*[[:space:]]+/\1 /g')"
 # Split the command on shell separators (&&, ||, ;, |, &, newline) and scan each.
-segments="$(awk '{ gsub(/&&|\|\||[;|&]/, "\n"); print }' <<< "$cmd")"
+segments="$(awk '{ gsub(/&&|\|\||[;|&]/, "\n"); print }' <<< "$norm")"
 while IFS= read -r seg; do
   [ -n "$seg" ] || continue
   scan_segment "$seg" && break
