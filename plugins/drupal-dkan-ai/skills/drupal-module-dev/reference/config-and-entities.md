@@ -175,5 +175,5 @@ class WidgetType extends ConfigEntityBase implements WidgetTypeInterface {
 - `DefaultHtmlRouteProvider` + the `form` handlers + `links` give a full admin CRUD UI
   for free.
 
-> **`accessCheck()` on entity queries is mandatory** (fatal since D11) — see
+> **`accessCheck()` on entity queries is mandatory** (throws since Drupal 10) — see
 > [routing-forms-rendering.md](routing-forms-rendering.md) and the SKILL.md rules.

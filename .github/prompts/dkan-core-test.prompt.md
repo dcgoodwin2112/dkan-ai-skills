@@ -135,7 +135,7 @@ use Drupal\Tests\dkan_common\Functional\Api1TestBase;
 
 /**
  * @group dkan
- * @group functional0
+ * @group functional1
  */
 class <ClassName> extends Api1TestBase {
 
@@ -157,9 +157,11 @@ class <ClassName> extends Api1TestBase {
 }
 ```
 
-(Choose `functional0`–`functional3` to balance with siblings; for non-API browser tests
-extend `BrowserTestBase` instead. `getEndpoint()` is abstract on `Api1TestBase` — a
-subclass that omits it won't instantiate.)
+(Choose `functional1`, `functional2`, or `functional3` to balance with siblings — CI runs
+each on its own node, while node 0 runs the non-functional suite; a test tagged
+`functional0` or left untagged is not parallelized. For non-API browser tests extend
+`BrowserTestBase` instead. `getEndpoint()` is abstract on `Api1TestBase` — a subclass
+that omits it won't instantiate.)
 
 ### 4. Show the run command
 

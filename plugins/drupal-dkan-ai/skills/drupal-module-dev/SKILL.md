@@ -42,8 +42,9 @@ standards — for Drupal 10.2+ / 11 on PHP 8.3.
    in procedural contexts (`.module`/`.install` files, static `#pre_render`/`#lazy_builder`
    callbacks) where no container is wired. ([services-and-di.md](reference/services-and-di.md))
 2. **`->accessCheck(TRUE|FALSE)` is mandatory on every entity query.** Deprecated in
-   D10, **fatal since D11** if omitted. Decide explicitly: `TRUE` for user-facing lists,
-   `FALSE` for system/internal logic. ([routing-forms-rendering.md](reference/routing-forms-rendering.md), [config-and-entities.md](reference/config-and-entities.md))
+   9.2, **throws since Drupal 10** if omitted — enforced across this skill's entire
+   `^10.2` range. Decide explicitly: `TRUE` for user-facing lists, `FALSE` for
+   system/internal logic. ([routing-forms-rendering.md](reference/routing-forms-rendering.md), [config-and-entities.md](reference/config-and-entities.md))
 3. **PHP attributes are the default for plugins.** Available for all plugin types by
    D10.2–11.2; `@Annotation` discovery is deprecated. Omitting the attribute class is
    deprecated in **D11.2**, required in **D12**, annotations removed in **D13**. New

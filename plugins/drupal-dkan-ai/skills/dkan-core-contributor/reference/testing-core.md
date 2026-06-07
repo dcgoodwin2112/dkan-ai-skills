@@ -65,12 +65,15 @@ this is the #1 cause of flaky/empty DKAN import tests.
 
 ## Test groups
 
-CI parallelizes by **group**. Two conventions:
+CI parallelizes by **group** (`parallelism: 4`). Two conventions:
 
 - Every DKAN test carries `@group dkan`.
-- Functional tests are split across four CI nodes by `@group functional0` … `@group
-  functional3`. CI runs `--group functional$CIRCLE_NODE_INDEX`, so a functional test
-  **without** one of these groups never runs in CI even though it passes locally.
+- Functional tests are bucketed into **three** groups, `@group functional1` … `@group
+  functional3`. Node 0 runs the non-functional suite (`--exclude-group
+  functional1,functional2,functional3` — unit + kernel); nodes 1–3 each run `--group
+  functional1`/`2`/`3`. A functional test left untagged (or tagged `functional0`, which
+  CI does not use) is **not** parallelized onto a functional node — it lands in node 0's
+  run alongside unit/kernel.
 
 ```php
 /**
@@ -80,8 +83,8 @@ CI parallelizes by **group**. Two conventions:
 final class MyApiTest extends Api1TestBase { /* … */ }
 ```
 
-Pick a `functionalN` to keep the four nodes roughly balanced (glance at where sibling
-tests in the module are assigned).
+Pick `functional1`, `2`, or `3` to keep the three functional nodes roughly balanced
+(glance at where sibling tests in the module are assigned).
 
 ## Cypress e2e
 
@@ -105,7 +108,7 @@ fixture-backed test so the migration is exercised.
 ```bash
 ddev phpunit --filter MyTest                         # one test
 ddev phpunit modules/dkan_metastore/tests            # one module's suite
-ddev phpunit --group dkan --group functional0        # mimic a CI node
+ddev phpunit --group dkan --group functional1        # mimic a functional CI node
 ddev dkan-module-test-cypress                        # e2e
 ```
 
