@@ -17,5 +17,5 @@ For the full picture see [`AGENTS.md`](../AGENTS.md).
 
 When working on DKAN, Drupal-AI, or MCP Server module code, consult the reference
 docs under `plugins/drupal-dkan-ai/skills/*/reference/` — they carry version-specific specifics
-(DKAN 4.x `Drupal\dkan_*` namespaces, `drupal/ai 1.3.x` lifecycle, `mcp_server`/
-`mcp/sdk` 0.6 volatility) that prevent common mistakes.
+(DKAN `Drupal\dkan_*` namespaces, the `drupal/ai` provider lifecycle, `mcp_server`/
+`mcp/sdk` API volatility) — the per-skill docs carry the exact pinned versions.

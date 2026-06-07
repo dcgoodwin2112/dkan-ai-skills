@@ -9,7 +9,7 @@ agent: 'agent'
 
 Add a route with controller and permission to a Drupal module.
 
-See [routing-forms-rendering.md](../skills/drupal-module-dev/reference/routing-forms-rendering.md) for controller/DI conventions.
+See [routing-forms-rendering.md](../../plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/routing-forms-rendering.md) for controller/DI conventions.
 
 ## Input
 

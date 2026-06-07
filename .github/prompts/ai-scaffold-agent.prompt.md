@@ -9,7 +9,7 @@ agent: 'agent'
 
 Scaffold a new AI Agent plugin for the Drupal AI module — autonomous worker that uses LLM-driven YAML prompts to fulfill a goal. Uses the `ai_agents` framework's "determine → solve" pattern, not OpenAI-style tool-calling loops.
 
-Read [SKILL.md](../skills/drupal-ai-module/SKILL.md), [plugin-types.md](../skills/drupal-ai-module/reference/plugin-types.md#ai-agent), and [services.md](../skills/drupal-ai-module/reference/services.md#agent-plugin) before proceeding. Then read `<webroot>/modules/contrib/ai_agents/src/Plugin/AiAgent/FieldType.php` as the canonical example — the scaffold below produces only a minimal skeleton.
+Read [SKILL.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/SKILL.md), [plugin-types.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/plugin-types.md#ai-agent), and [services.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/services.md#agent-plugin) before proceeding. Then read `<webroot>/modules/contrib/ai_agents/src/Plugin/AiAgent/FieldType.php` as the canonical example — the scaffold below produces only a minimal skeleton.
 
 ## Input
 

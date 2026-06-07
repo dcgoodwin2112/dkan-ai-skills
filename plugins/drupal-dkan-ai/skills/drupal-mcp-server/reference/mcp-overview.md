@@ -5,15 +5,16 @@ against. Read this first; the other reference docs go deep on each surface.
 
 ## What it is
 
-`mcp_server` bridges the **Model Context Protocol** PHP SDK (`mcp/sdk`) into
-Drupal. It lets AI clients (Claude Desktop, IDE agents, etc.) discover and invoke
+`mcp_server` bridges the **Model Context Protocol** PHP SDK (`mcp/sdk` — the
+official `modelcontextprotocol/php-sdk`, a PHP Foundation + Symfony collaboration)
+into Drupal. It lets AI clients (Claude Desktop, IDE agents, etc.) discover and invoke
 Drupal capabilities over MCP's JSON-RPC 2.0 protocol — as **tools** (actions),
 **resources** (readable artifacts), and **prompts** (reusable templated messages).
 
 The module supplies the transport, discovery, registration, session, and
 authorization plumbing. **You** supply the domain behavior as Drupal plugins and
 config entities. Core has **no Drupal module dependencies** — only `php` +
-`mcp/sdk` at the Composer level.
+`mcp/sdk` + `psr/simple-cache` at the Composer level.
 
 ## Architecture
 
@@ -84,8 +85,9 @@ available on both; scope access with a `RequestEvent` subscriber instead.
 ## Version landscape
 
 See the volatility callout in [SKILL.md](../SKILL.md). In short: `mcp_server`
-`v2.x-dev` ⇒ `mcp/sdk: dev-main` (0.6 API: `RuntimeToolHandlerInterface`,
-`ClientGateway`, `Builder::add()`); `0.6.0` is untagged; the `0.4`/`0.5` API is
+`v2.x-dev` ⇒ `mcp/sdk: ^0.6` (0.6 API: `RuntimeToolHandlerInterface`,
+`ClientGateway`, `Builder::add()`); **`0.6.0` was tagged 2026-06-02**, so the module
+now pins a released SDK rather than `dev-main`; the `0.4`/`0.5` API is
 incompatible. Confirm with `composer show drupal/mcp_server mcp/sdk` and read the
 **source**, not the bundled prose, which can lag. `opis/json-schema 2.6.0` (the
 SDK's validator) matches DKAN's lock — no conflict on a DKAN site.

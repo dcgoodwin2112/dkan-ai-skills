@@ -9,7 +9,7 @@ agent: 'agent'
 
 Scaffold a new FunctionCall (AI tool) plugin for the Drupal AI module — gives an AI agent a callable action.
 
-Read [SKILL.md](../skills/drupal-ai-module/SKILL.md), [plugin-types.md](../skills/drupal-ai-module/reference/plugin-types.md#functioncall-tool), and [pitfalls.md](../skills/drupal-ai-module/reference/pitfalls.md) before proceeding.
+Read [SKILL.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/SKILL.md), [plugin-types.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/plugin-types.md#functioncall-tool), and [pitfalls.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/pitfalls.md) before proceeding.
 
 ## Input
 

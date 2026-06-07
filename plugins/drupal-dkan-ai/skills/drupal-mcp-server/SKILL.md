@@ -1,6 +1,6 @@
 ---
 name: drupal-mcp-server
-description: Reference and decision support for writing custom modules that extend the contrib MCP Server module (drupal/mcp_server) — the bridge that exposes Drupal/DKAN capabilities to AI assistants over the Model Context Protocol (mcp/sdk). Loads when authoring #[Tool], #[ResourceProvider], #[ResourceTemplateProvider], #[PromptArgumentCompletionProvider], or #[Notification] plugins; working with Drupal\mcp_server\* namespaces, the mcp/sdk, or RequestEvent authorization; or editing under modules/contrib/mcp_server or a module that depends on mcp_server:mcp_server (including DKAN's dkan_mcp). Targets mcp_server v2.x-dev on the mcp/sdk 0.6 (dev-main) API — pre-release and volatile.
+description: Reference and decision support for writing custom modules that extend the contrib MCP Server module (drupal/mcp_server) — the bridge that exposes Drupal/DKAN capabilities to AI assistants over the Model Context Protocol (mcp/sdk). Loads when authoring #[Tool], #[ResourceProvider], #[ResourceTemplateProvider], #[PromptArgumentCompletionProvider], or #[Notification] plugins; working with Drupal\mcp_server\* namespaces, the mcp/sdk, or RequestEvent authorization; or editing under modules/contrib/mcp_server or a module that depends on mcp_server:mcp_server (including DKAN's dkan_mcp). Targets mcp_server v2.x-dev on the mcp/sdk 0.6 API (0.6.0 tagged 2026-06-02) — pre-release and volatile.
 ---
 
 # MCP Server Module — Plugin Author's Reference
@@ -27,18 +27,20 @@ For scaffolding a tool plugin, use `/mcp-scaffold-tool`.
 `mcp_server` is **pre-release** and rides a **pre-1.0, BC-breaking SDK**. This is
 the single biggest hazard; treat every API below as version-contingent.
 
-- The module's `v2.x-dev` branch requires **`mcp/sdk: dev-main`** (the 0.6 API):
+- The module's `v2.x-dev` branch requires **`mcp/sdk: ^0.6`** (the 0.6 API):
   `Mcp\Server\Handler\RuntimeToolHandlerInterface`, `Mcp\Server\ClientGateway`,
-  `Builder::add()`. `mcp/sdk` broke BC twice in ~2 months (0.4 → 0.5 → 0.6); the
-  latest *stable* tag is `v0.5.0` and **`0.6.0` is untagged**.
+  `Builder::add()`. `mcp/sdk` broke BC twice across 0.4 → 0.5 → 0.6, but **`0.6.0`
+  was tagged 2026-06-02**, so the module now pins a released SDK (`^0.6`) rather
+  than `dev-main`. `mcp/sdk` is the official MCP PHP SDK
+  (`modelcontextprotocol/php-sdk`, a PHP Foundation + Symfony collaboration).
 - The earlier `0.4`/`0.5` API (`Builder::addTool()`, no `ClientGateway`) is
-  **incompatible** — code written against it will not load against `dev-main`.
+  **incompatible** — code written against it will not load against `0.6`.
 - **The module's own bundled `references/` can lag its code** (e.g.
   `references/sdk/index.md` still says "`mcp/sdk ^0.4.0`" while the source imports
   0.6-only classes). Trust the **source + `composer.json`** over prose.
 - **`mcp_server` core has no Drupal module dependencies** — only `php` + `mcp/sdk`
-  at the Composer level. OAuth, admin UI, and the `drupal/tool` bridge are
-  submodules (see below).
+  + `psr/simple-cache` at the Composer level. OAuth, admin UI, and the `drupal/tool`
+  bridge are submodules (see below).
 - Per its maintainer: *this module is unreleased — add no backwards-compatibility
   layers or migrations in your solutions.*
 
@@ -65,6 +67,7 @@ or pin the module to a matching branch first. (This is exactly the state of
 | Autocomplete a prompt argument's values | **PromptArgumentCompletionProvider** | `#[PromptArgumentCompletionProvider]` under `src/Plugin/PromptArgumentCompletionProvider/` | [resources-prompts-notifications.md#completion-providers](reference/resources-prompts-notifications.md#completion-providers) |
 | Declare server-emitted notifications | **NotificationProvider** | `#[Notification]` under `src/Plugin/Notification/` | [resources-prompts-notifications.md#notifications](reference/resources-prompts-notifications.md#notifications) — **stub only, not yet wired** |
 | Gate who may call a tool / read a resource | **`RequestEvent` subscriber** | `event_subscriber` service | [auth-and-access.md](reference/auth-and-access.md) |
+| Expose an existing `drupal/tool` (Tool API) tool over MCP **without writing a plugin** | **`mcp_server_tool_bridge`** submodule | `McpToolConfig` entity (admin UI) | [mcp-overview.md#submodules](reference/mcp-overview.md#submodules) |
 | Just *call* the MCP server from a client | client config, no plugin | — | [mcp-overview.md#transports](reference/mcp-overview.md#transports) |
 
 Most work is **Tool plugins**. Reach for resources/prompts only when the client
@@ -83,7 +86,7 @@ should *read* artifacts or *reuse* prompt templates rather than invoke actions.
 
 ## Top pitfalls (full list: each reference doc)
 
-1. **SDK/module version mismatch** — symptom: fatal "class `Mcp\Server\...` not found" or tools silently absent. Cause: `mcp/sdk` at `0.4`/`0.5` while `mcp_server` is `2.x` (needs `dev-main`). Fix: align them (`composer show`), pin both to exact commits.
+1. **SDK/module version mismatch** — symptom: fatal "class `Mcp\Server\...` not found" or tools silently absent. Cause: `mcp/sdk` at `0.4`/`0.5` while `mcp_server` is `2.x` (needs `^0.6`). Fix: align them (`composer show`); pin `mcp/sdk:^0.6` (0.6.0 tagged 2026-06-02).
 2. **Tool not listed** — symptom: missing from `tools/list`. Cause: forgot `drush cr`, or native tool lacks `defaultConfiguration()['enabled' => TRUE]`. Fix: rebuild cache / add the default config.
 3. **Anyone can call write tools** — symptom: unauthenticated `tools/call` mutates data. Cause: relying on `checkAccess()` which nothing calls. Fix: add a `RequestEvent` subscriber that enforces it (or enable `mcp_server_oauth`).
 4. **Invalid tool/resource name** — symptom: `NameValidator` rejection at registration. Cause: a `:` in a derivative ID. Fix: use the `.` separator.
@@ -116,7 +119,7 @@ Full method signatures: [tool-plugins.md](reference/tool-plugins.md),
 DKAN ships `dkan_mcp`, today a **hand-rolled** MCP server (own factory, controller,
 drush command on `mcp/sdk ^0.4`) exposing ~35 metastore/datastore/harvest tools.
 There is a validated plan to **rebuild it on `mcp_server`** as `#[Tool]` plugins +
-a `ToolAccessSubscriber`, gated on the `mcp/sdk 0.6.0` tag. If you're touching DKAN
+a `ToolAccessSubscriber`, gated on the `mcp/sdk 0.6.0` tag (now landed, 2026-06-02). If you're touching DKAN
 MCP, read [dkan-integration.md](reference/dkan-integration.md) **first** — it tells
 you which world you're in and what carries over. For DKAN service/API specifics,
 the `dkan-module-author` skill is the companion.

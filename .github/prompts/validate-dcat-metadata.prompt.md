@@ -10,7 +10,7 @@ agent: 'agent'
 Validate a metadata record against the **DCAT-US / Project Open Data v1.1** rules DKAN
 enforces, and report violations with fixes.
 
-Read [SKILL.md](../skills/open-data-dcat/SKILL.md) and its reference docs first — they
+Read [SKILL.md](../../plugins/drupal-dkan-ai/skills/open-data-dcat/SKILL.md) and its reference docs first — they
 define the field tiers, vocabularies, and validation rules applied below.
 
 ## Input

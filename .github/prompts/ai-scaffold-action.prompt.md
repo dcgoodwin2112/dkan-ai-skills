@@ -9,7 +9,7 @@ agent: 'agent'
 
 Scaffold a new AI Assistant Action plugin — gives the AI Assistant API the ability to invoke a custom Drupal action mid-conversation (create node, assign role, RAG search, etc.).
 
-Read [SKILL.md](../skills/drupal-ai-module/SKILL.md), [plugin-types.md](../skills/drupal-ai-module/reference/plugin-types.md#assistant-action), and [services.md](../skills/drupal-ai-module/reference/services.md) before proceeding. Then read `<webroot>/modules/contrib/ai/modules/ai_search/src/Plugin/AiAssistantAction/RagAction.php` as the canonical example — the scaffold below produces a minimal skeleton.
+Read [SKILL.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/SKILL.md), [plugin-types.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/plugin-types.md#assistant-action), and [services.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/services.md) before proceeding. Then read `<webroot>/modules/contrib/ai/modules/ai_search/src/Plugin/AiAssistantAction/RagAction.php` as the canonical example — the scaffold below produces a minimal skeleton.
 
 ## Input
 

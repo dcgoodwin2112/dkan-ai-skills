@@ -176,6 +176,19 @@ else
   assert "bypass env skips the gate"          "[[ \"\$(cg_bypass 'git commit -m x')\" == *bypassed* ]]"
 fi
 
+echo "Test 10: generated Copilot prompt doc-links resolve"
+prompt_broken=0
+for f in "$repo_root"/.github/prompts/*.prompt.md; do
+  while IFS= read -r m; do
+    inner="${m#"]("}"; inner="${inner%")"}"; path="${inner%%#*}"
+    if [[ ! -e "$repo_root/.github/prompts/$path" ]]; then
+      echo "    broken: $(basename "$f") -> $path" >&2
+      prompt_broken=$((prompt_broken + 1))
+    fi
+  done < <(grep -oE '\]\(\.\.[^)]+\)' "$f")
+done
+assert "all ../ doc links in generated prompts resolve" "[[ $prompt_broken -eq 0 ]]"
+
 echo
 if [[ $fails -eq 0 ]]; then
   echo "All tests passed."

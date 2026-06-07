@@ -33,7 +33,7 @@ If the user just wants to *use* AI from existing code (call chat, generate embed
 
 1. **Key module is required.** Every provider resolves API keys via `\Drupal::service('key.repository')`. Add `key:key` to the module's `*.info.yml` dependencies. Never store raw secrets in `config/install/*.yml` — use Key entity references only.
 2. **Run `drush cr` after adding a plugin.** Plugin attribute discovery is cached. New providers/tools/agents won't appear until cache rebuild. The scaffold commands run this automatically.
-3. **Target `^1.3`, not `^2.0`.** As of June 2026, the current stable line is `1.4.x` (`^1.3` resolves to it); `2.0.x` is dev with breaking provider lifecycle changes per the upstream issue tracker.
+3. **Target `^1.3`, not `^2.0`.** As of June 2026, the current stable line is `1.4.x` (latest `1.4.1`; a `1.5.x-dev` branch is open; `^1.3` resolves to the stable line); `2.0.x` is dev with breaking provider lifecycle changes per the upstream issue tracker.
 4. **Plugin directory casing matters.** `src/Plugin/AiFunctionCall/` (singular `Call`, PascalCase) — `AiFunctionCalls/` is silently ignored.
 5. **Operation-type interface ↔ supportedOperationTypes() must agree.** A provider implementing `ChatInterface` must also list `'chat'` in `getSupportedOperationTypes()`, or `hasProvidersForOperationType('chat')` returns false and the provider is invisible.
 
@@ -76,6 +76,6 @@ If the major is `2`, the commands refuse to scaffold and direct the user to pin 
 - [reference/services.md](reference/services.md) — service IDs, classes, key methods for DI
 - [reference/testing-ai-plugins.md](reference/testing-ai-plugins.md) — unit-testing tools, asserting tool dispatch, golden-case eval, mocking `ai.provider`
 - [reference/ai-search-rag.md](reference/ai-search-rag.md) — RAG, embeddings, VdbProvider authoring, ai_search Search API backend
-- Upstream docs: https://project.pages.drupalcode.org/ai/1.3.x/
+- Upstream docs: https://project.pages.drupalcode.org/ai/
 - Canonical provider example: https://www.drupal.org/project/ai_provider_openai
 - Canonical agent + tool examples: `ai_agents` built-in `FieldType`/`ContentType`/`TaxonomyAgent` (in `<webroot>/modules/contrib/ai_agents/src/Plugin/AiAgent/`) and the tools in `<webroot>/modules/contrib/ai_agents/src/Plugin/AiFunctionCall/`
