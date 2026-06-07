@@ -280,6 +280,14 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   procedural memory adds the *newly-learned* ones. **Example:** the
   unenforced-`checkAccess` gotcha, captured into the `drupal-mcp-server` skill so
   no later session rediscovers it.
+- **Prune the contract**: currency and procedural memory only *add* to the
+  `AGENTS.md`/`CLAUDE.md` contract and skills, so periodically cut the other way or
+  the layer bloats until its rules get ignored (a long contract dilutes
+  instruction-following — the failure §7 routes around with hooks). On a cadence
+  (pair it with `/check-skill-currency`): drop stale or duplicated guidance,
+  **promote must-happen rules to hooks** instead of restating them, and **link to
+  the doc spine, don't inline** (§2). Where `AGENTS.md` is generated (this repo),
+  prune the *skills* it builds from, not the output.
 - **Dependency drift**: when you ride dev branches/pins, add a CI job that bumps to
   upstream HEAD and runs **contract tests** — assert the consumed upstream symbols
   still exist, instantiate every plugin. It goes red the moment upstream breaks you,
@@ -316,3 +324,10 @@ The loop is framework-neutral; only the toolkit and the gate commands change.
 and the doc discipline are universal. Only the gate *commands* (phpcs/phpunit via
 DDEV here), the scaffolds, and the currency sources are Drupal/DKAN-specific — swap
 them for your stack's linter, test runner, and scaffolds.
+
+**Scaling note:** the loop is sequential by design — the pause between phases is a
+feature, not a bottleneck. Genuinely independent work (separate repos, non-dependent
+phases) can parallelize across git worktrees, trading coordination and disk for
+throughput; confirm the work is *actually* independent first — modules with a
+dependency direction (a shared foundation the others build on) are not, and parallel
+edits there invite integration conflicts.
