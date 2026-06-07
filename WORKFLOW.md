@@ -15,7 +15,8 @@ Drupal/DKAN-specific bits are marked **Example** — swap them for your stack.
   suite; correctness before performance).
 - **Everything portable.** Domain knowledge, procedures, and norms live in
   versioned, auto-loading tooling — not in one session's memory — so any project
-  or agent starts from the same baseline.
+  or agent starts from the same baseline. New lessons flow *back* into that layer
+  after each phase (§12), so the loop compounds instead of relearning.
 - **Cheap verification beats trust.** Local lint/test gates, an independent plan
   review, an independent diff review, and an adversarial pass when confidence is
   low — each catches a different class of error before it ships.
@@ -31,8 +32,8 @@ Drupal/DKAN-specific bits are marked **Example** — swap them for your stack.
    review → adversarial review if low-confidence → PR → merge → cleanup.
 5. **Refine docs** — drive doc reconciliation to a measurable end-state with
    `/goal`.
-6. **Maintain** — currency checks + CI drift detection keep the toolkit and the
-   dependency pins honest.
+6. **Maintain** — currency checks, CI drift detection, and writing each phase's
+   learnings back keep the toolkit honest and compounding.
 
 Steps 2–4 pause for you between phases; nothing commits until you ask.
 
@@ -211,6 +212,9 @@ at low confidence; the adversarial pass confirmed it was real before it shipped.
 - **After merge, clean up:** `git checkout main && git pull --ff-only`, delete the
   merged local branch, `git fetch --prune`. Leaves only `main`, working tree clean,
   ready for the next phase.
+- **Before the next phase, capture what you learned.** If this phase surfaced a
+  durable, non-obvious finding that caused a correction, write it into the repo's
+  procedural memory now (§12) — while the context is fresh.
 
 ## 11. Refine docs and clean up with `/goal`
 
@@ -228,10 +232,19 @@ three docs does its one job correctly."
 
 ## 12. Maintain
 
-The loop doesn't end at merge — two things rot over time:
+The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
 
 - **Toolkit currency**: run `/check-skill-currency` (optionally on a schedule) to
   verify pinned version facts against upstream and report drift before it misleads.
+- **Procedural memory**: after each phase, distill the durable, non-obvious
+  findings — the ones that *caused a correction* — back into the working repo's
+  `AGENTS.md`/`CLAUDE.md` Gotchas or the relevant skill. Those gotchas and skills
+  *are* the project's procedural memory; writing them back closes the
+  compounding-knowledge loop, so the next session starts from the lesson instead
+  of re-deriving it. Pairs with currency: currency keeps *known* facts fresh,
+  procedural memory adds the *newly-learned* ones. **Example:** the
+  unenforced-`checkAccess` gotcha, captured into the `drupal-mcp-server` skill so
+  no later session rediscovers it.
 - **Dependency drift**: when you ride dev branches/pins, add a CI job that bumps to
   upstream HEAD and runs **contract tests** — assert the consumed upstream symbols
   still exist, instantiate every plugin. It goes red the moment upstream breaks you,
