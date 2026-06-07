@@ -215,14 +215,25 @@ adversarial pass inside Claude:
 - **Perspective-diverse lenses** — give each reviewer a distinct angle
   (correctness / security / does-it-actually-reproduce) so redundancy doesn't blind
   them all to the same miss.
-- **For an AI/agent surface, add a tool-I/O security lens.** Tool inputs *and*
-  outputs are untrusted — prompt injection arrives through call arguments *and*
-  through the data a tool returns, so never let returned content act as
-  instructions. Enforce **least privilege per tool** (a read tool must not reach a
-  destructive path). Vet **AI-suggested dependencies** before adding them — guard
-  against slopsquatting (confirm the package exists and is the one you meant), then
-  pin by hash. **Example:** an MCP server exposing dozens of tools, several of them
-  destructive writes, is the high-value target this guards.
+- **For an AI/agent surface, add a tool-I/O security lens.** Check the change
+  against the **lethal trifecta** — private-data access + exposure to untrusted
+  content + an exfiltration/write path; any two are survivable, all three is
+  exploitable — and break it by *design*, not by prompt. Tool inputs *and* outputs
+  are untrusted: indirect prompt injection arrives through call arguments *and*
+  through the data a tool returns (a catalog row, a dataset description, a harvest
+  error), so never let returned content act as instructions. Enforce **least
+  privilege per tool** (a read tool must not reach a destructive path) and keep
+  read-only and read-write tools on **separate, separately-credentialed surfaces**
+  (e.g. the `dkan-ro` / `dkan-rw` split) so text injected on the read path has no
+  write tool in reach. Keep destructive verbs (`delete`, `drop`, `unpublish`,
+  `publish`) **human-gated**, not autonomous. Vet **AI-suggested dependencies**
+  before adding them — guard against slopsquatting (confirm the package exists and
+  is the one you meant), then pin by hash. Anchor the pass to a maintained
+  checklist — **OWASP LLM Top 10** (LLM01 prompt injection, LLM05 improper output
+  handling, LLM06 excessive agency, LLM03 supply chain) and the **OWASP Agentic AI
+  Top 10** — so the lenses track named threats, not intuition. **Example:** an MCP
+  server exposing dozens of tools, several of them destructive writes, is the
+  high-value target this guards.
 - **Vary the model, not just the prompt.** Run the lenses under *different* models
   (e.g. one `opus`, one `sonnet` via the Agent tool's model option) and include the
   external codex reviewer — a different model family — so no single model's blind
@@ -293,6 +304,16 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   still exist, instantiate every plugin. It goes red the moment upstream breaks you,
   turning silent breakage into an early signal. **Example:** the `mcp_server` /
   `mcp/sdk` pin-bump job + `UpstreamContractTest` + `ToolDiscoveryTest`.
+- **MCP / AI-surface supply chain**: an MCP server you *consume* is a dependency
+  too — its tool descriptions, schemas, and return values are attacker-controllable
+  (tool poisoning), and a silent post-approval redefinition is a *rug pull*. Vet it
+  before trusting it; pin/snapshot its tool definitions so a changed scope trips a
+  diff. For a server you *build*, add a **tool-permission contract test** to the
+  suite above: snapshot each tool's `id` → access gate and fail the build if a
+  write/destructive tool is added without a `checkAccess` + subscriber gate, or an
+  existing one loses it (the excessive-agency / OWASP LLM06 guard). **Example:** the
+  DKAN MCP `ToolAccessSubscriber` + a snapshot over the read-only vs read-write
+  tool split.
 - **AI-surface regression**: prompts, agents, and tool schemas drift as models and
   dependencies change. Keep their **eval suite** as a standing regression gate —
   the behavioral analog of the contract tests above — and re-run it on every change

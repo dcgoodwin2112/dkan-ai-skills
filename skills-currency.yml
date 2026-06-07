@@ -43,6 +43,11 @@ sources:
   dcat_us:
     pod_v11: https://resources.data.gov/resources/dcat-us/
     notes: Slow-moving; DCAT-US v3 (RDF) is the federal direction but not in DKAN 4.x.
+  ai_security:
+    owasp_llm: https://genai.owasp.org/llm-top-10/
+    owasp_agentic: https://genai.owasp.org/resource/owasp-top-10-for-agentic-ai/
+    mcp_security: https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html
+    notes: OWASP GenAI lists revise periodically — verify the cited IDs/threats match the current published list. MCP protocol security guidance lives in the MCP spec + the OWASP MCP cheat sheet.
 
 skills:
 
@@ -167,6 +172,18 @@ skills:
         cadence: monthly
         volatility: high
         last_verified: 2026-06-01
+      - subject: AI-surface threat checklist
+        claim: "Security lens anchors to OWASP LLM Top 10 (LLM01 prompt injection, LLM05 improper output handling, LLM06 excessive agency, LLM03 supply chain) and the OWASP Agentic AI Top 10; tool outputs are untrusted (indirect injection); enforce read/write separation + least privilege + human-gated destructive verbs."
+        source: ai_security/owasp_llm
+        cadence: quarterly
+        volatility: medium
+        last_verified: 2026-06-07
+      - subject: MCP protocol security
+        claim: "MCP-specific risks: tool poisoning, rug pulls (post-approval redefinition), confused deputy, excessive scopes. Mitigate by vetting/pinning consumed servers, least-privilege per-tool scopes, and enforcing checkAccess via a RequestEvent subscriber."
+        source: ai_security/mcp_security
+        cadence: quarterly
+        volatility: medium
+        last_verified: 2026-06-07
 
   open-data-dcat:
     targets: "Project Open Data / DCAT-US v1.1 as implemented by DKAN 4.x"
