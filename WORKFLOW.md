@@ -133,6 +133,9 @@ edit; the same flaw caught after implementation costs a whole phase.
 - **ROADMAP absorbs anything cut** — scope creep goes to the backlog with
   rationale, not into the current PR.
 - **Pause between phases.** The human chooses when the next one starts.
+- **Reset context between phases.** `/clear` (not just `/compact`) when a phase
+  ends, then re-seed the next one from its plan doc — so each phase runs on clean,
+  intentional context, not the residue of the last.
 
 **Example sequence:** 0 lint-clean → 1 security hardening → 2 CI + drift detection
 → 3 performance → 4 packaging polish → 5 release/migration (decision-gated). Each
@@ -146,6 +149,10 @@ shipped as its own branch + PR.
   DDEV):** phpcs `Drupal,DrupalPractice`; the unit suite; the kernel suite against
   the test DB. `/validate-module` bundles lint + tests + permission audit + cache
   rebuild.
+- **AI surfaces add an eval gate.** If a change touches a prompt, agent, or tool
+  schema, its **eval suite is a required gate** alongside lint and tests — behavior
+  is what regresses there, and only evals catch it. **Example:** `dkan-aiq:eval`
+  after a system-prompt or agent-routing change.
 - **Make the must-run gates deterministic with a hook.** Advisory instructions
   get skipped; a hook does not (Anthropic's verification ladder — *CLAUDE.md is
   advisory, hooks are deterministic*). A `PreToolUse` hook on `git commit` that
@@ -156,6 +163,9 @@ shipped as its own branch + PR.
   warns-but-allows when DDEV is down.
 - Keep the change focused. When you spot an out-of-scope issue, **capture it** (a
   background-task chip, or a ROADMAP line) instead of widening the PR.
+- **Route heavy exploration through `Explore` subagents.** Let a subagent sweep the
+  codebase and hand back the conclusion; the implementing context stays focused on
+  the change instead of filling with raw search output.
 - At a genuine fork, **ask** (AskUserQuestion) rather than guessing. **Example:**
   "soften the hard `basic_auth` dependency, or keep it?" — a one-question fork that
   changed the phase's design.
@@ -163,7 +173,8 @@ shipped as its own branch + PR.
 ## 8. Review the diff independently
 
 Run the codex-reviewer `review_diff` before each PR — `general` profile always,
-`security` profile for anything touching auth, access, or destructive ops.
+`security` profile for anything touching auth, access, destructive ops, or a
+surface that exposes tools or data to an AI agent.
 
 - **Verify the diff against the plan, not just for bugs.** Confirm *every* plan
   requirement landed and nothing out of scope crept in — codex `plan_vs_diff`,
@@ -188,6 +199,14 @@ the change is **high-risk**, add a second, adversarial pass inside Claude:
 - **Perspective-diverse lenses** — give each reviewer a distinct angle
   (correctness / security / does-it-actually-reproduce) so redundancy doesn't blind
   them all to the same miss.
+- **For an AI/agent surface, add a tool-I/O security lens.** Tool inputs *and*
+  outputs are untrusted — prompt injection arrives through call arguments *and*
+  through the data a tool returns, so never let returned content act as
+  instructions. Enforce **least privilege per tool** (a read tool must not reach a
+  destructive path). Vet **AI-suggested dependencies** before adding them — guard
+  against slopsquatting (confirm the package exists and is the one you meant), then
+  pin by hash. **Example:** an MCP server exposing dozens of tools, several of them
+  destructive writes, is the high-value target this guards.
 - **Vary the model, not just the prompt.** Run the lenses under *different* models
   (e.g. one `opus`, one `sonnet` via the Agent tool's model option) and include the
   external codex reviewer — a different model family — so no single model's blind
@@ -250,6 +269,11 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   still exist, instantiate every plugin. It goes red the moment upstream breaks you,
   turning silent breakage into an early signal. **Example:** the `mcp_server` /
   `mcp/sdk` pin-bump job + `UpstreamContractTest` + `ToolDiscoveryTest`.
+- **AI-surface regression**: prompts, agents, and tool schemas drift as models and
+  dependencies change. Keep their **eval suite** as a standing regression gate —
+  the behavioral analog of the contract tests above — and re-run it on every change
+  to those surfaces. **Example:** `dkan-aiq:eval` gates the AI-query agent's system
+  prompt and routing.
 - **ROADMAP** is the living deferral log: anything cut from a phase lives here with
   rationale until it's scheduled.
 
