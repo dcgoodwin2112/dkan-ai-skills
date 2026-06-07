@@ -164,6 +164,12 @@ shipped as its own branch + PR.
 Run the codex-reviewer `review_diff` before each PR — `general` profile always,
 `security` profile for anything touching auth, access, or destructive ops.
 
+- **Verify the diff against the plan, not just for bugs.** Confirm *every* plan
+  requirement landed and nothing out of scope crept in — codex `plan_vs_diff`,
+  and/or the bundled `plan-diff-reviewer` subagent (a fresh-context Claude reviewer
+  handed only the diff + the plan, reporting requirement gaps, not style). The
+  built-in `/code-review` is a separate, optional in-session correctness + cleanup
+  pass.
 - **Gotcha:** new/untracked files aren't in the `working` diff. `git add` them and
   review in `staged` mode, or they're silently skipped.
 - **Integrate validated findings; decline noise with a recorded rationale.**
@@ -181,6 +187,11 @@ the change is **high-risk**, add a second, adversarial pass inside Claude:
 - **Perspective-diverse lenses** — give each reviewer a distinct angle
   (correctness / security / does-it-actually-reproduce) so redundancy doesn't blind
   them all to the same miss.
+- **Vary the model, not just the prompt.** Run the lenses under *different* models
+  (e.g. one `opus`, one `sonnet` via the Agent tool's model option) and include the
+  external codex reviewer — a different model family — so no single model's blind
+  spots dominate the panel (the agent-as-judge / CollabEval finding). The bundled
+  `plan-diff-reviewer` (§8) is a reusable fresh-context panelist.
 - **Escalate by risk:** a typo fix needs none; a destructive-write authorization
   path warrants 3–5 lenses.
 

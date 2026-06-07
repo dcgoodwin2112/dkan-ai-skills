@@ -1,14 +1,14 @@
 # dkan-ai-skills
 
-A Claude Code **plugin** of skills, slash commands, and reference docs for general Drupal 10.2+ / 11 module development and for writing custom Drupal modules that extend [DKAN](https://github.com/GetDKAN/dkan) 4.x, the [Drupal AI module](https://www.drupal.org/project/ai) (`drupal/ai`, `ai_agents`), and the [MCP Server module](https://www.drupal.org/project/mcp_server) (`drupal/mcp_server`) — for contributing to DKAN core itself, for the open-data metadata specs (DCAT-US / Project Open Data) DKAN implements, and for DKAN's decoupled JavaScript frontend.
+A Claude Code **plugin** of skills, slash commands, a review subagent, and reference docs for general Drupal 10.2+ / 11 module development and for writing custom Drupal modules that extend [DKAN](https://github.com/GetDKAN/dkan) 4.x, the [Drupal AI module](https://www.drupal.org/project/ai) (`drupal/ai`, `ai_agents`), and the [MCP Server module](https://www.drupal.org/project/mcp_server) (`drupal/mcp_server`) — for contributing to DKAN core itself, for the open-data metadata specs (DCAT-US / Project Open Data) DKAN implements, and for DKAN's decoupled JavaScript frontend.
 
-Ships **no runtime PHP code** — it packages auto-loading skills and slash commands for Claude Code. The reference docs are verified against DKAN `4.x`, `drupal/ai 1.3.x`, and `mcp_server` v2.x-dev (pre-release; `mcp/sdk` 0.6 API).
+Ships **no runtime PHP code** — it packages auto-loading skills, slash commands, a review subagent, and a commit-gate hook for Claude Code. The reference docs are verified against DKAN `4.x`, `drupal/ai 1.3.x`, and `mcp_server` v2.x-dev (pre-release; `mcp/sdk` 0.6 API).
 
 Claude Code is the primary target, but the same content is also published as tool-neutral adapters (`AGENTS.md`, `.github/` for Copilot) so it works with other coding agents — see [Use with other agents](#use-with-other-agents-copilot-codex-cursor-).
 
 ## Development workflow
 
-These skills and commands plug into a repeatable, phased development loop — empirical baseline, plan doc + independent plan review, scoped branch-per-phase PRs with independent diff review (and an adversarial pass when confidence is low), then `/goal`-driven doc cleanup. See **[WORKFLOW.md](WORKFLOW.md)** for the full process, written generically enough to lift to other projects.
+These skills, commands, and the bundled reviewer agent plug into a repeatable, phased development loop — empirical baseline, plan doc + independent plan review, scoped branch-per-phase PRs with independent diff review (the `plan-diff-reviewer` subagent, plus an adversarial pass when confidence is low), then `/goal`-driven doc cleanup. See **[WORKFLOW.md](WORKFLOW.md)** for the full process, written generically enough to lift to other projects.
 
 ## Layout
 
@@ -18,6 +18,8 @@ plugins/drupal-dkan-ai/            # CANONICAL SOURCE
   .claude-plugin/plugin.json       # plugin manifest
   skills/                          # auto-loading skills (SKILL.md + reference/)
   commands/                        # slash commands
+  agents/                          # review subagents (plan-diff-reviewer)
+  hooks/                           # commit-gate hook (PreToolUse)
 AGENTS.md                          # generated: broad cross-tool guidance
 .github/                           # generated: Copilot instructions + prompts
 bin/build-adapters                 # regenerates AGENTS.md + .github/ from the source
@@ -50,7 +52,7 @@ claude plugin marketplace remove dkan-ai-skills && claude plugin marketplace add
 claude plugin install drupal-dkan-ai@dkan-ai-skills
 ```
 
-When installed as a plugin, skills auto-load by their `description` and commands are namespaced — e.g. `/drupal-dkan-ai:scaffold-dkan-module`.
+When installed as a plugin, skills auto-load by their `description`, commands are namespaced — e.g. `/drupal-dkan-ai:scaffold-dkan-module` — and agents are invoked as `@agent-drupal-dkan-ai:plan-diff-reviewer`.
 
 ## Install (fallback: symlinks)
 
@@ -138,6 +140,14 @@ Because plugin hooks fire in every project, the script is **self-scoping**: it n
 - **Inspect/disable:** run `/hooks`, or override the event in a project's `.claude/settings.local.json`.
 
 Activates after `claude plugin update drupal-dkan-ai` and a **new session** (hooks load at session start). Shipped via the plugin install path only, not the `bin/install` symlink fallback.
+
+## Reviewer subagent
+
+The plugin ships a read-only review subagent, **`plan-diff-reviewer`**, that checks a code change against the plan it implements: every planned requirement present, nothing out of scope, plus correctness gaps. It reports **gaps, not style** (phpcs and the external reviewer own lint) and respects a repo's declined-style norms (e.g. accepted em dashes).
+
+Hand it the **diff** and the **plan** (inline or as paths) and invoke it by name — `@agent-drupal-dkan-ai:plan-diff-reviewer` — or let it auto-delegate from its description. It has `Read`/`Grep`/`Glob` only (no shell, no edits), so it is read-only at the tool boundary and treats the diff and plan as untrusted data — it never acts on instructions embedded in what it reviews. Output is fixed: Implemented / Missing-or-partial / Out-of-scope / Correctness concerns / Verdict.
+
+This is the fresh-context reviewer in [WORKFLOW.md](WORKFLOW.md) §8–§9 — complementary to the external codex `review_diff` / `plan_vs_diff`, and usable as one model-diverse lens in the §9 adversarial panel. Shipped via the plugin install path only (not the `bin/install` symlink fallback); available after `claude plugin update drupal-dkan-ai` and a new session.
 
 ## Reference docs
 
