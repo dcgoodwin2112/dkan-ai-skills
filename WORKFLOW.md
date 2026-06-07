@@ -25,20 +25,28 @@ Drupal/DKAN-specific bits are marked **Example** — swap them for your stack.
 
 ## The loop at a glance
 
+The sequence end to end. **Pause points for the human are called out; nothing
+commits until you ask.** Calibrate depth to the change (see Right-size below).
+
 1. **Baseline** — measure the current state empirically; date it.
 2. **Plan** — write a phased plan doc (goal, scope fence, sequencing, per-phase
-   "Done when", open decisions).
-3. **Review the plan** — independent reviewer (codex `review_plan`, or the
-   in-Claude fallback if codex is down); fold findings back in *before* writing
-   code.
-4. **Per phase** — branch → scaffold/implement → local gates → independent diff
-   review → adversarial review if low-confidence → PR → merge → cleanup.
-5. **Refine docs** — drive doc reconciliation to a measurable end-state with
-   `/goal`.
-6. **Maintain** — currency checks, CI drift detection, and writing each phase's
-   learnings back keep the toolkit honest and compounding.
+   "Done when", open decisions); present in plan mode, **pause after approval**.
+3. **Review the plan** — independent reviewer (codex `review_plan`, or the in-Claude
+   fallback if codex is down); fold findings back in *before* code.
+4. **Per phase**, in order: `/clear` & re-seed from the plan → branch →
+   scaffold/implement → **local gates** (lint + unit; eval if an AI surface) →
+   independent diff review → adversarial pass if low-confidence/high-risk → commit
+   (gate hook) → PR → merge → clean up → write learnings back. **Pause between
+   phases.**
+5. **Refine docs** — reconcile docs to a measurable end-state with `/goal`.
+6. **Maintain** — currency checks, CI drift detection, MCP/AI-surface contract
+   tests, and writing each phase's learnings back keep the toolkit compounding.
 
-Steps 2–4 pause for you between phases; nothing commits until you ask.
+**Right-size the loop.** The full ladder has overhead; match gate depth to change
+size. A typo or one-line fix skips the plan doc and phases (edit → local gates →
+commit); a substantive or risky change earns the whole sequence. The pieces scale
+independently — §9 already escalates the adversarial pass by risk; apply the same
+judgment to planning and phasing. When unsure on something risky, over-gate.
 
 ---
 
@@ -158,8 +166,11 @@ shipped as its own branch + PR.
   rebuild.
 - **AI surfaces add an eval gate.** If a change touches a prompt, agent, or tool
   schema, its **eval suite is a required gate** alongside lint and tests — behavior
-  is what regresses there, and only evals catch it. **Example:** `dkan-aiq:eval`
-  after a system-prompt or agent-routing change.
+  is what regresses there, and only evals catch it. **Calibrate before you trust it
+  as a gate:** an LLM-judged eval gates honestly only once its scores track human
+  ratings on a sample — an uncalibrated judge carries biases (length, position,
+  self-preference) that wave bad output through. **Example:** `dkan-aiq:eval` after a
+  system-prompt or agent-routing change.
 - **Make the must-run gates deterministic with a hook.** Advisory instructions
   get skipped; a hook does not (Anthropic's verification ladder — *CLAUDE.md is
   advisory, hooks are deterministic*). A `PreToolUse` hook on `git commit` that
@@ -237,8 +248,10 @@ adversarial pass inside Claude:
 - **Vary the model, not just the prompt.** Run the lenses under *different* models
   (e.g. one `opus`, one `sonnet` via the Agent tool's model option) and include the
   external codex reviewer — a different model family — so no single model's blind
-  spots dominate the panel (the agent-as-judge / CollabEval finding). The bundled
-  `plan-diff-reviewer` (§8) is a reusable fresh-context panelist.
+  spots dominate the panel (the agent-as-judge / CollabEval finding). Diversity is
+  the whole point: a same-family panel can *amplify* a shared bias instead of
+  cancelling it. The bundled `plan-diff-reviewer` (§8) is a reusable fresh-context
+  panelist.
 - **Escalate by risk:** a typo fix needs none; a destructive-write authorization
   path warrants 3–5 lenses.
 
@@ -287,7 +300,11 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   `AGENTS.md`/`CLAUDE.md` Gotchas or the relevant skill. Those gotchas and skills
   *are* the project's procedural memory; writing them back closes the
   compounding-knowledge loop, so the next session starts from the lesson instead
-  of re-deriving it. Pairs with currency: currency keeps *known* facts fresh,
+  of re-deriving it. **Two tiers:** a finding can rest in the harness's file-based
+  memory the moment it appears (cheap, session-spanning, not yet shared); *promote*
+  it to the committed `AGENTS.md`/skill once it recurs or proves durable — the
+  committed layer is shared and reviewed, so promoting (not every passing thought)
+  keeps it lean. Pairs with currency: currency keeps *known* facts fresh,
   procedural memory adds the *newly-learned* ones. **Example:** the
   unenforced-`checkAccess` gotcha, captured into the `drupal-mcp-server` skill so
   no later session rediscovers it.
@@ -326,25 +343,18 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
 
 ## Generalizing to another project
 
-The loop is framework-neutral; only the toolkit and the gate commands change.
+The loop is framework-neutral; lift §1–§12 as-is. The sequence (baseline → plan →
+review-plan → per-phase gates → `/goal` cleanup → maintain), the review gates, the
+pause cadence, and the doc discipline are **universal**. Only three pieces are
+stack-specific — swap them:
 
-1. **Toolkit** — a skills/commands repo for your stack: decision-support docs keyed
-   to file globs, scaffolding procedures, a currency manifest, adapter regeneration
-   if you target multiple agents.
-2. **Contract** — an `AGENTS.md` per repo: build/test/lint commands, style, norms,
-   and a three-doc spine (README / ARCHITECTURE / ROADMAP) with an untracked-scratch
-   allowlist.
-3. **Baseline → plan → review-plan** — measure and date; phased plan doc with "Done
-   when" gates and a decisions section; independent plan review before code.
-4. **Per phase** — branch → scaffold → **local gates** → independent diff review →
-   adversarial pass if low-confidence/high-risk → PR → merge → cleanup.
-5. **`/goal` doc cleanup** — reconcile docs to a measurable end-state.
-6. **Maintain** — currency + CI drift detection + ROADMAP.
-
-**Universal vs. stack-specific:** the sequence, the review gates, the pause cadence,
-and the doc discipline are universal. Only the gate *commands* (phpcs/phpunit via
-DDEV here), the scaffolds, and the currency sources are Drupal/DKAN-specific — swap
-them for your stack's linter, test runner, and scaffolds.
+- **Toolkit** (§1) — a skills/commands repo for your stack: decision-support docs
+  keyed to file globs, scaffolding procedures, a currency manifest, adapter
+  regeneration if you target multiple agents.
+- **Contract** (§2) — an `AGENTS.md` per repo: build/test/lint commands, style,
+  norms, and the three-doc spine.
+- **Gate commands** (§7) — your linter, test runner, and eval harness in place of
+  phpcs/phpunit-via-DDEV; your scaffolds; your upstreams as the currency sources.
 
 **Scaling note:** the loop is sequential by design — the pause between phases is a
 feature, not a bottleneck. Genuinely independent work (separate repos, non-dependent
