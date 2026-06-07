@@ -59,7 +59,7 @@ These are the contributor-specific concepts that aren't visible from a quick gre
 The most expensive mistakes when changing DKAN core. Symptom → cause → fix.
 
 1. **Import/harvest test asserts on rows that aren't there.** Symptom: count is 0, or the table doesn't exist. Cause: the import job sat in the queue and never ran. Fix: pull in `QueueRunnerTrait` and drain the queue in the test ([testing-core.md](reference/testing-core.md#async-and-queues)).
-2. **New test is green locally but never runs in CI.** Cause: missing/incorrect `@group functionalN`. Fix: add the group matching the CI split (functional0–3) plus `@group dkan`.
+2. **New test runs on the wrong CI node (or not in parallel).** Cause: missing/incorrect `@group functionalN`. Fix: tag functional tests `@group functional1`, `2`, or `3` (node 0 runs the non-functional suite) plus `@group dkan`.
 3. **Relying on a class/method/dep that only exists on a feature branch.** Symptom: "works on my checkout," fails review/CI on `4.x`. Cause: asserted against the wrong branch. Fix: `git show 4.x:<path>` to confirm before coding.
 4. **"Fixing DKAN" while actually editing a copy under `modules/custom/`.** Cause: wrong tree/perspective. Fix: confirm you're in `<dkan>/` core source (the `drupal/dkan` package), not a vendored custom module; if it's a custom module, switch to `dkan-module-author`.
 5. **Schema or config change merged with no update hook.** Symptom: existing sites error on `drush updatedb` / config import. Fix: add `<module>_update_NNNN()` in the right `.install` ([contributing-and-ci.md](reference/contributing-and-ci.md#update-hooks)).

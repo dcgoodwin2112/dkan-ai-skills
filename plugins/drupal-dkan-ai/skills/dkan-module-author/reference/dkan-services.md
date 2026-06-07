@@ -214,7 +214,7 @@ dispatch site is more useful than `mixed`. Verified against 4.x `LifeCycle`:
 | Event value | `getData()` payload | Dispatch site |
 |---|---|---|
 | `dkan_metastore_dataset_update` | `Drupal\dkan_metastore\MetastoreItemInterface` | `LifeCycle::datasetUpdate()` |
-| `dkan_metastore_metadata_pre_reference` | `Drupal\dkan_metastore\MetastoreItemInterface` | `LifeCycle::preReference()` |
+| `dkan_metastore_metadata_pre_reference` | `Drupal\dkan_metastore\MetastoreItemInterface` | `LifeCycle::referenceMetadata()` |
 
 `MetastoreItemInterface` exposes `getIdentifier()`, `getSchemaId()`, `getMetadata()`.
 Datastore events instead extend `DatastoreEventBase` and carry a `DataResource` (see

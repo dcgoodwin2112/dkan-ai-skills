@@ -75,11 +75,11 @@ skills:
         volatility: medium
         last_verified: 2026-06-01
       - subject: Entity query accessCheck
-        claim: "->accessCheck() mandatory; fatal since D11 if omitted."
+        claim: "->accessCheck() mandatory; deprecated 9.2, throws since Drupal 10 if omitted."
         source: drupal_core/change_records
         cadence: quarterly
         volatility: low
-        last_verified: 2026-06-01
+        last_verified: 2026-06-07
       - subject: JS once
         claim: "jQuery.once removed in D10; use core/once."
         source: drupal_core/change_records

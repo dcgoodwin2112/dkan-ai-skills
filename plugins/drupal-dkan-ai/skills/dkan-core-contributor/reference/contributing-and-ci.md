@@ -96,9 +96,11 @@ and `upgrade_and_test`. It runs a matrix in DDEV:
 | Database | mysql:5.7 (target), mariadb:10.11 (newer Drupal) |
 
 Jobs:
-- **phpunit** — parallelized into four nodes by `--group functional$CIRCLE_NODE_INDEX`
-  (hence the `@group functional0-3` requirement, [testing-core.md](testing-core.md#test-groups));
-  the Drupal-10.5/PHP-8.3 target job also produces coverage (Xdebug/pcov → Qlty).
+- **phpunit** — `parallelism: 4`: node 0 runs the non-functional suite (`--exclude-group
+  functional1,functional2,functional3`), nodes 1–3 run `--group functional1`/`2`/`3`
+  (hence the `@group functional1-3` requirement on functional tests,
+  [testing-core.md](testing-core.md#test-groups)); the Drupal-10.5/PHP-8.3 target job
+  also produces coverage (Xdebug/pcov → Qlty).
 - **cypress** — e2e specs split across nodes by timing.
 - **upgrade_and_test** — installs a stable release, then updates to your branch and
   re-runs tests (this is what exercises your update hooks + fixtures).

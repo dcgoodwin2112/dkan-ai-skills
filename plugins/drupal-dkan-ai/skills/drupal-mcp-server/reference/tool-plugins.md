@@ -14,7 +14,7 @@ installed version (see [SKILL.md](../SKILL.md) volatility note).
 - **Base class:** extend `Drupal\mcp_server\Plugin\ToolPluginBase` (implements
   `ToolPluginInterface` + `ContainerFactoryPluginInterface`).
 - **Handler:** implement `execute(array $arguments, ClientGateway $gateway): mixed`
-  — inherited contract from the SDK's `RuntimeToolHandlerInterface`, **not**
+  — inherited contract from the SDK's `ToolHandlerInterface`, **not**
   defined on the base. This is the method the SDK calls on `tools/call`.
 
 ## The `#[Tool]` attribute
@@ -49,7 +49,7 @@ confirmation, but gate real access with a `RequestEvent` subscriber
 ## `ToolPluginInterface` / `ToolPluginBase`
 
 ```php
-interface ToolPluginInterface extends PluginInspectionInterface, RuntimeToolHandlerInterface {
+interface ToolPluginInterface extends PluginInspectionInterface, ToolHandlerInterface {
   getTitle(): TranslatableMarkup;
   getDescription(): ?TranslatableMarkup;
   getDependencies(): array;                                      // module machine names
@@ -58,7 +58,7 @@ interface ToolPluginInterface extends PluginInspectionInterface, RuntimeToolHand
   getConfiguration(): array;
   setConfiguration(array $configuration): void;
   isEnabled(): bool;
-  // execute(array $arguments, ClientGateway $gateway): mixed;   // from RuntimeToolHandlerInterface
+  // execute(array $arguments, ClientGateway $gateway): mixed;   // from ToolHandlerInterface
 }
 ```
 
