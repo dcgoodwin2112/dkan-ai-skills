@@ -85,7 +85,7 @@ available on both; scope access with a `RequestEvent` subscriber instead.
 ## Version landscape
 
 See the volatility callout in [SKILL.md](../SKILL.md). In short: `mcp_server`
-`v2.x-dev` ⇒ `mcp/sdk: ^0.6` (0.6 API: `RuntimeToolHandlerInterface`,
+`v2.x-dev` ⇒ `mcp/sdk: ^0.6` (0.6 API: `ToolHandlerInterface`,
 `ClientGateway`, `Builder::add()`); **`0.6.0` was tagged 2026-06-02**, so the module
 now pins a released SDK rather than `dev-main`; the `0.4`/`0.5` API is
 incompatible. Confirm with `composer show drupal/mcp_server mcp/sdk` and read the

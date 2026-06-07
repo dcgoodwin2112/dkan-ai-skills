@@ -40,7 +40,7 @@ side-by-side** — the old code targets SDK `0.4`, `mcp_server` needs `^0.6`
 
 Root `composer.json` pins **`mcp/sdk: ^0.4`** (`v0.4.0` locked). The vendored
 `mcp_server` is at `v2.x-dev` (0.6 API) — so it references SDK classes
-(`RuntimeToolHandlerInterface`, `ClientGateway`) **not installed** and is **not
+(`ToolHandlerInterface`, `ClientGateway`) **not installed** and is **not
 runnable here yet**. It's present for migration prep. `dkan_mcp`'s hand-rolled
 server is what actually runs today, on the 0.4 SDK.
 

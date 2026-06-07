@@ -28,7 +28,7 @@ For scaffolding a tool plugin, use `/mcp-scaffold-tool`.
 the single biggest hazard; treat every API below as version-contingent.
 
 - The module's `v2.x-dev` branch requires **`mcp/sdk: ^0.6`** (the 0.6 API):
-  `Mcp\Server\Handler\RuntimeToolHandlerInterface`, `Mcp\Server\ClientGateway`,
+  `Mcp\Server\Handler\ToolHandlerInterface`, `Mcp\Server\ClientGateway`,
   `Builder::add()`. `mcp/sdk` broke BC twice across 0.4 → 0.5 → 0.6, but **`0.6.0`
   was tagged 2026-06-02**, so the module now pins a released SDK (`^0.6`) rather
   than `dev-main`. `mcp/sdk` is the official MCP PHP SDK
@@ -79,7 +79,7 @@ should *read* artifacts or *reuse* prompt templates rather than invoke actions.
 2. **Native plugins must opt themselves in.** `ToolPluginBase::isEnabled()` reads `configuration['enabled']`, default **FALSE**. A code-defined (native) tool must override `defaultConfiguration()` to return `['enabled' => TRUE]` or it never registers. (Config-entity-backed resources/prompts enable via their config instead.)
 3. **`checkAccess()` is declared but NOT auto-enforced on `tools/call`.** Core ships **zero** auth policy; overriding `checkAccess()` alone does nothing. To enforce it you must add a subscriber on the SDK's `Mcp\Event\RequestEvent` (or enable `mcp_server_oauth`). See [auth-and-access.md](reference/auth-and-access.md) — this is the #1 gotcha.
 4. **Derivative IDs use `.`, never `:`.** The MCP `NameValidator` rejects `:` in wire names; `mcp_server` swaps the core `base:derivative` separator to `base.derivative` on wire-exposed managers. `ToolPluginBase::DERIVATIVE_SEPARATOR` is already `.` — emit `.` from your deriver.
-5. **The handler signature is `execute(array $arguments, ClientGateway $gateway): mixed`** (0.6 API, from the SDK's `RuntimeToolHandlerInterface`). It is **not** on `ToolPluginBase` — you implement it. The `$gateway` (`Mcp\Server\ClientGateway`) is how a tool requests client sampling.
+5. **The handler signature is `execute(array $arguments, ClientGateway $gateway): mixed`** (0.6 API, from the SDK's `ToolHandlerInterface`). It is **not** on `ToolPluginBase` — you implement it. The `$gateway` (`Mcp\Server\ClientGateway`) is how a tool requests client sampling.
 6. **Schemas live in the `#[Tool]` attribute.** `inputSchema:` / `outputSchema:` on the attribute take precedence over the base accessors (which return empty). Write the JSON Schema in the attribute.
 7. **Admin/form code lives in `mcp_server_ui`, example plugins in `mcp_server_examples`** — not in core. Mirror the `views`/`views_ui` split.
 8. **`declare(strict_types=1);` + `final` classes + constructor promotion** — house style; phpcs (`Drupal,DrupalPractice`) and phpstan are enforced.
