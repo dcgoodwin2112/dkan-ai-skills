@@ -69,7 +69,9 @@ first_pip_target() {
 
 # npm-family: first real package target — skip value-consuming flags + their values
 # so a lockfile install with options (`npm install --prefix dir`) is not misread as
-# installing a package called "dir".
+# installing a package called "dir". (A token consumed here as a flag value is one
+# the manager itself treats as a value, not a package, so skipping it cannot hide a
+# real `install <pkg>` — the parser stays aligned with the manager's own semantics.)
 first_npm_target() {
   local skip=0 t
   for t in "$@"; do
