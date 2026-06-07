@@ -17,6 +17,11 @@
 # `npm ci`, `yarn install`, `pip install -r requirements.txt`, `pip install -e .`) —
 # those add nothing not already reviewed.
 #
+# Transient remote executors (`npx`, `pnpm dlx`, `bunx`, `uvx`) are also NOT gated:
+# they run a package once without adding a project dependency, so they fall outside
+# the "adds a named dependency" scope. They remain a slopsquat vector — vet an
+# unfamiliar executor target by hand.
+#
 # Plugin hooks fire for every Bash call in every project; supply-chain risk is
 # universal, so this gate is intentionally NOT project-scoped. Keep it low-friction:
 # vet + approve the install yourself and re-run, or bypass with CLAUDE_SKIP_DEP_GATE=1.
@@ -61,7 +66,7 @@ first_pip_target() {
   for t in "$@"; do
     if [ "$skip" = 1 ]; then skip=0; continue; fi
     case "$t" in
-      -r|--requirement|-e|--editable|-c|--constraint) skip=1 ;;  # consumes next token
+      -r|--requirement|-e|--editable|-c|--constraint|-t|--target|-i|--index-url|--extra-index-url|-f|--find-links|--prefix|--root|--python-version|--platform|--abi|--implementation) skip=1 ;;  # consumes next token's value
       .|-*) ;;                                                    # local install / flag
       *) printf '%s' "$t"; return 0 ;;
     esac
@@ -126,6 +131,14 @@ scan_segment() {
   local mgr="${toks[$i]}"; i=$((i + 1))
   [ "$i" -lt "$n" ] || return 1
   local sub="${toks[$i]}"; i=$((i + 1))
+  # `composer global require <pkg>` / `yarn global add <pkg>` install named packages
+  # globally (network fetch, same slopsquat risk). The `global` token shifts the real
+  # subcommand one slot, so consume it and re-read. (npm/pnpm/bun and yarn-berry use a
+  # `-g`/`--global` flag instead, already handled by the per-manager target scanners.)
+  if [ "$sub" = global ] && { [ "$mgr" = composer ] || [ "$mgr" = yarn ]; }; then
+    [ "$i" -lt "$n" ] || return 1
+    sub="${toks[$i]}"; i=$((i + 1))
+  fi
   local -a args=("${toks[@]:$i}")
   local p=""
 

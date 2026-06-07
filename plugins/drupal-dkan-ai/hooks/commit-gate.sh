@@ -80,7 +80,10 @@ done
 # Files about to be committed: staged, plus tracked-modified when -a/--all is used
 # (those get staged by `git commit -a` itself, so are not yet in the index here).
 changed="$(git -C "$repo" diff --cached --name-only 2>/dev/null)"
-if printf '%s' "$cmd" | grep -Eq '(^|[[:space:]])-[A-Za-z]*a[A-Za-z]*([[:space:]]|$)|[[:space:]]--all([[:space:]]|$)'; then
+# Detect -a/--all on the OPTIONS, not inside the commit message: strip quoted spans
+# first so `git commit -m "document the -a option"` is not misread as `commit -a`.
+cmd_opts="$(printf '%s' "$cmd" | sed -E "s/'[^']*'//g; s/\"[^\"]*\"//g")"
+if printf '%s' "$cmd_opts" | grep -Eq '(^|[[:space:]])-[A-Za-z]*a[A-Za-z]*([[:space:]]|$)|[[:space:]]--all([[:space:]]|$)'; then
   changed="$changed
 $(git -C "$repo" diff --name-only 2>/dev/null)"
 fi

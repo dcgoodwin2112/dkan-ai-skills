@@ -56,6 +56,10 @@ dependencies:
   #   - dkan:dkan_harvest
 ```
 
+> **Core floor:** `^10.2 || ^11` matches DKAN. If this module will also depend on
+> `drupal/ai` / `ai_agents` (providers, tools, agents), raise the floor to
+> `^10.5 || ^11.2` here and in `composer.json` — the AI module requires it.
+
 ### 3. `<module_name>.services.yml`
 
 ```yaml
