@@ -42,7 +42,7 @@ Valid to omit, but expected for a quality public record.
 | `@type` | string | JSON-LD type; should be `dcat:Dataset`. |
 | `describedBy` | string | URL to the dataset's data dictionary / documentation. |
 | `describedByType` | string | IANA media type of the `describedBy` resource. |
-| `spatial` | string | Spatial coverage — place name, bounding box, or GeoJSON (per POD v1.1 spatial). |
+| `spatial` | string | Spatial coverage — place name, bounding box, WKT (e.g. `POLYGON ((...))`, what DKAN's sample content emits), or GeoJSON (per POD v1.1 spatial). |
 | `temporal` | string | Time coverage as an ISO-8601 interval `start/end`. |
 | `isPartOf` | string | `identifier` of a parent collection this dataset belongs to. |
 | `references` | array<string> | URLs of related documents (technical info, developer docs). |
