@@ -48,7 +48,9 @@ md_body() {
 }
 
 # Copilot applyTo glob per skill (prose triggers don't map to globs mechanically;
-# curated here — keep in sync when adding a skill).
+# curated here — keep in sync when adding a skill). drupal-module-dev intentionally
+# overlaps the DKAN/AI/MCP skills' globs: it is the foundation layer and should
+# attach wherever module code is edited (Copilot merges all matching instructions).
 skill_glob() {
   case "$1" in
     dkan-module-author)    echo '**/modules/custom/**,**/modules/contrib/dkan/**' ;;
@@ -58,7 +60,7 @@ skill_glob() {
     open-data-dcat)        echo '**/schema/collections/**,**/data.json' ;;
     dkan-frontend)         echo '**/dkan_js_frontend/**,**/data-catalog-app/**,**/cmsds-open-data-components/**,**/data-catalog-components/**' ;;
     drupal-module-dev)     echo '**/modules/custom/**,**/modules/contrib/**' ;;
-    *)                     echo '**' ;;
+    *)                     echo '**'; echo "warning: no curated applyTo glob for skill '$1' — defaulting to ** (add a case in skill_glob)" >&2 ;;
   esac
 }
 
@@ -139,8 +141,8 @@ copilot="$out/.github/copilot-instructions.md"
   echo
   echo "When working on DKAN, Drupal-AI, or MCP Server module code, consult the reference"
   echo "docs under \`$plugin_rel/skills/*/reference/\` — they carry version-specific specifics"
-  echo "(DKAN 4.x \`Drupal\\dkan_*\` namespaces, \`drupal/ai 1.3.x\` lifecycle, \`mcp_server\`/"
-  echo "\`mcp/sdk\` 0.6 volatility) that prevent common mistakes."
+  echo "(DKAN \`Drupal\\dkan_*\` namespaces, the \`drupal/ai\` provider lifecycle, \`mcp_server\`/"
+  echo "\`mcp/sdk\` API volatility) — the per-skill docs carry the exact pinned versions."
 } > "$copilot"
 
 # ---- .github/instructions/<skill>.instructions.md -------------------------
@@ -190,8 +192,14 @@ for f in "$commands_dir"/*.md; do
     echo
     echo "$gen_marker"
     echo
-    # Inline the command body; map Claude's $ARGUMENTS to Copilot's input var.
-    md_body "$f" | sed 's/\$ARGUMENTS/${input:args}/g'
+    # Inline the command body; map Claude's $ARGUMENTS to Copilot's input var, and
+    # rewrite the command files' ../skills/ doc links to the repo-root canonical
+    # path (a prompt lives at .github/prompts/, two levels above the plugin), so the
+    # links resolve from there. bin/install --adapters then rewrites that base to
+    # the vendored .ai/dkan-ai-skills/ location.
+    md_body "$f" \
+      | sed 's/\$ARGUMENTS/${input:args}/g' \
+      | sed "s#](\.\./skills/#](../../$plugin_rel/skills/#g"
   } > "$prompt"
 done
 

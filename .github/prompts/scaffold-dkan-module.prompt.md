@@ -9,7 +9,7 @@ agent: 'agent'
 
 Scaffold a complete custom DKAN 4.x module skeleton: info.yml, services.yml, composer.json, `src/`, and (optionally) a standalone PHPUnit test harness with DKAN-namespaced stubs.
 
-Read [SKILL.md](../skills/dkan-module-author/SKILL.md), [reference/dkan-services.md](../skills/dkan-module-author/reference/dkan-services.md), and [reference/dkan-testing.md](../skills/dkan-module-author/reference/dkan-testing.md) before proceeding. The scaffold below is modeled on the real `dkan_query_tools` module — match it exactly.
+Read [SKILL.md](../../plugins/drupal-dkan-ai/skills/dkan-module-author/SKILL.md), [reference/dkan-services.md](../../plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-services.md), and [reference/dkan-testing.md](../../plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-testing.md) before proceeding. The scaffold below is modeled on the real `dkan_query_tools` module — match it exactly.
 
 ## Input
 
@@ -125,7 +125,7 @@ composer.lock
 
 ### 6. `--service <ServiceName>` (optional)
 
-Generate `src/Service/<ServiceName>.php` with constructor-promoted DI, then uncomment/adapt the example service block in `services.yml` (service ID `<module_name>.<snake_case_service_name>`). For DKAN dependency type hints and service IDs, defer to [reference/dkan-services.md](../skills/dkan-module-author/reference/dkan-services.md) or `/scaffold-drupal-service`.
+Generate `src/Service/<ServiceName>.php` with constructor-promoted DI, then uncomment/adapt the example service block in `services.yml` (service ID `<module_name>.<snake_case_service_name>`). For DKAN dependency type hints and service IDs, defer to [reference/dkan-services.md](../../plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-services.md) or `/scaffold-drupal-service`.
 
 ```php
 <?php

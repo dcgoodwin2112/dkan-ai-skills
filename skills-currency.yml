@@ -13,7 +13,7 @@
 # When you add or materially change a skill, add/adjust its entries here.
 
 meta:
-  last_full_review: 2026-06-01
+  last_full_review: 2026-06-07
   # Bump when the whole manifest is re-reconciled against sources.
 
 # Where to verify each upstream. Claims reference these by key.
@@ -29,12 +29,14 @@ sources:
   mcp_server:
     project: https://www.drupal.org/project/mcp_server
     repo: https://git.drupalcode.org/project/mcp_server
-    sdk: https://github.com/php-mcp/sdk
-    notes: Pre-release and volatile; expect churn between checks.
+    sdk: https://github.com/modelcontextprotocol/php-sdk
+    notes: Pre-release and volatile; expect churn between checks. mcp/sdk 0.6.0 tagged 2026-06-02 (Packagist mcp/sdk = modelcontextprotocol/php-sdk, PHP Foundation + Symfony).
   dkan:
     repo: https://github.com/GetDKAN/dkan
-    releases: https://github.com/GetDKAN/dkan/releases
+    releases: https://www.drupal.org/project/dkan/releases
+    packagist_legacy: https://packagist.org/packages/getdkan/dkan
     branch: 4.x
+    notes: DKAN v4 released March 2026 as drupal/dkan on drupal.org; getdkan/dkan (Packagist) is legacy v2/v3. Dev continues on the GitHub 4.x branch.
   dkan_frontend:
     app: https://github.com/GetDKAN/data-catalog-app
     components_current: https://github.com/GetDKAN/cmsds-open-data-components
@@ -113,7 +115,7 @@ skills:
         source: drupal_core/change_records
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-01
+        last_verified: 2026-06-07
 
   dkan-module-author:
     targets: "DKAN 4.x on Drupal ^10.2 || ^11"
@@ -135,17 +137,17 @@ skills:
     targets: "DKAN 4.x (GitHub GetDKAN/dkan, 4.x branch)"
     claims:
       - subject: Branch / CI
-        claim: "Active development on 4.x; CircleCI matrix + Qlty/phpcs standards; in-repo PHPUnit harness with DKAN traits (@group dkan / functionalN)."
+        claim: "Active development on 4.x; CircleCI matrix (~10.5/~10.6/~11.2/~11.3 across PHP 8.1-8.4) + Qlty/phpcs standards; in-repo PHPUnit harness with DKAN traits (@group dkan / functionalN)."
         source: dkan/repo
         cadence: quarterly
         volatility: medium
-        last_verified: 2026-06-01
+        last_verified: 2026-06-07
 
   drupal-ai-module:
-    targets: "drupal/ai 1.4.x (current stable; docs verified against 1.3.5; refuses 2.0.x)"
+    targets: "drupal/ai 1.4.x (current stable 1.4.1; docs verified against 1.3.5; refuses 2.0.x)"
     claims:
       - subject: Version line
-        claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (docs verified against 1.3.5); refuses 2.0.x (dev, breaking provider lifecycle changes)."
+        claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (latest 1.4.1; 1.5.x-dev branch open; docs verified against 1.3.5); refuses 2.0.x (dev, breaking provider lifecycle changes)."
         source: drupal_ai/releases
         cadence: monthly
         volatility: high
@@ -161,17 +163,17 @@ skills:
     targets: "mcp_server v2.x-dev on the mcp/sdk 0.6 API (pre-release, volatile)"
     claims:
       - subject: Module + SDK version
-        claim: "mcp_server v2.x-dev; mcp/sdk 0.6 API. Pre-release and volatile — expect breaking changes."
+        claim: "mcp_server v2.x-dev requires mcp/sdk ^0.6 (0.6.0 tagged 2026-06-02). Module still pre-release (no stable mcp_server tag) — expect churn."
         source: mcp_server/project
         cadence: monthly
         volatility: high
-        last_verified: 2026-06-01
+        last_verified: 2026-06-07
       - subject: SDK API surface
-        claim: "Extension points: #[Tool]/#[ResourceProvider]/prompt/notification plugins; ClientGateway in execute(); checkAccess() gating."
+        claim: "Extension points: #[Tool]/#[ResourceProvider]/prompt/notification plugins; ClientGateway in execute(); checkAccess() gating. mcp_server_tool_bridge submodule bridges drupal/tool tools via McpToolConfig entities."
         source: mcp_server/repo
         cadence: monthly
         volatility: high
-        last_verified: 2026-06-01
+        last_verified: 2026-06-07
       - subject: AI-surface threat checklist
         claim: "Security lens anchors to OWASP LLM Top 10 (LLM01 prompt injection, LLM05 improper output handling, LLM06 excessive agency, LLM03 supply chain) and the OWASP Agentic AI Top 10; tool outputs are untrusted (indirect injection); enforce read/write separation + least privilege + human-gated destructive verbs."
         source: ai_security/owasp_llm
@@ -205,11 +207,11 @@ skills:
     targets: "dkan_js_frontend (core_version_requirement ^10.2 || ^11) + React app + component library"
     claims:
       - subject: Two library lineages
-        claim: "Current: @civicactions/cmsds-open-data-components 4.x (CMS Design System, Node 22). Legacy: @civicactions/data-catalog-components ~1.18 (DKAN 2.x, Node 16)."
+        claim: "Current: @civicactions/cmsds-open-data-components 4.x (latest 4.1.8; CMS Design System, Node 22). Legacy: @civicactions/data-catalog-components ~1.18 (DKAN 2.x, Node 16)."
         source: dkan_frontend/npm_current
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-01
+        last_verified: 2026-06-07
       - subject: Reference app
         claim: "data-catalog-app default branch still depends on the legacy data-catalog-components / DKAN 2.x."
         source: dkan_frontend/app

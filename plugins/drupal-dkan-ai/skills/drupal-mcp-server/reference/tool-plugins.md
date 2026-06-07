@@ -2,8 +2,8 @@
 
 The primary extension point: a `#[Tool]` plugin exposes one callable action to
 MCP clients (`tools/list` advertises it, `tools/call` invokes it). Signatures
-here are the **0.6 / `dev-main`** SDK API — verify against your installed
-version (see [SKILL.md](../SKILL.md) volatility note).
+here are the **0.6** SDK API (`mcp/sdk ^0.6`; `0.6.0` tagged) — verify against your
+installed version (see [SKILL.md](../SKILL.md) volatility note).
 
 ## Anatomy
 

@@ -25,6 +25,7 @@ in a running site with `ddev drush rq`.
 ## Branches & releases
 
 - Development is on GitHub **`GetDKAN/dkan`**; long-lived branches `2.x`, `3.x`, `4.x`.
+- **Releases:** v4 publishes as **`drupal/dkan` on drupal.org** (released March 2026); `getdkan/dkan` on Packagist is legacy v2/v3. Development still happens on the GitHub `4.x` branch.
 - Branch from — and PR back to — the branch you're targeting (usually `4.x` for new
   work). Confirm every API/dep fact against that branch (`git show 4.x:<path>`); the
   working tree may be ahead.

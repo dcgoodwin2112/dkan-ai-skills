@@ -23,15 +23,15 @@ before proceeding.
 
 ### 1. Version gate
 
-This scaffold targets the **0.6 / `dev-main`** SDK API (`execute(array $arguments,
-ClientGateway $gateway)`, `Mcp\Server\ClientGateway`). Confirm the installed
-reality:
+This scaffold targets the **0.6** SDK API (`execute(array $arguments,
+ClientGateway $gateway)`, `Mcp\Server\ClientGateway`; `mcp/sdk ^0.6`, `0.6.0`
+tagged). Confirm the installed reality:
 
 ```bash
 composer show drupal/mcp_server mcp/sdk
 ```
 
-- If `mcp/sdk` is `0.4`/`0.5` (API `Builder::addTool()`, no `ClientGateway`) while `mcp_server` is `2.x`, **stop** — the module references SDK classes that aren't installed and won't load. Tell the user to align the versions (bump `mcp/sdk` to `dev-main`, or pin `mcp_server` to a matching branch) first.
+- If `mcp/sdk` is `0.4`/`0.5` (API `Builder::addTool()`, no `ClientGateway`) while `mcp_server` is `2.x`, **stop** — the module references SDK classes that aren't installed and won't load. Tell the user to align the versions (bump `mcp/sdk` to `^0.6`, or pin `mcp_server` to a matching branch) first.
 - Verify the base class and interface exist: `ls <webroot>/modules/contrib/mcp_server/src/Plugin/ToolPluginBase.php`.
 
 ### 2. Locate module and derive identifiers

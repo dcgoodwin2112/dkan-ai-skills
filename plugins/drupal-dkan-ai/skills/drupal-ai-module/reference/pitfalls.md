@@ -1,6 +1,6 @@
 # Drupal AI Module — Common Pitfalls
 
-Failure modes when extending the Drupal AI module, with symptoms and fixes. Targets `drupal/ai ^1.3` (verified against 1.3.5 + `ai_agents` 1.2.3 + `ai_provider_anthropic` 1.2.2). Order is rough frequency.
+Failure modes when extending the Drupal AI module, with symptoms and fixes. Targets `drupal/ai ^1.3` (current stable 1.4.1; verified against 1.3.5 + `ai_agents` 1.2.3 + `ai_provider_anthropic` 1.2.2). Order is rough frequency.
 
 ## 1. Forgot to rebuild cache
 
@@ -59,8 +59,8 @@ Failure modes when extending the Drupal AI module, with symptoms and fixes. Targ
 ## 10. 1.x vs 2.x branch confusion
 
 - **Symptom**: Code references methods/events that don't exist (e.g. `ProviderSetupEvent`, `ProviderDisabledEvent`).
-- **Cause**: Following a 2.0.x guide while installed on stable 1.3.x. 2.0.x has breaking provider lifecycle changes (per upstream issue tracker).
-- **Fix**: Pin to `^1.3` in module info. Use the 1.3.x docs at https://project.pages.drupalcode.org/ai/1.3.x/. Do not use `^2.0` until it stabilizes.
+- **Cause**: Following a 2.0.x guide while installed on the stable 1.x line. 2.0.x has breaking provider lifecycle changes (per upstream issue tracker).
+- **Fix**: Pin to `^1.3` in module info. Use the 1.x docs at https://project.pages.drupalcode.org/ai/. Do not use `^2.0` until it stabilizes.
 
 ## 11. 1.2.x → 1.3.x API key revalidation
 

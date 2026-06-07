@@ -9,7 +9,7 @@ agent: 'agent'
 
 Add an EventSubscriber to a Drupal module that listens to DKAN events.
 
-See [reference/dkan-services.md](../skills/dkan-module-author/reference/dkan-services.md) for DKAN service and event conventions.
+See [reference/dkan-services.md](../../plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-services.md) for DKAN service and event conventions.
 
 ## Input
 

@@ -3,9 +3,10 @@
 How DKAN exposes itself over MCP, and how that maps onto `mcp_server`. Pair this
 with the **`dkan-module-author`** skill for DKAN service/API specifics.
 
-> **⏱ Time-sensitive (as of 2026-05-31).** DKAN's MCP module is **mid-migration**.
-> The plan below is validated but **not yet executed** in `dkan-site`. Always
-> check the live state first:
+> **⏱ Time-sensitive (as of 2026-06-07).** DKAN's MCP module is **mid-migration**;
+> the external blocker (`mcp/sdk 0.6.0`) cleared 2026-06-02. The plan below is
+> validated but **not yet confirmed executed** in `dkan-site`. Always check the
+> live state first:
 > ```bash
 > composer show drupal/mcp_server mcp/sdk
 > ls docroot/modules/custom/dkan_mcp/src        # Server/ + Controller/ present → still hand-rolled
@@ -32,8 +33,8 @@ over HTTP). None of the contrib `#[Tool]` plugin model is used.
 **The target — rebuilt on `mcp_server`.** The validated plan deletes all the
 plumbing above and re-exposes the same tools as `#[Tool]` plugins, with a
 `ToolAccessSubscriber` for per-tool permission gating. **This is a cutover, not
-side-by-side** — the old code targets SDK `0.4`, `mcp_server` needs `dev-main`
-(0.6); both can't autoload at once.
+side-by-side** — the old code targets SDK `0.4`, `mcp_server` needs `^0.6`
+(0.6.0 tagged); both can't autoload at once.
 
 ### Current `dkan-site` reality
 
@@ -126,8 +127,9 @@ bootstrap.
 ## Cutover gate
 
 Phases 1–4 (scaffold plugins, port tools, delete plumbing, docs) can proceed on a
-branch now against `mcp_server:2.x-dev` / `mcp/sdk:dev-main` pinned to exact
-commits. **Do not flip production** (root `composer.json`: `mcp/sdk ^0.4` →
-`dev-main`, add `drupal/mcp_server`) until **`mcp/sdk 0.6.0` tags** — the one hard
-external dependency. Rollback is atomic: revert the root composer change + the
-branch. Acceptance checklist lives in `contrib-mcp-server-migration.md §12`.
+branch now against `mcp_server:2.x-dev` / `mcp/sdk:^0.6`. **`mcp/sdk 0.6.0` tagged
+2026-06-02**, so the one hard external blocker has cleared — the production flip
+(root `composer.json`: `mcp/sdk ^0.4` → `^0.6`, add `drupal/mcp_server`) is now
+unblocked; verify the live `dkan-site` state before flipping. Rollback is atomic:
+revert the root composer change + the branch. Acceptance checklist lives in
+`contrib-mcp-server-migration.md §12`.

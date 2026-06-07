@@ -11,8 +11,8 @@ Scaffold a PHPUnit test **inside the DKAN core package** (`drupal/dkan`), in the
 module/suite with the correct base class, DKAN traits, and `@group` annotations so it
 runs locally *and* in CI.
 
-Read [SKILL.md](../skills/dkan-core-contributor/SKILL.md) and
-[reference/testing-core.md](../skills/dkan-core-contributor/reference/testing-core.md)
+Read [SKILL.md](../../plugins/drupal-dkan-ai/skills/dkan-core-contributor/SKILL.md) and
+[reference/testing-core.md](../../plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/testing-core.md)
 first. This is the **in-repo** harness (`ddev phpunit`, real Drupal kernel) — NOT the
 standalone-stub harness from `/scaffold-dkan-module`. Pick a real sibling test in the
 target module and match it exactly.

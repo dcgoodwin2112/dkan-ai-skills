@@ -129,11 +129,12 @@ editing; let the human review context, adjust effort, or redirect first.
 Before any code, run the plan through an independent reviewer — the codex-reviewer
 MCP, `review_plan`. It catches sequencing errors, missing risks, and scope creep
 while they're still free to fix. Fold validated findings back into the plan doc
-(track that as its own step). **If codex is unavailable**, say so and stand in a
-fresh-context Claude critique — a subagent prompted to do the same job (sequencing
-errors, missing risks, scope creep); note the substitution in the plan doc rather
-than skip the gate. (`/code-review` reviews diffs, not plans, so it is not the
-stand-in here.)
+(track that as its own step). **If codex is unavailable**, say so and stand in the
+bundled **`plan-reviewer`** subagent (`@agent-drupal-dkan-ai:plan-reviewer`) — a
+fresh-context Claude reviewer handed the plan doc, reporting the same classes
+(sequencing errors, missing risks, scope creep, unstated decisions); note the
+substitution in the plan doc rather than skip the gate. (`/code-review` reviews
+diffs, not plans, so it is not the stand-in here.)
 
 This is the highest-leverage review in the loop: a flaw caught here costs one doc
 edit; the same flaw caught after implementation costs a whole phase.

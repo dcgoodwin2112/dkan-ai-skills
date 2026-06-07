@@ -9,7 +9,7 @@ agent: 'agent'
 
 Scaffold a new AI Provider plugin for the Drupal AI module — adds a new LLM backend (chat, embeddings, etc.). Two flavors: extending `OpenAiBasedProviderClientBase` for OpenAI-compatible APIs (the common case, almost no code) or extending `AiProviderClientBase` directly for fully custom APIs (more code).
 
-Read [SKILL.md](../skills/drupal-ai-module/SKILL.md), [plugin-types.md](../skills/drupal-ai-module/reference/plugin-types.md#ai-provider), [pitfalls.md](../skills/drupal-ai-module/reference/pitfalls.md), and [services.md](../skills/drupal-ai-module/reference/services.md#provider-plugin) before proceeding. Then read `<webroot>/modules/contrib/ai_provider_anthropic/src/Plugin/AiProvider/AnthropicProvider.php` (OpenAI-compatible) and the Anthropic `definitions/api_defaults.yml` as references.
+Read [SKILL.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/SKILL.md), [plugin-types.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/plugin-types.md#ai-provider), [pitfalls.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/pitfalls.md), and [services.md](../../plugins/drupal-dkan-ai/skills/drupal-ai-module/reference/services.md#provider-plugin) before proceeding. Then read `<webroot>/modules/contrib/ai_provider_anthropic/src/Plugin/AiProvider/AnthropicProvider.php` (OpenAI-compatible) and the Anthropic `definitions/api_defaults.yml` as references.
 
 ## Input
 
