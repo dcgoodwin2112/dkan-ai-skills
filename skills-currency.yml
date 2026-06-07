@@ -142,20 +142,20 @@ skills:
         last_verified: 2026-06-01
 
   drupal-ai-module:
-    targets: "drupal/ai 1.3.x (refuses 2.0.x)"
+    targets: "drupal/ai 1.4.x (current stable; docs verified against 1.3.5; refuses 2.0.x)"
     claims:
       - subject: Version line
-        claim: "Skill targets drupal/ai 1.3.x and refuses 2.0.x (breaking provider lifecycle changes)."
+        claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (docs verified against 1.3.5); refuses 2.0.x (dev, breaking provider lifecycle changes)."
         source: drupal_ai/releases
         cadence: monthly
         volatility: high
-        last_verified: 2026-06-01
+        last_verified: 2026-06-07
       - subject: Core requirement
-        claim: "drupal/ai 1.3.x requires Drupal ^10.5 || ^11.2."
+        claim: "drupal/ai 1.4.x requires Drupal ^10.5 || ^11.2 (unchanged from 1.3.x)."
         source: drupal_ai/project
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-01
+        last_verified: 2026-06-07
 
   drupal-mcp-server:
     targets: "mcp_server v2.x-dev on the mcp/sdk 0.6 API (pre-release, volatile)"

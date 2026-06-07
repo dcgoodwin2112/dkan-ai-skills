@@ -15,7 +15,7 @@ Read [SKILL.md](../skills/drupal-ai-module/SKILL.md), [plugin-types.md](../skill
 
 `${input:args}` should be: `<module_path> <AgentName>`
 
-- `module_path`: Path to the target module relative to the project root, or just the machine name.
+- `module_path`: Path to the target module — relative to the project root (e.g. `<webroot>/modules/custom/my_module`) or just the machine name (e.g. `dkan_query_tools`), resolved against the site's module directories.
 - `AgentName`: PascalCase class name (e.g., `DatasetExplorer`). The class name typically does NOT include "Agent" suffix — match the built-in convention (`FieldType`, `ContentType`, `TaxonomyAgent`).
 
 ## Steps

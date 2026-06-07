@@ -1,6 +1,6 @@
 ---
 name: drupal-ai-module
-description: Reference and decision support for writing custom modules that extend the Drupal AI module (drupal/ai, drupal/ai_agents, drupal/ai_assistant_api). Loads when the user is writing Provider, FunctionCall (Tool), AiAgent, AiAssistantAction, or AiAutomatorType plugins, or when working with the AI module's plugin discovery, services, or extension points. Targets drupal/ai 1.3.x; refuses 2.0.x as unstable.
+description: Reference and decision support for writing custom modules that extend the Drupal AI module (drupal/ai, drupal/ai_agents, drupal/ai_assistant_api). Loads when the user is writing Provider, FunctionCall (Tool), AiAgent, AiAssistantAction, or AiAutomatorType plugins, or when working with the AI module's plugin discovery, services, or extension points. Targets the drupal/ai 1.x line (current stable 1.4.x); refuses 2.0.x as unstable.
 ---
 
 # Drupal AI Module — Plugin Author's Reference
@@ -11,7 +11,7 @@ For scaffolding boilerplate, use the slash commands: `/ai-scaffold-provider`, `/
 
 > **Path convention**: example paths are written as `<webroot>/modules/...`, relative to the project's Drupal web root (`docroot/` in DKAN's recommended-project, `web/` in many other builds). Substitute your project's actual root; confirm with `ls` if unsure.
 
-> **Version floor**: `drupal/ai 1.3.x` requires Drupal `^10.5 || ^11.2`; `ai_agents 1.2.x` requires `^10.3 || ^11`. This is a higher core floor than DKAN itself (`^10.2`) — a module combining DKAN + AI must satisfy the AI floor. Verify with `composer show drupal/ai | grep drupal/core` before assuming a core version.
+> **Version floor**: `drupal/ai` 1.3.x–1.4.x requires Drupal `^10.5 || ^11.2`; `ai_agents 1.2.x` requires `^10.3 || ^11`. This is a higher core floor than DKAN itself (`^10.2`) — a module combining DKAN + AI must satisfy the AI floor. Verify with `composer show drupal/ai | grep drupal/core` before assuming a core version.
 
 ## When to use which plugin type
 
@@ -33,7 +33,7 @@ If the user just wants to *use* AI from existing code (call chat, generate embed
 
 1. **Key module is required.** Every provider resolves API keys via `\Drupal::service('key.repository')`. Add `key:key` to the module's `*.info.yml` dependencies. Never store raw secrets in `config/install/*.yml` — use Key entity references only.
 2. **Run `drush cr` after adding a plugin.** Plugin attribute discovery is cached. New providers/tools/agents won't appear until cache rebuild. The scaffold commands run this automatically.
-3. **Target `^1.3`, not `^2.0`.** As of April 2026, `2.0.x` is dev with breaking provider lifecycle changes per the upstream issue tracker. The 1.3.x line is stable.
+3. **Target `^1.3`, not `^2.0`.** As of June 2026, the current stable line is `1.4.x` (`^1.3` resolves to it); `2.0.x` is dev with breaking provider lifecycle changes per the upstream issue tracker.
 4. **Plugin directory casing matters.** `src/Plugin/AiFunctionCall/` (singular `Call`, PascalCase) — `AiFunctionCalls/` is silently ignored.
 5. **Operation-type interface ↔ supportedOperationTypes() must agree.** A provider implementing `ChatInterface` must also list `'chat'` in `getSupportedOperationTypes()`, or `hasProvidersForOperationType('chat')` returns false and the provider is invisible.
 

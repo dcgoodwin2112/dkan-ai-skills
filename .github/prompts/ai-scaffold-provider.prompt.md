@@ -15,7 +15,7 @@ Read [SKILL.md](../skills/drupal-ai-module/SKILL.md), [plugin-types.md](../skill
 
 `${input:args}` should be: `<module_path> <ProviderName> [base] [operation_types...]`
 
-- `module_path`: Path to the target module relative to the project root, or just the machine name.
+- `module_path`: Path to the target module — relative to the project root (e.g. `<webroot>/modules/custom/my_module`) or just the machine name (e.g. `dkan_query_tools`), resolved against the site's module directories.
 - `ProviderName`: PascalCase class name without the `Provider` suffix (e.g., `Mistral` → generates `MistralProvider`).
 - `base`: Optional. `openai` (default — extends `OpenAiBasedProviderClientBase`) or `custom` (extends `AiProviderClientBase`). Pick `openai` if the upstream API is OpenAI-compatible.
 - `operation_types`: Optional. One or more of `chat`, `embeddings`, `text_to_image`, `text_to_speech`, `speech_to_text`, `moderation`, `image_classification`, `audio_to_audio`. Default: `chat`. **For `openai` base, the base already implements all six relevant interfaces** — listing extra ops here only changes what `getSupportedOperationTypes()` returns.
@@ -99,7 +99,6 @@ namespace Drupal\<module_name>\Plugin\AiProvider;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\ai\Attribute\AiProvider;
 use Drupal\ai\Base\OpenAiBasedProviderClientBase;
-use Drupal\ai\Traits\OperationType\ChatTrait;
 
 /**
  * Plugin implementation of the '<plugin_id>' provider.
@@ -109,8 +108,6 @@ use Drupal\ai\Traits\OperationType\ChatTrait;
   label: new TranslatableMarkup('<ProviderName>'),
 )]
 class <ProviderName>Provider extends OpenAiBasedProviderClientBase {
-
-  use ChatTrait;
 
   /**
    * The base API endpoint for this provider.

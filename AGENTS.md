@@ -53,7 +53,7 @@ Reference and decision support for writing custom Drupal modules that extend DKA
 
 ### drupal-ai-module
 
-Reference and decision support for writing custom modules that extend the Drupal AI module (drupal/ai, drupal/ai_agents, drupal/ai_assistant_api). Loads when the user is writing Provider, FunctionCall (Tool), AiAgent, AiAssistantAction, or AiAutomatorType plugins, or when working with the AI module's plugin discovery, services, or extension points. Targets drupal/ai 1.3.x; refuses 2.0.x as unstable.
+Reference and decision support for writing custom modules that extend the Drupal AI module (drupal/ai, drupal/ai_agents, drupal/ai_assistant_api). Loads when the user is writing Provider, FunctionCall (Tool), AiAgent, AiAssistantAction, or AiAutomatorType plugins, or when working with the AI module's plugin discovery, services, or extension points. Targets the drupal/ai 1.x line (current stable 1.4.x); refuses 2.0.x as unstable.
 
 - Guide: [`plugins/drupal-dkan-ai/skills/drupal-ai-module/SKILL.md`](plugins/drupal-dkan-ai/skills/drupal-ai-module/SKILL.md)
 - Reference docs:

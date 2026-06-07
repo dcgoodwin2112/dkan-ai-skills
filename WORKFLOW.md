@@ -178,7 +178,9 @@ shipped as its own branch + PR.
   "always runs." Keep slow/integration checks (kernel, full matrix) in CI — the
   hook is fast local feedback; **CI stays authoritative.** This plugin ships such a
   gate (`hooks/commit-gate.sh`): it self-scopes to DDEV-backed modules and
-  warns-but-allows when DDEV is down.
+  warns-but-allows when DDEV is down. A companion `hooks/dependency-gate.sh` applies
+  the same principle to supply-chain risk — it blocks agent-initiated package installs
+  (`composer require`, `npm install <pkg>`, `uv add`, …) until a human vets them (§9).
 - Keep the change focused. When you spot an out-of-scope issue, **capture it** (a
   background-task chip, or a ROADMAP line) instead of widening the PR.
 - **Route heavy exploration through `Explore` subagents.** Let a subagent sweep the
@@ -239,7 +241,7 @@ adversarial pass inside Claude:
   write tool in reach. Keep destructive verbs (`delete`, `drop`, `unpublish`,
   `publish`) **human-gated**, not autonomous. Vet **AI-suggested dependencies**
   before adding them — guard against slopsquatting (confirm the package exists and
-  is the one you meant), then pin by hash. Anchor the pass to a maintained
+  is the one you meant), then pin by hash; the bundled `dependency-gate` hook (§7) makes this stop deterministic. Anchor the pass to a maintained
   checklist — **OWASP LLM Top 10** (LLM01 prompt injection, LLM05 improper output
   handling, LLM06 excessive agency, LLM03 supply chain) and the **OWASP Agentic AI
   Top 10** — so the lenses track named threats, not intuition. **Example:** an MCP

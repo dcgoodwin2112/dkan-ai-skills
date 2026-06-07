@@ -15,7 +15,7 @@ See [routing-forms-rendering.md](../skills/drupal-module-dev/reference/routing-f
 
 ${input:args} should be: `<module_path> <path> [permission]`
 
-- `module_path`: Path to the module, resolved under `<webroot>/modules/custom/` (e.g., `dkan_query_tools`)
+- `module_path`: Path to the target module — relative to the project root (e.g. `<webroot>/modules/custom/my_module`) or just the machine name (e.g. `dkan_query_tools`), resolved against the site's module directories.
 - `path`: URL path (e.g., `/admin/dkan/my-page` or `/api/my-endpoint/{id}`)
 - `permission`: Optional permission machine name. If omitted, defaults to `access content` for public routes or `administer site configuration` for `/admin/*` paths.
 

@@ -4,8 +4,9 @@
 #
 # Shipped by the drupal-dkan-ai plugin as a PreToolUse(Bash) hook. It BLOCKS
 # (exit 2) any command that ADDS a named package dependency — `composer require`,
-# `npm install <pkg>` / `npm add`, `yarn add`, `pnpm add`, `pip install <pkg>`, and
-# the common `cargo`/`go`/`gem` equivalents — so a human vets the package before it
+# `npm install <pkg>` / `npm add`, `yarn add`, `pnpm add`, `bun add`, `pip install <pkg>`,
+# `uv add` / `uv pip install <pkg>`, `poetry add`, `pipx install`, and the common
+# `cargo`/`go`/`gem`/`deno` equivalents — so a human vets the package before it
 # enters the project. This guards against SLOPSQUATTING: LLMs hallucinate
 # plausible-but-nonexistent package names (~1 in 5 suggested packages don't exist)
 # and attackers pre-register them. CI dependency review + lockfile/hash pinning stay
@@ -35,7 +36,7 @@ cmd="$(printf '%s' "$input" | jq -r '.tool_input.command // empty')"
 
 [ "${CLAUDE_SKIP_DEP_GATE:-}" = "1" ] && { echo "dependency-gate: bypassed (CLAUDE_SKIP_DEP_GATE=1)." >&2; exit 0; }
 
-managers='composer npm pnpm yarn bun pip pip3 cargo go gem'
+managers='composer npm pnpm yarn bun pip pip3 uv poetry pipx cargo go gem deno'
 
 is_manager() {
   local t="$1" m
@@ -163,6 +164,38 @@ scan_segment() {
       ;;
     gem)
       [ "$sub" = "install" ] && { MATCH="gem $(first_positional ${args[@]+"${args[@]}"})"; return 0; }
+      ;;
+    uv)
+      # `uv add <pkg>`, `uv pip install <pkg>`, `uv tool install <pkg>` add named
+      # packages; `uv pip install -r req.txt`, `uv sync/lock/run`, and bare forms do not.
+      case "$sub" in
+        add) MATCH="uv $(first_positional ${args[@]+"${args[@]}"})"; return 0 ;;
+        pip|tool)
+          if [ "${args[0]:-}" = "install" ]; then
+            local -a rest=("${args[@]:1}")
+            if [ "$sub" = "pip" ]; then
+              p="$(first_pip_target ${rest[@]+"${rest[@]}"})"
+            else
+              p="$(first_positional ${rest[@]+"${rest[@]}"})"
+            fi
+            [ -n "$p" ] && { MATCH="uv $p"; return 0; }
+          fi ;;
+      esac
+      ;;
+    poetry)
+      [ "$sub" = "add" ] && { MATCH="poetry $(first_positional ${args[@]+"${args[@]}"})"; return 0; }
+      ;;
+    pipx)
+      [ "$sub" = "install" ] && { MATCH="pipx $(first_positional ${args[@]+"${args[@]}"})"; return 0; }
+      ;;
+    deno)
+      # `deno add <pkg>` / `deno install <pkg>` add packages; bare `deno install`
+      # (project deps) does not.
+      case "$sub" in
+        add|install)
+          p="$(first_positional ${args[@]+"${args[@]}"})"
+          [ -n "$p" ] && { MATCH="deno $p"; return 0; } ;;
+      esac
       ;;
   esac
   return 1

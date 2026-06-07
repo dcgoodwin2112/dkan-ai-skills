@@ -2,7 +2,7 @@
 
 A Claude Code **plugin** of skills, slash commands, a review subagent, and reference docs for general Drupal 10.2+ / 11 module development and for writing custom Drupal modules that extend [DKAN](https://github.com/GetDKAN/dkan) 4.x, the [Drupal AI module](https://www.drupal.org/project/ai) (`drupal/ai`, `ai_agents`), and the [MCP Server module](https://www.drupal.org/project/mcp_server) (`drupal/mcp_server`) — for contributing to DKAN core itself, for the open-data metadata specs (DCAT-US / Project Open Data) DKAN implements, and for DKAN's decoupled JavaScript frontend.
 
-Ships **no runtime PHP code** — it packages auto-loading skills, slash commands, a review subagent, and a commit-gate hook for Claude Code. The reference docs are verified against DKAN `4.x`, `drupal/ai 1.3.x`, and `mcp_server` v2.x-dev (pre-release; `mcp/sdk` 0.6 API).
+Ships **no runtime PHP code** — it packages auto-loading skills, slash commands, a review subagent, and commit-gate + dependency-gate hooks for Claude Code. The reference docs are verified against DKAN `4.x`, `drupal/ai 1.3.x`, and `mcp_server` v2.x-dev (pre-release; `mcp/sdk` 0.6 API).
 
 Claude Code is the primary target, but the same content is also published as tool-neutral adapters (`AGENTS.md`, `.github/` for Copilot) so it works with other coding agents — see [Use with other agents](#use-with-other-agents-copilot-codex-cursor-).
 
@@ -19,7 +19,7 @@ plugins/drupal-dkan-ai/            # CANONICAL SOURCE
   skills/                          # auto-loading skills (SKILL.md + reference/)
   commands/                        # slash commands
   agents/                          # review subagents (plan-diff-reviewer)
-  hooks/                           # commit-gate hook (PreToolUse)
+  hooks/                           # commit-gate + dependency-gate hooks (PreToolUse)
 AGENTS.md                          # generated: broad cross-tool guidance
 .github/                           # generated: Copilot instructions + prompts
 bin/build-adapters                 # regenerates AGENTS.md + .github/ from the source
@@ -152,7 +152,7 @@ Before any `git commit`, runs the committing module's phpcs + unit suite via DDE
 
 ### dependency-gate
 
-Before a command that **adds a named package** — `composer require`, `npm install <pkg>` / `npm add`, `yarn add`, `pnpm add`, `bun add`, `pip install <pkg>`, and the common `cargo`/`go`/`gem` equivalents — **blocks** so a human vets the package first. This guards against **slopsquatting**: LLMs hallucinate plausible-but-nonexistent package names (~1 in 5 suggested packages) and attackers pre-register them. Supply-chain risk is universal, so this gate is **not** project-scoped.
+Before a command that **adds a named package** — `composer require`, `npm install <pkg>` / `npm add`, `yarn add`, `pnpm add`, `bun add`, `pip install <pkg>`, `uv add` / `uv pip install <pkg>`, `poetry add`, `pipx install`, and the common `cargo`/`go`/`gem`/`deno` equivalents — **blocks** so a human vets the package first. This guards against **slopsquatting**: LLMs hallucinate plausible-but-nonexistent package names (~1 in 5 suggested packages) and attackers pre-register them. Supply-chain risk is universal, so this gate is **not** project-scoped.
 
 - Lockfile-driven installs (`composer install`, bare `npm install`, `npm ci`, `yarn install`, `pip install -r …`, `pip install -e .`) are **not** gated — they add nothing unreviewed.
 - **Bypass** with `CLAUDE_SKIP_DEP_GATE=1`; preview a command's verdict with `CLAUDE_GATE_DRYRUN=1`.
@@ -182,6 +182,7 @@ This is the fresh-context reviewer in [WORKFLOW.md](WORKFLOW.md) §8–§9 — c
 - `dkan-workflows.md` — CSV import pipeline, event system, harvest ETL, publish flow
 - `dkan-harvest.md` — authoring custom harvest extractors/transformers/loaders (ETL class-strings)
 - `dkan-drush.md` — every DKAN drush command (datastore, harvest, metastore, sample content)
+- `dkan-diagnostics.md` — operational diagnostics: watchdog logs, stuck queues, permission misconfig, the `dkan_mcp` status tools
 - `dkan-testing.md` — unit/kernel/functional patterns, mock-chain, standalone stubs
 
 ### DKAN core contribution (`plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/`)
