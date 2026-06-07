@@ -44,13 +44,23 @@ The clone is a standalone tooling checkout — keep it anywhere outside your Dru
 
 Validate changes with `claude plugin validate ~/src/dkan-ai-skills/plugins/drupal-dkan-ai`.
 
-**Updating:** Claude Code caches an installed plugin by version. After `git pull` (or local edits), bump `version` in `plugins/drupal-dkan-ai/.claude-plugin/plugin.json`, then `claude plugin update drupal-dkan-ai`. For quick local iteration without a version bump, force-refresh the cache:
+**Updating:** Claude Code caches an installed plugin by version. After `git pull` (or local edits), bump `version` in `plugins/drupal-dkan-ai/.claude-plugin/plugin.json`, then refresh the marketplace and update by the **marketplace-qualified** name:
+
+```bash
+claude plugin marketplace update dkan-ai-skills      # re-read the local marketplace
+claude plugin update drupal-dkan-ai@dkan-ai-skills   # the @dkan-ai-skills suffix is required (bare name errors "not found")
+claude plugin list                                   # verify the new version is installed
+```
+
+Restart Claude Code to apply, or run `/reload-plugins` in the CLI to reload without restarting (not available in Desktop — see below). For quick local iteration without a version bump, force-refresh the cache:
 
 ```bash
 claude plugin uninstall drupal-dkan-ai@dkan-ai-skills
 claude plugin marketplace remove dkan-ai-skills && claude plugin marketplace add ~/src/dkan-ai-skills
 claude plugin install drupal-dkan-ai@dkan-ai-skills
 ```
+
+**Refreshing in Claude Desktop:** the `/plugin` and `/reload-plugins` commands are not available in the desktop app, and `/reload-skills` reloads only skills (not agents or hooks). Run the CLI update above, then **fully quit and reopen Desktop** to load new agents and hooks — a new conversation alone may not pick them up ([claude-code#52967](https://github.com/anthropics/claude-code/issues/52967)).
 
 When installed as a plugin, skills auto-load by their `description`, commands are namespaced — e.g. `/drupal-dkan-ai:scaffold-dkan-module` — and agents are invoked as `@agent-drupal-dkan-ai:plan-diff-reviewer`.
 
