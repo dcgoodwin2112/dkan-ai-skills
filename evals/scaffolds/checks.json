@@ -1,0 +1,166 @@
+{
+  "_about": "Phase 3 scaffold-correctness gate. Each scaffold command embeds the canonical code it instructs Claude to produce (fenced templates) plus a 'Pitfall checks' list. This file turns that documented contract into deterministic assertions: a regression gate over the SHIPPED command templates. It does NOT execute the commands or judge model output (that is Phase 2). assert_pos must ALL match; assert_neg must NONE match. Matching is case-sensitive re.search.",
+  "_schema": {
+    "scope": "'code' = all fenced code blocks in the command concatenated; 'doc' = the whole markdown file.",
+    "rule": "command passes iff every assert_pos matches its scope AND no assert_neg matches its scope.",
+    "neg_scope_note": "Anti-pattern negatives are ALWAYS scoped to 'code'. The Pitfall prose deliberately names the wrong forms ('NOT plugin.manager.ai_assistant_action'), so a doc-scoped neg would false-fail on the warning text. Facts that live only in prose (service IDs, dep names) are asserted positively at doc scope instead.",
+    "neg_example": "Every assert_neg carries a sample violation it must catch. check_scaffolds.py verifies on every run that the pattern matches its neg_example (else the negative is vacuous and the gate fails). This keeps a typo'd negative from passing silently forever.",
+    "kind": "'full-template' commands embed complete canonical files; 'snippet' commands embed illustrative patterns (checked more lightly, honestly)."
+  },
+  "commands_dir": "plugins/drupal-dkan-ai/commands",
+  "commands": [
+    {
+      "command": "mcp-scaffold-tool.md",
+      "skill": "drupal-mcp-server",
+      "kind": "full-template",
+      "assert_pos": [
+        {"re": "#\\[Tool\\b", "scope": "code", "note": "Tool attribute"},
+        {"re": "extends ToolPluginBase", "scope": "code", "note": "correct base class"},
+        {"re": "public function execute\\(array \\$arguments, ClientGateway \\$gateway\\): mixed", "scope": "code", "note": "exact mcp/sdk 0.6 execute() signature"},
+        {"re": "defaultConfiguration\\(\\): array", "scope": "code", "note": "native tools start disabled; must opt in"},
+        {"re": "'enabled' => TRUE", "scope": "code", "note": "enable the tool"},
+        {"re": "checkAccess\\(AccountInterface \\$account\\): AccessResultInterface", "scope": "code", "note": "--write access gate"},
+        {"re": "composer show drupal/mcp_server mcp/sdk", "scope": "doc", "note": "version-gate step present"}
+      ],
+      "assert_neg": [
+        {"re": "RuntimeToolHandlerInterface", "scope": "code", "note": "fabricated interface name (repo corrected it to ToolHandlerInterface)", "neg_example": "implements RuntimeToolHandlerInterface {"},
+        {"re": "Builder::addTool", "scope": "code", "note": "old 0.4/0.5 SDK API must not leak into the 0.6 code template", "neg_example": "$builder->addTool(); // Builder::addTool"},
+        {"re": "Plugin/Tools/", "scope": "doc", "note": "directory must be singular Plugin/Tool/", "neg_example": "Path: src/Plugin/Tools/Foo.php"}
+      ]
+    },
+    {
+      "command": "ai-scaffold-tool.md",
+      "skill": "drupal-ai-module",
+      "kind": "full-template",
+      "assert_pos": [
+        {"re": "#\\[FunctionCall\\b", "scope": "code", "note": "FunctionCall attribute"},
+        {"re": "extends FunctionCallBase", "scope": "code", "note": "correct base class"},
+        {"re": "ExecutableFunctionCallInterface", "scope": "code", "note": "declares the plugin runs server-side"},
+        {"re": "function_name:", "scope": "code", "note": "function_name key (what the LLM sees)"},
+        {"re": "\\$this->setOutput\\(", "scope": "code", "note": "result written via setOutput()"},
+        {"re": "src/Plugin/AiFunctionCall/", "scope": "doc", "note": "singular AiFunctionCall directory documented"},
+        {"re": "composer show drupal/ai", "scope": "doc", "note": "version-gate step present"}
+      ],
+      "assert_neg": [
+        {"re": "AiFunctionCalls", "scope": "code", "note": "plural dir is silently ignored; code must use singular AiFunctionCall", "neg_example": "namespace Drupal\\m\\Plugin\\AiFunctionCalls;"},
+        {"re": "OverridableFunctionCallInterface", "scope": "code", "note": "must NOT be redeclared on the class (base implements it)", "neg_example": "implements OverridableFunctionCallInterface {"}
+      ]
+    },
+    {
+      "command": "ai-scaffold-action.md",
+      "skill": "drupal-ai-module",
+      "kind": "full-template",
+      "assert_pos": [
+        {"re": "#\\[AiAssistantAction\\b", "scope": "code", "note": "attribute"},
+        {"re": "extends AiAssistantActionBase", "scope": "code", "note": "base class"},
+        {"re": "public function triggerAction\\(string \\$action_id, array \\$parameters = \\[\\]\\): void", "scope": "code", "note": "exact triggerAction() signature"},
+        {"re": "public function listActions\\(\\): array", "scope": "code", "note": "listActions present"},
+        {"re": "provideFewShotLearningExample\\(\\)", "scope": "code", "note": "few-shot examples method"},
+        {"re": "buildConfigurationForm\\(", "scope": "code", "note": "PluginFormInterface method implemented"},
+        {"re": "submitConfigurationForm\\(", "scope": "code", "note": "PluginFormInterface method implemented"},
+        {"re": "ai_assistant_api\\.action_plugin\\.manager", "scope": "doc", "note": "correct service id documented"},
+        {"re": "ai:ai_assistant_api", "scope": "doc", "note": "correct (singular) dependency form"},
+        {"re": "composer show drupal/ai", "scope": "doc", "note": "version-gate step present"}
+      ],
+      "assert_neg": [
+        {"re": "triggerInstruction", "scope": "code", "note": "AI-fabricated method name", "neg_example": "public function triggerInstruction() {"},
+        {"re": "executeAction", "scope": "code", "note": "AI-fabricated method name", "neg_example": "public function executeAction() {"}
+      ]
+    },
+    {
+      "command": "ai-scaffold-agent.md",
+      "skill": "drupal-ai-module",
+      "kind": "full-template",
+      "assert_pos": [
+        {"re": "#\\[AiAgent\\b", "scope": "code", "note": "attribute"},
+        {"re": "extends AiAgentBase implements ContainerFactoryPluginInterface", "scope": "code", "note": "base + only ContainerFactoryPluginInterface on subclass"},
+        {"re": "AiAgentInterface::JOB_SOLVABLE", "scope": "code", "note": "real JOB_* constant"},
+        {"re": "public function agentsCapabilities\\(\\)", "scope": "code", "note": "capabilities method"},
+        {"re": "public function answerQuestion\\(\\)", "scope": "code", "note": "abstract method implemented (instantiation fails without it)"},
+        {"re": "public function determineSolvability\\(\\)", "scope": "code", "note": "solvability method"},
+        {"re": "is_triage:", "scope": "code", "note": "YAML prompt schema present"},
+        {"re": "determineTask\\.yml", "scope": "doc", "note": "prompt files are .yml, not .txt"},
+        {"re": "composer show drupal/ai_agents", "scope": "doc", "note": "version-gate step present"}
+      ],
+      "assert_neg": [
+        {"re": "JOB_NEEDS_MORE_INFO", "scope": "code", "note": "fictional JOB_* constant", "neg_example": "return AiAgentInterface::JOB_NEEDS_MORE_INFO;"},
+        {"re": "implements\\s+AiAgentInterface", "scope": "code", "note": "must not redeclare AiAgentInterface (base provides it)", "neg_example": "class X extends AiAgentBase implements AiAgentInterface {"}
+      ]
+    },
+    {
+      "command": "ai-scaffold-provider.md",
+      "skill": "drupal-ai-module",
+      "kind": "full-template",
+      "assert_pos": [
+        {"re": "#\\[AiProvider\\b", "scope": "code", "note": "attribute"},
+        {"re": "extends OpenAiBasedProviderClientBase", "scope": "code", "note": "openai-compatible base variant"},
+        {"re": "extends AiProviderClientBase implements ChatInterface", "scope": "code", "note": "fully-custom base variant"},
+        {"re": "public function getSupportedOperationTypes\\(\\): array", "scope": "code", "note": "supported-ops method"},
+        {"re": "public function getConfiguredModels\\(", "scope": "code", "note": "models method"},
+        {"re": "authentication:", "scope": "code", "note": "api_defaults keyed by operation with authentication sub-key"},
+        {"re": "_permission: 'administer ai providers'", "scope": "code", "note": "settings route permission"},
+        {"re": "composer show drupal/ai", "scope": "doc", "note": "version-gate step present"}
+      ],
+      "assert_neg": [
+        {"re": "function __construct", "scope": "code", "note": "must NOT define a constructor (AiProviderClientBase::__construct is final)", "neg_example": "public function __construct() {}"}
+      ]
+    },
+    {
+      "command": "scaffold-dkan-module.md",
+      "skill": "dkan-module-author",
+      "kind": "full-template",
+      "assert_pos": [
+        {"re": "dkan:dkan_metastore", "scope": "code", "note": "correct dkan_-prefixed dependency"},
+        {"re": "dkan:dkan_datastore", "scope": "code", "note": "correct dkan_-prefixed dependency"},
+        {"re": "\"type\": \"drupal-custom-module\"", "scope": "code", "note": "composer module type"},
+        {"re": "getdkan/mock-chain", "scope": "code", "note": "dev-only test dependency"},
+        {"re": "namespace Drupal\\\\dkan_metastore;", "scope": "code", "note": "stub declares the real 4.x namespace"},
+        {"re": "namespace RootedData;", "scope": "code", "note": "RootedJsonData stub namespace"},
+        {"re": "'@dkan.metastore.service'", "scope": "code", "note": "service IDs are un-prefixed dkan.* (only modules/namespaces carry dkan_)"},
+        {"re": "core_version_requirement: \\^10\\.2 \\|\\| \\^11", "scope": "code", "note": "DKAN core floor"},
+        {"re": "\\^10\\.5 \\|\\| \\^11\\.2", "scope": "doc", "note": "raised AI core floor (matches Phase 2 T2's verified drupal/ai fact)"}
+      ],
+      "assert_neg": [
+        {"re": "- dkan:(?!dkan_)", "scope": "code", "note": "dependency list items must carry the dkan_ prefix; dkan:metastore is the single most common scaffold mistake (anchored on the YAML list dash to ignore explanatory comments)", "neg_example": "  - dkan:metastore"}
+      ]
+    },
+    {
+      "command": "scaffold-drupal-service.md",
+      "skill": "drupal-module-dev",
+      "kind": "snippet",
+      "assert_pos": [
+        {"re": "protected MetastoreService \\$metastore", "scope": "code", "note": "constructor-promoted DI pattern"},
+        {"re": "'@dkan.metastore.service'", "scope": "code", "note": "service-id argument reference"},
+        {"re": "src/Service/\\{ServiceName\\}\\.php", "scope": "doc", "note": "service class path"},
+        {"re": "phpcs --standard=Drupal,DrupalPractice", "scope": "doc", "note": "lint step documented"}
+      ],
+      "assert_neg": []
+    },
+    {
+      "command": "add-drupal-route.md",
+      "skill": "drupal-module-dev",
+      "kind": "snippet",
+      "assert_pos": [
+        {"re": "extends ControllerBase", "scope": "code", "note": "controller base class"},
+        {"re": "public static function create\\(ContainerInterface \\$container\\): static", "scope": "code", "note": "DI factory method"},
+        {"re": "_controller:", "scope": "code", "note": "route _controller key"},
+        {"re": "_permission:", "scope": "code", "note": "route _permission key"},
+        {"re": "phpcs --standard=Drupal,DrupalPractice", "scope": "doc", "note": "lint step documented"}
+      ],
+      "assert_neg": []
+    },
+    {
+      "command": "add-event-subscriber.md",
+      "skill": "dkan-module-author",
+      "kind": "snippet",
+      "assert_pos": [
+        {"re": "implements EventSubscriberInterface", "scope": "code", "note": "subscriber interface"},
+        {"re": "public static function getSubscribedEvents\\(\\): array", "scope": "code", "note": "required static method"},
+        {"re": "MetastoreService::EVENT_DATA_GET", "scope": "code", "note": "references the event constant, not a raw string"},
+        {"re": "name: event_subscriber", "scope": "code", "note": "tagged service entry"},
+        {"re": "phpcs --standard=Drupal,DrupalPractice", "scope": "doc", "note": "lint step documented"}
+      ],
+      "assert_neg": []
+    }
+  ]
+}
