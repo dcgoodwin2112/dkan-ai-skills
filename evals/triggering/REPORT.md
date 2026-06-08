@@ -8,7 +8,7 @@ skills with deliberately overlapping Drupal/DKAN domains.
 
 | Method | Tests | Runs where | Status |
 |---|---|---|---|
-| `run_eval.py` (vendored) via `bin/eval trigger` | Real `claude -p` triggering: does a description make Claude invoke the skill? (per-skill, in isolation) | Authenticated terminal / CI | Harness built. **Not runnable inside a sandboxed Claude Code agent session — nested `claude -p` gets HTTP 401** (host-managed OAuth isn't visible to child processes). Run it yourself. |
+| `run_eval.py` (vendored) via `bin/eval trigger` | Real `claude -p` triggering: does a description attract Claude to the skill (a `Skill` invocation or a `Read` of its command file)? (per-skill, in isolation) | Authenticated terminal / CI | Harness built. **Not runnable inside a sandboxed Claude Code agent session — nested `claude -p` gets HTTP 401** (host-managed OAuth isn't visible to child processes). Run it yourself. |
 | In-session judge routing | Description *discriminability*: given all 7 name+descriptions, route each query to one skill or `none` | In-session subagents (have auth) | **Done — results below** |
 
 ## The eval set — `routing.json` (100 queries)
@@ -23,8 +23,10 @@ skills with deliberately overlapping Drupal/DKAN domains.
 
 ## Results — in-session judge routing
 
-Blind, forced single-choice routing over name+description only, two models for a robustness
-gradient:
+Blind, forced single-choice routing over name+description only. Run with two judges (a strong
+and a weak/haiku router) — not as independent corroboration (both read the same descriptions
+the labels were authored from), but to check the descriptions separate cleanly even for a
+small model:
 
 | Judge | Overall | Near-misses (35) |
 |---|---|---|
@@ -32,11 +34,19 @@ gradient:
 | weak (haiku) | **100/100** | 35/35 |
 | inter-model agreement | **100/100** | — |
 
-Both models — including a weak one — routed every query, including all 35 adversarial
-near-misses, to the intended skill, with perfect agreement. The 7 descriptions carry enough
-disambiguating signal (cross-references, namespace/path cues, explicit "for X see Y" pointers)
-to be **text-separable**; no cross-skill description overlap was found. Artifact:
-`results/judge_routing.json`.
+Both judges routed every query — including all 35 adversarial near-misses — to the intended
+skill. The 7 descriptions carry enough disambiguating signal (cross-references, namespace/path
+cues, explicit "for X see Y" pointers) to be **text-separable**. Two caveats on how to read
+these numbers, before the fuller interpretation below:
+
+- The **near-miss column is a subset** of the overall score, so a perfect overall run is
+  necessarily 35/35. The breakdown would only become informative if the overall were <100% —
+  it would then localize where the misses fall, not add an independent pass.
+- The **two judges are not independent of the labeling** (both route from the same descriptions
+  the labels were authored against), so their agreement confirms the descriptions are
+  unambiguous, not that triggering is robust.
+
+Artifact: `results/judge_routing.json`.
 
 ## Honest interpretation — what this does and does NOT prove
 
