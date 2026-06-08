@@ -1,0 +1,683 @@
+{
+  "skills": [
+    "drupal-module-dev",
+    "drupal-ai-module",
+    "dkan-module-author",
+    "dkan-core-contributor",
+    "open-data-dcat",
+    "drupal-mcp-server",
+    "dkan-frontend"
+  ],
+  "queries": [
+    {
+      "id": 1,
+      "query": "I'm getting a QueryException fatal on my entityTypeManager->getStorage('node')->getQuery() call in a custom block plugin. What am I missing in Drupal 10?",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": []
+    },
+    {
+      "id": 2,
+      "query": "converting my procedural hook_node_presave to the new OOP #[Hook] attribute class in src/Hook/ for drupal 11 — do i still need a procedural shim if the module also has to run on 10.3?",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": []
+    },
+    {
+      "id": 3,
+      "query": "My ConfigFormBase submit handler runs but nothing persists to config. The settings page just reloads with empty fields. How do I wire getEditableConfigNames correctly?",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": []
+    },
+    {
+      "id": 4,
+      "query": "PHPUnit kernel test fails with 'Schema errors for ... missing schema' when my module saves its config object. How do I mark it FullyValidatable and add the config/schema yml?",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": []
+    },
+    {
+      "id": 5,
+      "query": "I have an entity/config update that needs to load every node of a bundle and re-save a field. Should this go in hook_update_N or hook_post_update_NAME? I keep hitting a null container error.",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": []
+    },
+    {
+      "id": 6,
+      "query": "Need to add a route at /admin/reports/foo with a controller and a custom permission in my_module.routing.yml and my_module.permissions.yml. Controller should inject the database connection via create().",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": []
+    },
+    {
+      "id": 7,
+      "query": "phpcs is throwing Drupal.Commenting and DrupalPractice errors on my src/Plugin/Block class, and phpstan complains about the deprecated @Annotation discovery. How do I convert the plugin to a PHP attribute?",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": []
+    },
+    {
+      "id": 8,
+      "query": "getting 'Error: Class \"Drupal\" not found' from an event subscriber service when the queue worker runs it. i'm calling \\Drupal::service('logger.factory') inside the class — how should i inject it instead via services.yml?",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": []
+    },
+    {
+      "id": 9,
+      "query": "On Drupal 11.2 my hook_requirements stopped firing the runtime check on the status report. I heard requirements got split into separate hooks — what replaced it for runtime vs install-time checks?",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": []
+    },
+    {
+      "id": 10,
+      "query": "I'm writing a custom plugin that injects Drupal\\dkan_metastore\\MetastoreService to read dataset items and reindex them. What's the service ID and constructor signature for the metastore storage?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": [
+        "drupal-module-dev"
+      ]
+    },
+    {
+      "id": 11,
+      "query": "Adding a new #[Tool] plugin to my module so an AI assistant can query our content over MCP. How do I declare the input schema and handle RequestEvent authorization in the tool's execute method?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": [
+        "drupal-module-dev"
+      ]
+    },
+    {
+      "id": 12,
+      "query": "My custom module defines a FunctionCall plugin in src/Plugin/AiFunctionCall so the LLM can call it as a tool, but it isn't showing up in plugin discovery for drupal/ai 1.4. What attribute and base class does the function call plugin need?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": [
+        "drupal-module-dev"
+      ]
+    },
+    {
+      "id": 13,
+      "query": "I'm patching a bug in modules/contrib/dkan/modules/datastore — the DictionaryEnforcer service in Drupal\\dkan_datastore mangles a column type. Need to fix the core class and update its PHPUnit test in the dkan package so it lands mergeably in CI.",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": [
+        "drupal-module-dev"
+      ]
+    },
+    {
+      "id": 14,
+      "query": "What does accrualPeriodicity expect as a value, and is contactPoint required? I'm hand-editing a dataset record in schema/collections/dataset.json and want to know the allowed values.",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": [
+        "drupal-module-dev"
+      ]
+    },
+    {
+      "id": 15,
+      "query": "I'm adding Mistral as an LLM backend in our Drupal site. Should my provider plugin extend OpenAiBasedProviderClientBase or AiProviderClientBase, and why does PHP fatal with \"Cannot override final method __construct\" when I try to inject my own services?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": []
+    },
+    {
+      "id": 16,
+      "query": "My FunctionCall tool isn't showing up for the agent. The class is in src/Plugin/AiFunctionCalls/ with the #[FunctionCall] attribute and an execute() method that calls setOutput(). I already ran drush cr. What's wrong?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": []
+    },
+    {
+      "id": 17,
+      "query": "Scaffolding an AiAgent plugin with the ai_agents determine/solve flow. Where do the per-operation prompts live, and which methods are fatal-if-missing on AiAgentBase? I keep returning JOB_NEEDS_MORE_INFO from determineSolvability but it's not recognized.",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": []
+    },
+    {
+      "id": 18,
+      "query": "getting ServiceNotFoundException for \"logger.channel.ai\" when i inject it into a custom provider class on drupal/ai 1.3.5. how am i supposed to log from a provider?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": []
+    },
+    {
+      "id": 19,
+      "query": "We want vision support routed to our custom provider but setting capabilities: { chat_with_image_vision: true } in definitions/api_defaults.yml does nothing. How are AiModelCapability values actually declared and filtered per model?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": []
+    },
+    {
+      "id": 20,
+      "query": "Composer is refusing drupal/ai 2.0.x and our code references ProviderSetupEvent and ProviderDisabledEvent that don't exist. What version line should we pin to and what's the right event to hook for pre/post generate response?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": []
+    },
+    {
+      "id": 21,
+      "query": "How do I register an AiAssistantAction plugin and resolve it at runtime? I can't find a plugin.manager.ai_assistant_action service and the action isn't listed by the assistant.",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": []
+    },
+    {
+      "id": 22,
+      "query": "Writing a custom AiAutomatorType plugin to populate a field with an LLM call. Which plugin manager service id and manager class do I use, and how do I wire an extra service into the plugin given the base create() pattern?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": []
+    },
+    {
+      "id": 23,
+      "query": "Our chat tool's streamed output comes back truncated on the consumer side when streamedOutput(TRUE) is set. I think getNormalized() returns some iterator. How should the consumer handle a StreamedChatMessageIteratorInterface so it isn't consumed mid-flight?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": []
+    },
+    {
+      "id": 24,
+      "query": "I'm writing a #[Tool] plugin under src/Plugin/Tool/ that extends ToolPluginBase, but tools/call never invokes my execute(array $arguments, ClientGateway $gateway). The tool shows up in tools/list though. Why isn't the handler firing?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": [
+        "drupal-ai-module"
+      ]
+    },
+    {
+      "id": 25,
+      "query": "My #[Tool] returns AccessResult::allowed() from checkAccess() but anonymous MCP clients can still call it. How do I actually enforce authorization with a RequestEvent subscriber so the destructive flag isn't just a hint?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": [
+        "drupal-ai-module"
+      ]
+    },
+    {
+      "id": 26,
+      "query": "I need a generic plugin type with a #[FooHandler] attribute, a plugin manager service, and an interface/base class, discovered from src/Plugin/FooHandler/. What's the standard Drupal 11 way to define the manager and wire it in services.yml?",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": [
+        "drupal-ai-module"
+      ]
+    },
+    {
+      "id": 27,
+      "query": "Building a custom module that exposes a new metastore endpoint so an AI assistant can fetch dataset records. How do I query DKAN's metastore service and shape the distribution JSON for downloadURL vs accessURL?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": [
+        "drupal-ai-module"
+      ]
+    },
+    {
+      "id": 28,
+      "query": "We want to send our dataset descriptions through an LLM to auto-generate keyword tags. Before that, which keyword/theme values are actually valid per the catalog spec and is keyword required on a distribution or only on the dataset?",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": [
+        "drupal-ai-module"
+      ]
+    },
+    {
+      "id": 29,
+      "query": "I'm building a custom module under web/modules/custom/county_portal that injects dkan.metastore.service to fetch a dataset by UUID and then loops its distributions. The get() call keeps throwing when I treat the result as an array — how should I consume what MetastoreService::get('dataset', $uuid) returns, and what's the right way to read the resolved resource identifier off each distribution?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": []
+    },
+    {
+      "id": 30,
+      "query": "Need to write a custom harvest transform in my own module to clean up incoming titles before they hit the metastore. How do I register a custom extractor/transformer/loader in the harvest plan JSON and wire it through HarvestService for my datasets?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": []
+    },
+    {
+      "id": 31,
+      "query": "writing an event subscriber in my custom module that should run whenever a dataset is updated so i can ping an external system. tagged it event_subscriber in my services.yml and getSubscribedEvents returns the constant but it never fires. which dkan event constant do i actually subscribe to for dataset update?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": []
+    },
+    {
+      "id": 32,
+      "query": "From a controller in my custom module I want to run a datastore query programmatically across two resources with a join instead of hitting /api/1/datastore/query over HTTP. How do I build the DatastoreQuery DTO and execute it through the datastore query service, and what does runQuery give me back?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": []
+    },
+    {
+      "id": 33,
+      "query": "My module POSTs a dataset to /api/1/metastore/schemas/dataset/items and it returns 201, but anonymous requests to the item endpoint 404. The dataset shows up for me as admin though. What am I missing in the create flow?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": []
+    },
+    {
+      "id": 34,
+      "query": "In docroot/modules/custom/agency_sync I need to look up the downloaded local file for a distribution so I can post-process the CSV. I'm calling ResourceMapper::get(md5($downloadURL), 'source') and getting null even though the file clearly imported. How should I resolve the resource correctly?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": []
+    },
+    {
+      "id": 35,
+      "query": "Scaffolding a brand-new DKAN 4.x integration module from scratch — info.yml, services.yml, a service that depends on dkan_datastore, and a kernel test. What's the standard skeleton and which DKAN-specific testing conventions (mock chains, base classes) apply when my tests touch dkan_metastore classes?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": []
+    },
+    {
+      "id": 36,
+      "query": "I want my custom module to subscribe to DKAN's search event so I can rewrite the Elasticsearch/index query before it runs. Which event class and constant does DKAN dispatch for search, and how do I alter the query payload from my subscriber without modifying anything in contrib?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": []
+    },
+    {
+      "id": 37,
+      "query": "Our custom module consumes DKAN's REST API from a Drupal controller acting as a proxy. For the datastore SQL endpoint and the metastore items PATCH endpoint, what permissions/access checks gate them and what request body shapes do they expect?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": []
+    },
+    {
+      "id": 38,
+      "query": "I'm patching the dkan_metastore module itself in modules/contrib/dkan to fix a bug in how the Dereferencer expands publisher references, and I need to add a PHPUnit test for it. Which test suite, base class, and @group annotations does DKAN core require so it actually runs in CircleCI?",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": [
+        "dkan-module-author"
+      ]
+    },
+    {
+      "id": 39,
+      "query": "What's the difference between downloadURL and accessURL on a distribution, and is downloadURL required? Trying to figure out which one to populate for a CSV that's directly downloadable versus an API landing page in our catalog records.",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": [
+        "dkan-module-author"
+      ]
+    },
+    {
+      "id": 40,
+      "query": "In my custom module's event subscriber I want to inject a service by passing arguments in my services.yml, but the constructor argument order keeps tripping me up and I'm unsure whether to use @ prefixes or a factory. What's the correct dependency-injection wiring for a Drupal 11 service that has another service as a dependency?",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": [
+        "dkan-module-author"
+      ]
+    },
+    {
+      "id": 41,
+      "query": "The dataset detail page in the catalog isn't rendering the distribution download buttons — the React app seems to get the dataset but the component shows nothing. How does the decoupled frontend fetch the dataset from DKAN and where would I configure the API root it calls?",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": [
+        "dkan-module-author"
+      ]
+    },
+    {
+      "id": 42,
+      "query": "I'm changing the metastore reference lifecycle in DKAN core so the Referencer dedupes keyword nodes differently, which alters stored field_json_metadata. Do I need an update hook for this, and which submodule's .install does it go in, plus an update-path test?",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": [
+        "dkan-module-author"
+      ]
+    },
+    {
+      "id": 43,
+      "query": "I'm fixing a bug in dkan_metastore's reference lifecycle — the OrphanChecker isn't dereferencing distributions when a dataset is deleted. Walk me through how Referencer/Dereferencer interact and where I'd patch it in the drupal/dkan source.",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": []
+    },
+    {
+      "id": 44,
+      "query": "Need to add a new datastore ResourceProcessor in DKAN core alongside DictionaryEnforcer. Where does it live under dkan_datastore/src/Service/ResourceProcessor and how does the import pipeline pick it up?",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": []
+    },
+    {
+      "id": 45,
+      "query": "writing a kernel test for the ImportQueueWorker in modules/contrib/dkan, the row count keeps coming back 0. what group annotation and trait do i need so it actually drains the queue and runs in CI",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": []
+    },
+    {
+      "id": 46,
+      "query": "I want to swap the JSON schema validation in dkan_metastore from justinrainbow to opis. How does RootedJsonData flow through ValidMetadataFactory and SchemaRetriever, and is this change already on the 4.x branch?",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": []
+    },
+    {
+      "id": 47,
+      "query": "Our DKAN core PR is red on CircleCI — phpcs is flagging the new DatabaseTableFactory changes against Drupal,DrupalPractice and one of the parallel functional nodes isn't picking up the test. How do I get this mergeable?",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": []
+    },
+    {
+      "id": 48,
+      "query": "Adding a built-in DatasetInfo plugin to dkan_common. Where's the plugin manager, what's the discovery directory, and do I need an update hook for it to land in a core release?",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": []
+    },
+    {
+      "id": 49,
+      "query": "I changed the shape of a metastore schema in dkan/schema/collections and the storage factory abstraction. Existing sites blow up on drush updatedb. What's the update-hook convention and which .install file does it go in?",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": []
+    },
+    {
+      "id": 50,
+      "query": "Refactoring the harvest ETL in the dkan package — splitting a Transform step into its own class under dkan_harvest/src/ETL. How does the Factory wire Extract/Transform/Load and what tests should I add to the in-repo suite?",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": []
+    },
+    {
+      "id": 51,
+      "query": "Contributing a fix to GetDKAN/dkan on the 4.x branch where DataFactory/NodeData leaks a perspective/UUID mapping bug. I need to verify the current signature on 4.x before I touch it and add a functional test that won't be flaky.",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": []
+    },
+    {
+      "id": 52,
+      "query": "Building a custom module under web/modules/custom that injects DKAN's metastore service to bulk-patch field_json_metadata on our datasets, then re-validates them. How do I get the DataFactory/NodeData out of the container and call it correctly?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": [
+        "dkan-core-contributor"
+      ]
+    },
+    {
+      "id": 53,
+      "query": "I have a custom module that subscribes to DKAN's dataset publish event and writes a row to my datastore table. The async import job never seems to fire in my phpunit test. How do I pump the Procrastinator queue in a standalone module test?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": [
+        "dkan-core-contributor"
+      ]
+    },
+    {
+      "id": 54,
+      "query": "What's the right way to tag a Drupal functional test with a @group so CI's parallel split runs it, and which PHPUnit base class do I extend for a kernel test? This is a generic contrib module, nothing DKAN-specific.",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": [
+        "dkan-core-contributor"
+      ]
+    },
+    {
+      "id": 55,
+      "query": "In the metastore schema, is accrualPeriodicity required, and what are the allowed values for accessLevel and the difference between downloadURL and accessURL? Trying to fix a harvested record that DKAN keeps rejecting.",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": [
+        "dkan-core-contributor"
+      ]
+    },
+    {
+      "id": 56,
+      "query": "I'm writing a #[Tool] plugin in dkan_mcp that exposes DKAN's datastore query over MCP. How do I wire RequestEvent authorization and register the tool with mcp_server?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": [
+        "dkan-core-contributor"
+      ]
+    },
+    {
+      "id": 57,
+      "query": "What's the difference between downloadURL and accessURL in a DKAN distribution? When should I use one vs the other?",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": []
+    },
+    {
+      "id": 58,
+      "query": "I need to set accrualPeriodicity to weekly on a dataset but validation keeps rejecting 'weekly'. What's the correct ISO 8601 value?",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": []
+    },
+    {
+      "id": 59,
+      "query": "is accessLevel a required field and what values does it accept? someone put 'Open' and it broke",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": []
+    },
+    {
+      "id": 60,
+      "query": "We're editing schema/collections/dataset.json to mark contactPoint as required. What shape does contactPoint expect — is it a vCard object or just an email string?",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": []
+    },
+    {
+      "id": 61,
+      "query": "Trying to make our catalog federally POD-compliant for data.gov harvesting. Does DKAN support bureauCode and programCode, and what's the top-level structure of the data.json export?",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": []
+    },
+    {
+      "id": 62,
+      "query": "what's the difference between the format and mediaType fields on a distribution? do i put CSV in both",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": []
+    },
+    {
+      "id": 63,
+      "query": "Can you sanity-check this dataset record before I publish it? title, description, identifier, modified, keyword, accessLevel=restricted public, and a spatial field with a bounding box. Are the required fields all there and is spatial allowed?",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": []
+    },
+    {
+      "id": 64,
+      "query": "Is publisher supposed to be a string or a nested object in POD v1.1? And is it required or just recommended?",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": []
+    },
+    {
+      "id": 65,
+      "query": "Building a harvest source file by hand. What exactly does each dataset record need to conform to, and how do I wrap the datasets so DKAN accepts the source?",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": []
+    },
+    {
+      "id": 66,
+      "query": "Write me a PHP service method that loads a dataset from the metastore and sets its accrualPeriodicity to R/P1M, then re-validates and saves it via ValidMetadataFactory.",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": [
+        "open-data-dcat"
+      ]
+    },
+    {
+      "id": 67,
+      "query": "In my harvest transformer plugin, I need to read incoming downloadURL values and rewrite them before they hit the datastore. How do I structure the transform class and register it?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": [
+        "open-data-dcat"
+      ]
+    },
+    {
+      "id": 68,
+      "query": "I want to change how DKAN core's metastore validates the accessLevel enum — patching the validation logic in dkan_metastore itself and adding a PHPUnit test for it.",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": [
+        "open-data-dcat"
+      ]
+    },
+    {
+      "id": 69,
+      "query": "How do I parse an ISO 8601 repeating interval like R/P1M in plain Python and compute the next occurrence date? Nothing to do with Drupal, just date math.",
+      "expected_skill": "none",
+      "near_miss_for": [
+        "open-data-dcat"
+      ]
+    },
+    {
+      "id": 70,
+      "query": "On the React dataset detail page, the distribution's downloadURL button isn't rendering. How does the frontend component pull downloadURL out of the API response?",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": [
+        "open-data-dcat"
+      ]
+    },
+    {
+      "id": 71,
+      "query": "I'm authoring a #[Tool] plugin under src/Plugin/Tool/ in my custom module so an AI client can run a datastore query over MCP. What's the right execute() signature now that we're on mcp/sdk 0.6, and where does the input JSON Schema go?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": []
+    },
+    {
+      "id": 72,
+      "query": "my native mcp_server tool isn't showing up in tools/list even after drush cr. it extends ToolPluginBase. what am i missing?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": []
+    },
+    {
+      "id": 73,
+      "query": "We need to lock down write operations exposed through the contrib MCP Server module — right now any cookie-authenticated request to POST /_mcp can call a mutating tool. I overrode checkAccess() but it does nothing. How do I actually enforce authorization?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": []
+    },
+    {
+      "id": 74,
+      "query": "How do I subscribe to the SDK's RequestEvent and throw McpAuthorizationDeniedException to deny a tools/call before it runs? Trying to gate by Drupal permission.",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": []
+    },
+    {
+      "id": 75,
+      "query": "Want to expose a parameterized set of DKAN dataset records over MCP as a resource family with a URI template — is that a ResourceProvider or a ResourceTemplateProvider, and which attribute and directory do I use?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": []
+    },
+    {
+      "id": 76,
+      "query": "rebuilding dkan_mcp on top of mcp_server instead of the hand-rolled factory — which of the ~35 metastore/datastore tools carry over as #[Tool] plugins, and how should the ToolAccessSubscriber be wired?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": []
+    },
+    {
+      "id": 77,
+      "query": "getting a fatal that Mcp\\Server\\ClientGateway is not found when the server boots. composer show says mcp/sdk is 0.5. is that the problem?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": []
+    },
+    {
+      "id": 78,
+      "query": "My derivative tool plugin is getting rejected by the NameValidator at registration. The deriver emits IDs like mymodule:foo. How should derivative IDs be separated for the wire-exposed manager?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": []
+    },
+    {
+      "id": 79,
+      "query": "writing a phpunit test for an mcp_server Tool plugin — how do I instantiate it through plugin.manager.mcp_server.tool and assert the execute() result without standing up the whole stdio server?",
+      "expected_skill": "drupal-mcp-server",
+      "near_miss_for": []
+    },
+    {
+      "id": 80,
+      "query": "I'm writing a FunctionCall tool for the Drupal AI module so an agent can CRUD a node. Where does the plugin class go, which execute-related interface do I declare, and how do I read the arguments and set the output?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": [
+        "drupal-mcp-server"
+      ]
+    },
+    {
+      "id": 81,
+      "query": "How do I register a custom tool plugin in Drupal 11 — the attribute discovery, the plugin manager service, and the directory under src/Plugin? Just need the general plugin scaffolding, not anything AI- or MCP-specific.",
+      "expected_skill": "drupal-module-dev",
+      "near_miss_for": [
+        "drupal-mcp-server"
+      ]
+    },
+    {
+      "id": 82,
+      "query": "I want to add the GitHub MCP server and a filesystem MCP server to my Claude Code / Cursor client config so the assistant can use those tools. What does the mcpServers JSON block look like and how do I point it at the stdio command?",
+      "expected_skill": "none",
+      "near_miss_for": [
+        "drupal-mcp-server"
+      ]
+    },
+    {
+      "id": 83,
+      "query": "Building an AiAgent plugin with the ai_agents determine/solve framework and giving it a couple of FunctionCall tools. How does agentsCapabilities() route it, and how do the tools get invoked in the tool-calling loop?",
+      "expected_skill": "drupal-ai-module",
+      "near_miss_for": [
+        "drupal-mcp-server"
+      ]
+    },
+    {
+      "id": 84,
+      "query": "The dkan_mcp tools let me query the catalog — I want to pull every distribution's downloadURL for published datasets and check which ones 404. Can you run that against the datastore and report broken links?",
+      "expected_skill": "none",
+      "near_miss_for": [
+        "drupal-mcp-server"
+      ]
+    },
+    {
+      "id": 85,
+      "query": "On our DKAN site the React data catalog renders fine but every data table comes up empty and never fetches rows. I think the datastore_query_api flag in dkan_js_frontend.config is out of sync with what the library's useDatastore expects for the route shape. How do I line them up?",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": []
+    },
+    {
+      "id": 86,
+      "query": "We deployed a fresh build of the data-catalog-app into docroot/frontend and now we just get a blank white page. The module is enabled. What's the likely cause and how do I fix where the build output lands?",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": []
+    },
+    {
+      "id": 87,
+      "query": "I need to add a new SPA route like /publishers/{id} to the decoupled DKAN frontend so deep links work. Do I add a routing.yml entry or is there a config-driven way the dkan_js_frontend RouteProvider picks it up?",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": []
+    },
+    {
+      "id": 88,
+      "query": "whats the difference between data-catalog-components and cmsds-open-data-components and how do i tell which one our frontend app actually depends on? we're on node 22 if that matters",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": []
+    },
+    {
+      "id": 89,
+      "query": "Walk me through what ddev dkan-frontend-install actually does end to end — downloading the app into /frontend, the npm install, enabling the module, and why it sets front/403/404 to /home.",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": []
+    },
+    {
+      "id": 90,
+      "query": "How does the React single-page app served from /frontend actually reach DKAN's datastore query endpoint at runtime? I want to understand the data path from the browser through window.drupalSettings to the HTTP call, not the PHP that implements the endpoint.",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": []
+    },
+    {
+      "id": 91,
+      "query": "Our composer extra.dkan-frontend points at a custom app fork via url and ref, but ddev dkan-frontend-build doesn't seem to pick up my local component-library edits — the site still shows the published dist/main.js. How do I get the local library changes to show?",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": []
+    },
+    {
+      "id": 92,
+      "query": "Trying to understand the css_folder and js_folder keys in dkan_js_frontend.config. Does the Drupal module compile the React assets, or does it just glob and attach whatever is already built under /frontend/build/static?",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": []
+    },
+    {
+      "id": 93,
+      "query": "We want to serve the decoupled DKAN React catalog as the entire site frontend, not at a subpath. What's the serving contract between dkan_js_frontend, the Page controller, and the Drupal site config so deep links don't 404?",
+      "expected_skill": "dkan-frontend",
+      "near_miss_for": []
+    },
+    {
+      "id": 94,
+      "query": "I'm implementing the PHP for the /datastore/query endpoint in a custom DKAN module — I need to add a derived expression column and handle the SQL the way the DatastoreController does. How do I extend the query service?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": [
+        "dkan-frontend"
+      ]
+    },
+    {
+      "id": 95,
+      "query": "In dkan_datastore core I want to change how the query API serializes its JSON response shape for resourceId vs datasetID requests. Which class in Drupal\\dkan_datastore builds that payload and how do I alter it without breaking the existing tests?",
+      "expected_skill": "dkan-core-contributor",
+      "near_miss_for": [
+        "dkan-frontend"
+      ]
+    },
+    {
+      "id": 96,
+      "query": "Building a React single-page app and I want to wire up client-side routing with react-router so deep links don't 404 on refresh. What's the standard way to configure the catch-all route and history fallback?",
+      "expected_skill": "none",
+      "near_miss_for": [
+        "dkan-frontend"
+      ]
+    },
+    {
+      "id": 97,
+      "query": "For a distribution record the catalog UI shows, what's the actual difference between downloadURL and accessURL, and which one is required when the resource is a directly downloadable CSV?",
+      "expected_skill": "open-data-dcat",
+      "near_miss_for": [
+        "dkan-frontend"
+      ]
+    },
+    {
+      "id": 98,
+      "query": "Our custom module exposes the metastore dataset data the frontend consumes, but I need the REST response to add a computed field and respect the metastore reference dereferencing. How do I hook into the metastore item factory in PHP?",
+      "expected_skill": "dkan-module-author",
+      "near_miss_for": [
+        "dkan-frontend"
+      ]
+    },
+    {
+      "id": 99,
+      "query": "how do I vertically and horizontally center a div in plain CSS using flexbox?",
+      "expected_skill": "none",
+      "near_miss_for": []
+    },
+    {
+      "id": 100,
+      "query": "write a bash one-liner to recursively rename every .jpeg file to .jpg under the current directory",
+      "expected_skill": "none",
+      "near_miss_for": []
+    }
+  ]
+}

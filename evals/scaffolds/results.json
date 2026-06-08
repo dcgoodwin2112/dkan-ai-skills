@@ -1,0 +1,123 @@
+{
+  "eval": "scaffold_correctness",
+  "method": "Deterministic string/regex assertions over each scaffold command's embedded templates (assert_pos must match, assert_neg must not). Case-sensitive. No LLM, no PHP, no network. Checks the shipped command artifact, not model output.",
+  "provenance": {
+    "date": "2026-06-08",
+    "commands": 9,
+    "caveats": [
+      "Golden/regression gate: it encodes each command's documented contract (template + Pitfall checks) as executable assertions. It catches edits that break a template (drop a required method, change a signature, reintroduce a fabricated name) \u2014 the exact class of bug this repo has fixed by hand. It does not independently prove the template is correct in the world; that is what phpcs lint and the commands' own runtime-discovery steps provide.",
+      "phpcs Drupal,DrupalPractice is NOT run here (this is a plugin repo with no PHP/DDEV). It is a skip-guarded layer in bin/eval scaffolds that lints real generated output where a DDEV/phpcs environment exists."
+    ]
+  },
+  "summary": {
+    "commands": 9,
+    "passed": 9,
+    "assertions": 75,
+    "assertions_passed": 75,
+    "pos_total": 64,
+    "neg_total": 11,
+    "negatives_with_example": 11,
+    "negatives_live": 11
+  },
+  "per_command": [
+    {
+      "command": "mcp-scaffold-tool.md",
+      "skill": "drupal-mcp-server",
+      "kind": "full-template",
+      "passed": true,
+      "pos_total": 7,
+      "pos_missing": [],
+      "neg_total": 3,
+      "neg_hit": [],
+      "neg_dead": []
+    },
+    {
+      "command": "ai-scaffold-tool.md",
+      "skill": "drupal-ai-module",
+      "kind": "full-template",
+      "passed": true,
+      "pos_total": 7,
+      "pos_missing": [],
+      "neg_total": 2,
+      "neg_hit": [],
+      "neg_dead": []
+    },
+    {
+      "command": "ai-scaffold-action.md",
+      "skill": "drupal-ai-module",
+      "kind": "full-template",
+      "passed": true,
+      "pos_total": 10,
+      "pos_missing": [],
+      "neg_total": 2,
+      "neg_hit": [],
+      "neg_dead": []
+    },
+    {
+      "command": "ai-scaffold-agent.md",
+      "skill": "drupal-ai-module",
+      "kind": "full-template",
+      "passed": true,
+      "pos_total": 9,
+      "pos_missing": [],
+      "neg_total": 2,
+      "neg_hit": [],
+      "neg_dead": []
+    },
+    {
+      "command": "ai-scaffold-provider.md",
+      "skill": "drupal-ai-module",
+      "kind": "full-template",
+      "passed": true,
+      "pos_total": 8,
+      "pos_missing": [],
+      "neg_total": 1,
+      "neg_hit": [],
+      "neg_dead": []
+    },
+    {
+      "command": "scaffold-dkan-module.md",
+      "skill": "dkan-module-author",
+      "kind": "full-template",
+      "passed": true,
+      "pos_total": 9,
+      "pos_missing": [],
+      "neg_total": 1,
+      "neg_hit": [],
+      "neg_dead": []
+    },
+    {
+      "command": "scaffold-drupal-service.md",
+      "skill": "drupal-module-dev",
+      "kind": "snippet",
+      "passed": true,
+      "pos_total": 4,
+      "pos_missing": [],
+      "neg_total": 0,
+      "neg_hit": [],
+      "neg_dead": []
+    },
+    {
+      "command": "add-drupal-route.md",
+      "skill": "drupal-module-dev",
+      "kind": "snippet",
+      "passed": true,
+      "pos_total": 5,
+      "pos_missing": [],
+      "neg_total": 0,
+      "neg_hit": [],
+      "neg_dead": []
+    },
+    {
+      "command": "add-event-subscriber.md",
+      "skill": "dkan-module-author",
+      "kind": "snippet",
+      "passed": true,
+      "pos_total": 5,
+      "pos_missing": [],
+      "neg_total": 0,
+      "neg_hit": [],
+      "neg_dead": []
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "_about": "Phase 2 task-outcome eval. Each task is self-contained (subagents cannot see external DKAN/Drupal source). Grading is DETERMINISTIC string/regex matching (re.search, case-insensitive) to sidestep LLM-judge bias: pass = all assert_pos match AND no assert_neg matches. Tokens were verified present in the skill docs (the with-skill arm reads those docs), so a doc-informed answer passes; baseline relies on parametric knowledge. assert_neg tokens are known stale/hallucinated forms the skills corrected.",
+  "tasks": [
+    {
+      "id": 1,
+      "skill": "drupal-module-dev",
+      "prompt": "In Drupal 11.2 the combined hook_requirements() was split. Name the THREE replacements: the hook for runtime checks, the hook for update-time checks, and the class-based mechanism for install-time checks. Be exact.",
+      "assert_pos": ["hook_runtime_requirements", "hook_update_requirements", "InstallRequirementsInterface"],
+      "assert_neg": []
+    },
+    {
+      "id": 2,
+      "skill": "drupal-ai-module",
+      "prompt": "What exact Drupal core version constraint does drupal/ai 1.4.x require? Give the precise constraint string.",
+      "assert_pos": ["10\\.5", "11\\.2"],
+      "assert_neg": []
+    },
+    {
+      "id": 3,
+      "skill": "dkan-module-author",
+      "prompt": "In DKAN 4.x's metastore, which service do you inject to load a dataset item by UUID from a custom module? Give the service class and its exact service ID.",
+      "assert_pos": ["MetastoreService|dkan\\.metastore\\.service"],
+      "assert_neg": []
+    },
+    {
+      "id": 4,
+      "skill": "dkan-core-contributor",
+      "prompt": "You are adding a functional PHPUnit test to DKAN core that must run in its CircleCI matrix. What @group identifiers does DKAN use to split functional tests across CI nodes? Name the exact group(s).",
+      "assert_pos": ["functional1|functional2|functional3"],
+      "assert_neg": [],
+      "_neg_note": "Dropped neg 'functional0' during grader calibration: correct answers also mention it (to say 'do not use it'), so a substring neg false-fails them; the positive functional1|2|3 already captures correctness."
+    },
+    {
+      "id": 5,
+      "skill": "open-data-dcat",
+      "prompt": "A dataset record sets accrualPeriodicity to \"quarterly\". Is that a valid value in DKAN's Project Open Data / DCAT-US v1.1 schema? If not, what is the correct value representing quarterly?",
+      "assert_pos": ["R/P3M"],
+      "assert_neg": []
+    },
+    {
+      "id": 6,
+      "skill": "drupal-mcp-server",
+      "prompt": "Write a minimal write-capable #[Tool] plugin for the contrib drupal/mcp_server module on the mcp/sdk 0.6 API. Show the attribute, the base class, the execute() method signature, and how the tool gates access. Keep it short.",
+      "assert_pos": ["#\\[Tool\\b", "ClientGateway", "checkAccess"],
+      "assert_neg": ["RuntimeToolHandlerInterface"]
+    },
+    {
+      "id": 7,
+      "skill": "dkan-frontend",
+      "prompt": "In DKAN's decoupled React frontend (dkan_js_frontend), which configuration key controls which datastore query API style/endpoint the React app calls? Give the exact config key name.",
+      "assert_pos": ["datastore_query_api"],
+      "assert_neg": []
+    }
+  ]
+}
