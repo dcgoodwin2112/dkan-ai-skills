@@ -165,6 +165,16 @@ The plugin ships two read-only review subagents for the independent-review gates
 
 **`plan-diff-reviewer`** (WORKFLOW.md §8–§9) checks a **code change against the plan** it implements: every planned requirement present, nothing out of scope, plus correctness gaps. It reports **gaps, not style** (phpcs and the external reviewer own lint) and respects a repo's declined-style norms (e.g. accepted em dashes). Hand it the diff and the plan (inline or as paths); invoke it as `@agent-drupal-dkan-ai:plan-diff-reviewer`, or let it auto-delegate. It complements codex `review_diff` / `plan_vs_diff`. Output is fixed: Implemented / Missing-or-partial / Out-of-scope / Correctness concerns / Verdict.
 
+## Does it actually work?
+
+An eval harness in `evals/` measures whether the skills change outcomes, three ways (run via `bin/eval`; full method in **[docs/EVALS.md](docs/EVALS.md)**):
+
+- **Task outcome** — the same model, **with the skill vs. without**, on real DKAN/Drupal tasks, graded deterministically (no LLM judge). Headline: **100% vs 48%** of assertions pass (**+52 pts**). On the discriminating tasks the no-skill baseline produced confident, *plausible-but-wrong* answers — stale version constraints, invented service/method names, nonexistent config keys — the exact failure mode the skills prevent. Open **`evals/tasks/benchmark.html`** to see the with-vs-without answers side by side ([`evals/tasks/REPORT.md`](evals/tasks/REPORT.md)).
+- **Triggering gate** — does each skill's `description` attract the model for the right prompts and **not** for sibling-domain near-misses? ([`evals/triggering/REPORT.md`](evals/triggering/REPORT.md))
+- **Scaffold-correctness gate** — `bin/eval scaffolds` deterministically checks that every scaffold command's code template stays spec-conformant: required attribute / base class / method signature present, AI-fabricated forms absent ([`evals/scaffolds/REPORT.md`](evals/scaffolds/REPORT.md)).
+
+Honest by construction: the two **gates** are cheap and deterministic; the task benchmark is a **reported evidence artifact** (3 runs/arm, regenerated on demand), not a pass/fail gate; triggering is a description-attraction proxy, not production auto-load. For a live demo, **`demo/before-after.sh "<question>"`** answers one question with and without the skill, side by side.
+
 ## Reference docs
 
 ### Drupal module development (`plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/`)

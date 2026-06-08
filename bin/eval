@@ -9,6 +9,11 @@
 #                     near-misses (negatives). Per-skill sets are derived from
 #                     evals/triggering/routing.json by build_trigger_sets.py.
 #
+#   task              Regrade the recorded task-outcome runs and regenerate the
+#                     static demo (benchmark.json + benchmark.html). Deterministic,
+#                     no auth — operates on evals/tasks/runs/raw_runs.json. Collect
+#                     fresh runs in-session first (see docs/EVALS.md).
+#
 #   scaffolds         Scaffold-correctness gate (no auth, no deps — runs
 #                     anywhere). Deterministic string/regex assertions over each
 #                     scaffold command's embedded code templates: required
@@ -85,7 +90,7 @@ cmd_trigger() {
     ( cd "$tmp" && PYTHONPATH="$evals_dir" python3 -m lib.run_eval \
         --eval-set "$set_file" --skill-path "$skill_dir" \
         --runs-per-query "$runs" --num-workers "$workers" --timeout "$timeout" \
-        --verbose "${model_args[@]}" ) > "$results_dir/$skill.run_eval.json"
+        --verbose "${model_args[@]+"${model_args[@]}"}" ) > "$results_dir/$skill.run_eval.json"
     local rc=$?
     rm -rf "$tmp"
     [[ $rc -eq 0 ]] || die "run_eval failed for '$skill' (rc=$rc)"
@@ -134,8 +139,18 @@ cmd_scaffolds() {
   echo "   phpcs clean" >&2
 }
 
+cmd_task() {
+  command -v python3 >/dev/null 2>&1 || die "python3 not found"
+  echo "== task-outcome benchmark: regrade recorded runs + regenerate demo ==" >&2
+  python3 "$evals_dir/lib/grade_tasks.py"     || die "grade_tasks.py failed"
+  python3 "$evals_dir/lib/generate_viewer.py" || die "generate_viewer.py failed"
+  echo "   -> evals/tasks/benchmark.json + evals/tasks/benchmark.html" >&2
+  echo "   (collect fresh runs in-session before regrading — see docs/EVALS.md)" >&2
+}
+
 case "${1:-}" in
   trigger)   shift; cmd_trigger "${1:-}" ;;
+  task)      shift; cmd_task ;;
   scaffolds) shift; cmd_scaffolds ;;
-  *) echo "usage: bin/eval <trigger [skill] | scaffolds>" >&2; exit 2 ;;
+  *) echo "usage: bin/eval <trigger [skill] | task | scaffolds>" >&2; exit 2 ;;
 esac

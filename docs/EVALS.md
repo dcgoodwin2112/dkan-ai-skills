@@ -1,0 +1,96 @@
+# Evals
+
+How `dkan-ai-skills` measures whether the skills work, and how to reproduce it. The
+harness lives in `evals/`; the runner is `bin/eval`.
+
+Three evals, two roles:
+
+| eval | asks | role | command | needs |
+|---|---|---|---|---|
+| **triggering** | does a skill's `description` attract the model for the right prompts (and not sibling near-misses)? | enforced gate | `bin/eval trigger [skill]` | authenticated `claude` |
+| **task outcome** | does the packaged skill beat a no-skill baseline on real DKAN/Drupal tasks? | evidence artifact | `bin/eval task` | `python3` (regrade); in-session (fresh runs) |
+| **scaffold correctness** | do the scaffold commands' code templates stay spec-conformant? | enforced gate | `bin/eval scaffolds` | `python3` (+ optional phpcs) |
+
+**Gate vs. artifact.** The enforced, automatable gates are **triggering** and
+**scaffold-correctness** — cheap, stable, deterministic. The **task-outcome** benchmark is
+a *reported evidence/demo artifact*: 3 binary runs/arm is too coarse to gate on, so it is
+regenerated on demand, not enforced.
+
+Each eval has a detailed report next to its data — read those for method and results:
+`evals/triggering/REPORT.md`, `evals/tasks/REPORT.md`, `evals/scaffolds/REPORT.md`.
+
+## Run
+
+### `bin/eval trigger [skill]`
+Spawns `claude -p` per query against an **isolated temp project root**, detecting whether the
+named skill's description attracts a `Skill`/`Read` call. Per-skill sets are derived from
+`evals/triggering/routing.json`. **Auth:** needs a logged-in `claude` or `ANTHROPIC_API_KEY`;
+it does **not** work inside a sandboxed Claude Code session (nested `claude -p` returns 401).
+Knobs: `EVAL_RUNS`, `EVAL_WORKERS`, `EVAL_TIMEOUT`, `EVAL_MODEL`. The in-session complement
+(no auth) is `evals/triggering/results/judge_routing.json`.
+
+### `bin/eval task`
+Regrades the recorded paired runs (`evals/tasks/runs/raw_runs.json`) with the deterministic
+grader and regenerates the static demo: `benchmark.json` + `benchmark.html`. **No auth, no
+model** — fully reproducible. To collect **fresh** runs: in-session, run the paired subagents
+over `evals/tasks/tasks.json` (with-skill reads the named skill's docs; baseline answers from
+parametric knowledge only — same model both arms), record verbatim into `raw_runs.json`, then
+`bin/eval task`.
+
+### `bin/eval scaffolds`
+Deterministic gate over each scaffold command's embedded templates (required attribute / base
+class / method signatures / version-gate present; fabricated forms absent). **No deps, no
+auth.** Optionally lints **real generated output** with phpcs where a Drupal/DDEV env exists:
+set `EVAL_PHPCS` (e.g. `"ddev exec vendor/bin/phpcs"`) and `EVAL_SCAFFOLD_OUTPUT_DIR`; absent
+either, the phpcs layer skips cleanly and the structural gate still runs.
+
+## What the numbers do / don't claim
+
+- **triggering** is a **description-attraction proxy**, not production auto-load, and is
+  partially circular (the labels and the judge complement share the descriptions). Real
+  auto-load arbitration across 7 siblings is approximated by sibling-domain negatives.
+- **task outcome** measures the **packaged skill end-to-end vs. nothing**, in-session (the
+  with-skill arm *reads* the docs) — not auto-load, and 3 binary runs/arm is coarse.
+- **scaffold correctness** is a **golden/regression gate** on the shipped templates, not proof
+  of world-correctness — phpcs lint and the commands' own runtime-discovery steps own that.
+
+## Add an eval
+
+- **triggering** — add queries to `evals/triggering/routing.json` (`expected_skill`,
+  `near_miss_for`); `bin/eval trigger` rebuilds the per-skill sets.
+- **task** — add a task to `evals/tasks/tasks.json` with ≥1 DKAN-specific `assert_pos` and, where
+  apt, an `assert_neg` for a known hallucination; calibrate (below); collect runs; `bin/eval task`.
+- **scaffold** — add a command's assertions to `evals/scaffolds/checks.json`: `assert_pos`
+  required forms, `assert_neg` fabricated forms (always `code`-scoped) each with a `neg_example`.
+
+## Calibration & discrimination
+
+Grading is **deterministic string/regex** (no LLM judge), so there is no judge to calibrate —
+the discipline is making assertions *discriminate*:
+
+- **task** — confirm each `assert_pos` matches a correct answer and that the assertion actually
+  **fails the baseline on ≥1 run**; drop non-discriminating assertions (they inflate both arms).
+- **scaffold** — every `assert_neg` carries a `neg_example`; the checker **fails the gate** if a
+  negative cannot match its own example, so a typo'd negative can't pass silently.
+
+## Cost
+
+`trigger` and fresh `task` runs spend tokens + time (`claude -p` / subagents) — keep the corpus
+small (≤12 tasks × 3 runs; ~100 trigger queries) and report spend. `task` regrade, the viewer,
+and the `scaffolds` gate are **free** (no model).
+
+## Provenance
+
+Each eval records date, `claude` CLI version, model, and runs in its results JSON. The vendored
+`run_eval.py` pins its skill-creator source — see `evals/lib/PROVENANCE.md`.
+
+## CI
+
+- **scaffold gate** — run on every change (no deps).
+- **triggering gate** — run on description changes (cheap); needs `ANTHROPIC_API_KEY`.
+- **task benchmark** — on demand only (coarse; not a gate).
+
+## Live demo
+
+`demo/before-after.sh ["question"]` — asks one question with and without the skill and prints
+the answers labeled side by side. A presentation aid, separate from the measurement path.
