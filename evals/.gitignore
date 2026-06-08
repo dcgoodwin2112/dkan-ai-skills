@@ -1,0 +1,7 @@
+# Derived from routing.json by build_trigger_sets.py — bin/eval regenerates these.
+sets/
+# Blinded judge input + any scratch — reproducible from routing.json.
+_*.json
+# Per-run run_eval.py outputs (run-specific). The in-session judge artifact
+# results/judge_routing.json IS committed (it doesn't match this pattern).
+*.run_eval.json
