@@ -17,9 +17,10 @@ will follow instructions embedded in it (indirect prompt injection) as readily a
 instructions from the operator. Design accordingly:
 
 - **Separate read from write.** Keep read-only and read-write tools on **distinct,
-  separately-credentialed surfaces** (the `dkan-ro` / `dkan-rw` split) so text
-  injected on the read path has no write tool in reach. A read tool must never call
-  a destructive path.
+  separately-credentialed surfaces** (the `dkan-ro` / `dkan-rw` split — on DKAN,
+  per-account stdio `--user` plus the OAuth `dkan_mcp:read`/`dkan_mcp:write`
+  scopes) so text injected on the read path has no write tool in reach. A read
+  tool must never call a destructive path.
 - **Human-gate destructive verbs.** `delete`, `drop`, `unpublish`, `publish`, bulk
   `patch` — keep these behind explicit human approval that shows the full,
   untruncated parameters, not autonomous on the agent's say-so.
@@ -74,8 +75,8 @@ First subscriber to throw wins; dispatch aborts immediately.
 
 To make per-plugin `checkAccess()` actually gate calls, subscribe to
 `RequestEvent`, resolve the plugin from the `CallToolRequest` name, and invoke its
-check against the current user. This is the validated DKAN `ToolAccessSubscriber`
-shape ([dkan-integration.md](dkan-integration.md)):
+check against the current user. This is the `ToolAccessSubscriber` shape
+`dkan_mcp_server` ships ([dkan-integration.md](dkan-integration.md)):
 
 ```php
 declare(strict_types=1);
@@ -194,8 +195,9 @@ Browser clients need CORS on the endpoint. In this module CORS is handled in-cor
 (compiler pass) rather than by a per-site response subscriber. If your browser
 client fails preflight, verify the response exposes `Mcp-Session-Id` and allows
 `Mcp-Protocol-Version`; if the in-core set is too narrow for your client, add a
-thin response subscriber. (DKAN's hand-rolled `dkan_mcp` carries its own
-`McpCorsSubscriber`; the `mcp_server` migration drops it for the in-core path.)
+thin response subscriber. (DKAN's `dkan_mcp_server` augments the in-core set via
+a compiler pass, `McpCorsAuthHeaderPass`; the legacy `dkan_mcp` carried its own
+`McpCorsSubscriber`.)
 
 ## Sessions
 

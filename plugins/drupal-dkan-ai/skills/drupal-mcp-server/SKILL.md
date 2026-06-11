@@ -116,13 +116,15 @@ Full method signatures: [tool-plugins.md](reference/tool-plugins.md),
 
 ## DKAN integration
 
-DKAN ships `dkan_mcp`, today a **hand-rolled** MCP server (own factory, controller,
-drush command on `mcp/sdk ^0.4`) exposing ~35 metastore/datastore/harvest tools.
-There is a validated plan to **rebuild it on `mcp_server`** as `#[Tool]` plugins +
-a `ToolAccessSubscriber`, gated on the `mcp/sdk 0.6.0` tag (now landed, 2026-06-02). If you're touching DKAN
-MCP, read [dkan-integration.md](reference/dkan-integration.md) **first** — it tells
-you which world you're in and what carries over. For DKAN service/API specifics,
-the `dkan-module-author` skill is the companion.
+DKAN MCP on `dkan-site` is **`dkan_mcp_server`** — a custom module built ON
+`mcp_server` (`mcp/sdk ^0.6`) exposing **38 tools (25 read / 13 write)** as
+`#[Tool]` plugins, with per-tool `checkAccess()` enforced by a shipped
+`ToolAccessSubscriber`; stdio via `drush dkan-mcp-server:serve --user=NAME`, HTTP
+at `/mcp` with OAuth-only auth (since 2026-06-10). The legacy hand-rolled
+`dkan_mcp` (a ~35-tool surface on `mcp/sdk ^0.4`) is disabled. If you're touching
+DKAN MCP, read [dkan-integration.md](reference/dkan-integration.md) **first** —
+it tells you which world you're in and what carried over. For DKAN service/API
+specifics, the `dkan-module-author` skill is the companion.
 
 ## Reference
 
