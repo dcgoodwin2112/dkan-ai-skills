@@ -29,11 +29,14 @@ tokens, no `claude -p` — it runs fine inside a Claude Code session and finishe
   Configured but unreachable → exit 2 with the server's stderr tail and a ddev hint. Any check
   fail/error → exit 1. Provenance records a site fingerprint from `get_site_status`.
 
-## Result (day one, 2026-06-11)
+## Result
 
-**22/27 pass — the 5 failures are the demonstration.** Every live check against the running
-site passes; every failure is a doc tripwire catching real drift created on 2026-06-10, when
-the site's MCP module (`dkan_mcp_server` 1.0.x) moved under the docs:
+**Current: 27/27 pass** (committed `results.json`) after the follow-up docs PR fixed the drift
+the gate caught on day one.
+
+**Day one (2026-06-11): 22/27 — the 5 failures were the demonstration.** Every live check
+against the running site passed; every failure was a doc tripwire catching real drift created
+on 2026-06-10, when the site's MCP module (`dkan_mcp_server` 1.0.x) moved under the docs:
 
 | failing tripwire | stale text | live truth (proven by) |
 |---|---|---|
@@ -44,10 +47,10 @@ the site's MCP module (`dkan_mcp_server` 1.0.x) moved under the docs:
 | doc_names_current_serve_cmd | current command unnamed | dkan-mcp-server:serve |
 
 Each tripwire's expected value is justified by a sibling live check in the same run — the
-pairing is the gate's core idea. The fix is a follow-up docs PR (which must also run
-`bin/build-adapters`); this report's red snapshot stays committed as the discrimination
-evidence, mirroring how the scaffold gate documents catching a deliberate break — except this
-break is real.
+pairing is the gate's core idea. The follow-up docs PR rewrote `dkan-integration.md` /
+`SKILL.md` to the post-migration reality (and reran `bin/build-adapters`), turning the gate
+green. This section keeps the red snapshot as the discrimination evidence, mirroring how the
+scaffold gate documents catching a deliberate break — except this break was real.
 
 ## Discrimination (verified end-to-end)
 
@@ -83,6 +86,6 @@ renamed setups: `EVAL_DKAN_MCP_CMD_RO/_RW`, `EVAL_DKAN_SITE_URL`, `EVAL_DKAN_MCP
 ## Files
 
 - `checks.json` — probe/op/expected check inventory (source of truth)
-- `results.json` — committed day-one run (red by design; see Result)
+- `results.json` — committed latest run (green; the day-one red is documented above)
 - `../lib/check_live.py` — gate runner · `../lib/mcp_stdio.py` — stdio JSON-RPC client
 - `../../bin/eval` — `live` subcommand

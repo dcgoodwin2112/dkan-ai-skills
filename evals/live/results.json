@@ -38,8 +38,8 @@
   },
   "summary": {
     "checks": 27,
-    "passed": 22,
-    "failed": 5,
+    "passed": 27,
+    "failed": 0,
     "skipped": 0,
     "errors": 0,
     "by_group": {
@@ -62,8 +62,8 @@
         "error": 0
       },
       "doc_tripwire": {
-        "pass": 0,
-        "fail": 5,
+        "pass": 5,
+        "fail": 0,
         "skip": 0,
         "error": 0
       }
@@ -1003,8 +1003,8 @@
       "note": "live serve command is dkan-mcp-server:serve (the regex cannot substring-match it: ':serve' must follow 'dkan-mcp')",
       "skill": "drupal-mcp-server",
       "doc_ref": null,
-      "status": "fail",
-      "actual": "matched at line 26: 'dkan-mcp:serve'"
+      "status": "pass",
+      "actual": "no match (stale text absent)"
     },
     {
       "id": "doc_no_35_tools",
@@ -1015,8 +1015,8 @@
       "note": "live writer surface is 38 tools (see rw_tool_count)",
       "skill": "drupal-mcp-server",
       "doc_ref": null,
-      "status": "fail",
-      "actual": "matched at line 29: '~35 tools'"
+      "status": "pass",
+      "actual": "no match (stale text absent)"
     },
     {
       "id": "doc_no_22_read",
@@ -1027,8 +1027,8 @@
       "note": "live reader surface is 25 read tools (see ro_tool_count)",
       "skill": "drupal-mcp-server",
       "doc_ref": null,
-      "status": "fail",
-      "actual": "matched at line 30: '22 read'"
+      "status": "pass",
+      "actual": "no match (stale text absent)"
     },
     {
       "id": "doc_skill_no_35",
@@ -1039,8 +1039,8 @@
       "note": "SKILL.md repeats the stale ~35 count",
       "skill": "drupal-mcp-server",
       "doc_ref": null,
-      "status": "fail",
-      "actual": "matched at line 120: '~35 '"
+      "status": "pass",
+      "actual": "no match (stale text absent)"
     },
     {
       "id": "doc_names_current_serve_cmd",
@@ -1051,8 +1051,8 @@
       "note": "the doc should name the current serve command (most opinionated tripwire \u2014 droppable if the docs PR restructures the file)",
       "skill": "drupal-mcp-server",
       "doc_ref": null,
-      "status": "fail",
-      "actual": "no match in file"
+      "status": "pass",
+      "actual": "matched"
     }
   ]
 }
