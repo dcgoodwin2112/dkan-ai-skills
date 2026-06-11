@@ -19,8 +19,8 @@ $ARGUMENTS should be: `<module_path> [event_name]`
 1. **Locate the module**: Read its `.info.yml` to confirm the machine name and namespace.
 
 2. **Discover events**:
-   - If no event name provided: when a Drupal MCP server (e.g. `dkan_mcp`) is connected, call its `list_events` tool. Otherwise, grep DKAN source for event constants: `grep -rn "const EVENT_" <webroot>/modules/contrib/dkan/modules/*/src/`. Present the results as a numbered list showing: constant name, event string, declaring class, module. Ask the user which event(s) to subscribe to.
-   - If event name provided: when the MCP server is connected, call its `get_event_info` tool to see the declaring class and existing subscribers. Otherwise, grep DKAN source for the event string and its `EVENT_` constant to find the declaring class, and grep for `getSubscribedEvents` referencing it to find existing subscribers. Note existing subscribers so the new one doesn't duplicate behavior.
+   - If no event name provided: grep DKAN source for event constants: `grep -rn "const EVENT_" <webroot>/modules/contrib/dkan/modules/*/src/`. Present the results as a numbered list showing: constant name, event string, declaring class, module. Ask the user which event(s) to subscribe to.
+   - If event name provided: grep DKAN source for the event string and its `EVENT_` constant to find the declaring class, and grep for `getSubscribedEvents` referencing it to find existing subscribers. Note existing subscribers so the new one doesn't duplicate behavior.
 
 3. **Generate the subscriber class** at `src/EventSubscriber/{Name}Subscriber.php`:
    - Namespace: `Drupal\{module_name}\EventSubscriber`

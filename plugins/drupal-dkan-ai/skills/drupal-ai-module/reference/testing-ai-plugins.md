@@ -1,6 +1,6 @@
 # Testing Drupal AI Plugins
 
-How to test providers, FunctionCall tools, and agents. Two layers: deterministic PHPUnit unit tests for the glue you wrote, and non-deterministic eval runs for model behavior. Patterns below are grounded in `dkan_drupal_ai_query` and `dkan_query_tools`. Targets `drupal/ai ^1.3` + `ai_agents 1.2.x`.
+How to test providers, FunctionCall tools, and agents. Two layers: deterministic PHPUnit unit tests for the glue you wrote, and non-deterministic eval runs for model behavior. Patterns below are grounded in `dkan_ai_query` (drupal.org project, 0.x — renamed 2026-06 from `dkan_drupal_ai_query`) and `dkan_query_tools`. Targets `drupal/ai ^1.3` + `ai_agents 1.2.x`.
 
 ## 1. The testing pyramid
 
@@ -61,10 +61,10 @@ The mock `Query` returns a `RootedData\RootedJsonData` because that is the real 
 
 To verify *which tools an agent invoked* and *what it captured*, subscribe to `ai_agents` tool events. DKAN has two subscribers on `AgentToolFinishedExecutionEvent`:
 
-- `ArtifactCaptureSubscriber` (`<webroot>/modules/custom/dkan_drupal_ai_query/src/EventSubscriber/ArtifactCaptureSubscriber.php`) — transforms tool output into UI artifacts (data tables, charts, aux panels, a debug `tool_call` snapshot).
+- `ArtifactCaptureSubscriber` (`<webroot>/modules/custom/dkan_ai_query/src/EventSubscriber/ArtifactCaptureSubscriber.php`) — transforms tool output into UI artifacts (data tables, charts, aux panels, a debug `tool_call` snapshot).
 - `ToolCallEvalCollectorSubscriber` (priority `-100`) — records every call into `EvalToolCallCollector`, keyed by thread/runner id, for eval scoring.
 
-Unit-test a subscriber by constructing it directly and firing a real event with a **stub tool**. `FunctionCallStub` (`<webroot>/modules/custom/dkan_drupal_ai_query/tests/stubs/FunctionCallStub.php`) lives outside any namespace and implements only the surface subscribers touch: `getFunctionName()`, `getReadableOutput()`, `getContextValues()`.
+Unit-test a subscriber by constructing it directly and firing a real event with a **stub tool**. `FunctionCallStub` (`<webroot>/modules/custom/dkan_ai_query/tests/stubs/FunctionCallStub.php`) lives outside any namespace and implements only the surface subscribers touch: `getFunctionName()`, `getReadableOutput()`, `getContextValues()`.
 
 ```php
 $tool = new \FunctionCallStub(
@@ -89,7 +89,7 @@ For the **artifact subscriber** (`ArtifactCaptureSubscriberTest`), mock `Artifac
 
 ## 4. Golden-case eval harness
 
-When unit tests can't help — you need to know whether the *model* does the right thing — use the golden-case harness in `<webroot>/modules/custom/dkan_drupal_ai_query/src/Eval/`. Define expected behavior in YAML, run each case through the real agent, score, report.
+When unit tests can't help — you need to know whether the *model* does the right thing — use the golden-case harness in `<webroot>/modules/custom/dkan_ai_query/src/Eval/`. Define expected behavior in YAML, run each case through the real agent, score, report.
 
 - **`GoldenCase`** (`GoldenCase.php`) — one immutable case loaded from a YAML row. Fields beyond `id`/`question`: `expectedDatasetId`, `expectedAnswerPattern` (regex), `forbiddenAnswerPattern`, `expectedRefusal`, `expectedRefusalCategory`, `expectedToolCalls`, `forbiddenToolCalls`, `expectedFailureCategory`. The YAML set lives at `tests/eval/golden_set.yml`.
 - **`EvalRunner`** (`EvalRunner.php`) — runs cases through the live `dkan_data_query` agent, bypassing the HTTP controller. Per case: create provider + agent, prepend catalog context (mirrors production), `setAiConfiguration(['temperature' => 0])` for max determinism, `setProgressTracking(FALSE)` (no session under Drush), `determineSolvability()` then `solve()`. Flushes all caches between cases for clean state. Reads captured refusal + tool calls afterward.
@@ -122,7 +122,7 @@ return new ChatOutput($message, ['mock' => TRUE], []);
 
 The agent consumes output via `ChatOutput::getNormalized()`, which returns the `ChatMessage` (or a `StreamedChatMessageIteratorInterface` when streaming — don't stream in tests). `$message->getText()` is the answer; `$message->getTools()` is the tool calls.
 
-DKAN ships a full mock provider rather than ad-hoc mocking for end-to-end runs: `dkan_drupal_ai_query_mock` (`<webroot>/modules/custom/dkan_drupal_ai_query/modules/dkan_drupal_ai_query_mock/`). Its `DkanAiqMockProvider` is a real `AiProvider` plugin (`getSupportedOperationTypes() => ['chat']`, capabilities `ChatTools` + `ChatSystemRole`) that replays scripted YAML scenarios (`scenarios/*.yml`: `match` block + ordered `turns` of `tool_calls`/`final_answer`). Real tools still execute against the datastore — only the LLM is replaced. Use it to exercise the full controller/polling/artifact UI without API cost or non-determinism.
+DKAN ships a full mock provider rather than ad-hoc mocking for end-to-end runs: `dkan_ai_query_mock` (`<webroot>/modules/custom/dkan_ai_query/modules/dkan_ai_query_mock/`). Its `DkanAiqMockProvider` is a real `AiProvider` plugin (`getSupportedOperationTypes() => ['chat']`, capabilities `ChatTools` + `ChatSystemRole`) that replays scripted YAML scenarios (`scenarios/*.yml`: `match` block + ordered `turns` of `tool_calls`/`final_answer`). Real tools still execute against the datastore — only the LLM is replaced. Use it to exercise the full controller/polling/artifact UI without API cost or non-determinism.
 
 Critical shape detail (from the mock's `chat()`): tool-call turns must put an array of `ToolsFunctionOutput` directly on the assistant `ChatMessage` via `setTools()`, matching `OpenAiProvider`. Wrapping them in a `ToolsOutput` (as `EchoProvider` does) crashes the agent in `FunctionCallPluginManager::convertToolResponseToObject()`.
 

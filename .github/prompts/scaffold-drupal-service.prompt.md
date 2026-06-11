@@ -25,7 +25,7 @@ ${input:args} should be: `<module_path> <ServiceName> [dependency_service_ids...
    - The fully qualified class name (for the type hint)
    - Public method signatures (for reference when writing the service logic)
 
-   If a Drupal MCP server (e.g. `dkan_mcp`) is connected, use its `get_service_info` tool. Otherwise, locate the service definition by grepping the `*.services.yml` files (e.g. `<webroot>/modules/contrib/dkan/**/*.services.yml`) for the service ID to get its `class:`, then read that class file for public method signatures.
+   Locate the service definition by grepping the `*.services.yml` files (e.g. `<webroot>/modules/contrib/dkan/**/*.services.yml`) for the service ID to get its `class:`, then read that class file for public method signatures.
 
    If a service ID is a Drupal core service (e.g., `http_client`, `request_stack`), use known type hints (`ClientInterface`, `RequestStack`, etc.) without further lookup.
 

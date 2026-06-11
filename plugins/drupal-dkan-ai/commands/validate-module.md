@@ -24,7 +24,7 @@ $ARGUMENTS should be the module path relative to the project root (e.g., `dkan_q
    - Otherwise try Drupal bootstrap: `ddev exec phpunit {module_path}/tests/`
    - Report pass/fail counts.
 
-4. **Permission audit**: If a Drupal MCP server (e.g. `dkan_mcp`) is connected, call its `check_permissions` tool and report any orphaned route permissions, unused permissions, or orphaned role permissions that involve this module. Otherwise, audit manually: read `{module_path}/{module_name}.permissions.yml` for declared permissions, grep `{module_path}/{module_name}.routing.yml` for `_permission` requirements, and flag any route permission that isn't declared in `.permissions.yml` or known Drupal/DKAN core permissions.
+4. **Permission audit**: read `{module_path}/{module_name}.permissions.yml` for declared permissions, grep `{module_path}/{module_name}.routing.yml` for `_permission` requirements, and flag any route permission that isn't declared in `.permissions.yml` or known Drupal/DKAN core permissions.
 
 5. **Cache rebuild**:
    ```

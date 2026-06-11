@@ -38,12 +38,13 @@ plugin wrapper needs only a smoke test.
 
 ## Standalone stubs (no Drupal bootstrap)
 
-DKAN's `dkan_mcp` tests run on the site-level PHPUnit with **standalone stubs** —
-minimal local implementations of DKAN/Drupal classes (`tests/stubs/*.php`) loaded
-via `tests/bootstrap.php`, so logic tests need no running site or DB. Mirror this
-when your tool delegates to heavy services: stub the service's contract, assert
-your adapter calls it correctly. Fast, hermetic, and unaffected by the
-hand-rolled-vs-`mcp_server` migration (the logic classes don't change).
+DKAN's `dkan_ai_query` tests run on the site-level PHPUnit with **standalone
+stubs** — minimal local implementations of DKAN/Drupal classes
+(`tests/stubs/*.php`) loaded via `tests/bootstrap.php`, so logic tests need no
+running site or DB. Mirror this when your tool delegates to heavy services: stub
+the service's contract, assert your adapter calls it correctly. Fast and
+hermetic. (`dkan_mcp_server` itself uses conventional Unit/Kernel suites with
+test doubles.)
 
 ## Kernel test the integration (sparingly)
 
@@ -89,7 +90,7 @@ applied to *authorization*.
 # Contrib module's own suite (run from the Drupal root):
 vendor/bin/phpunit <webroot>/modules/contrib/mcp_server/tests/
 
-# A custom module with standalone stubs (DKAN dkan_mcp style):
+# A module with standalone stubs (DKAN dkan_ai_query style):
 cd <webroot>/modules/custom/<module> && ../../../../vendor/bin/phpunit
 
 vendor/bin/phpcs --standard=Drupal,DrupalPractice <webroot>/modules/custom/<module>/
