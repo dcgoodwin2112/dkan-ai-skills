@@ -41,7 +41,7 @@ the architecture that links the three moving pieces.
 4. **Serving the SPA as the site frontend needs `front`, `404`, and `403` all set to `/home`.** Otherwise deep links and unknown paths return Drupal's 404 instead of loading the app. `ddev dkan-frontend-install` sets these.
 5. **The app talks to DKAN over HTTP only — no PHP coupling.** It fetches metastore (`/api/1/metastore/...`), datastore (`/datastore/query/...`), search, and `openapi.json`. Metadata field meaning is [`open-data-dcat`](../open-data-dcat/SKILL.md); datastore/search API mechanics are [`dkan-module-author`](../dkan-module-author/SKILL.md).
 6. **The `datastore_query_api` switch is the load-bearing Drupal↔React coupling.** It's a `dkan_js_frontend.config` key surfaced into `window.drupalSettings`; the library's `useDatastore` reads it to pick the datastore route (`/datastore/query/{resourceId}` when false vs `/datastore/query/{datasetID}/0` when true). A mismatch yields empty data tables ([build-deploy-customize.md](reference/build-deploy-customize.md)).
-7. **Two library lineages exist — don't conflate them.** The older `@civicactions/data-catalog-components` (used by the `data-catalog-app` scaffold, DKAN 2.x era, Node 16) and the current `@civicactions/cmsds-open-data-components` (CMS Design System based, Node 22, actively maintained). They have different APIs, props, and docs ([architecture.md](reference/architecture.md)).
+7. **Two library lineages exist — don't conflate them.** The older `@civicactions/data-catalog-components` (used by the `data-catalog-app` scaffold, DKAN 2.x era, Node 18) and the current `@civicactions/cmsds-open-data-components` (CMS Design System based, Node 22, actively maintained). They have different APIs, props, and docs ([architecture.md](reference/architecture.md)).
 8. **The component library is consumed as a built npm dep** (`dist/main.js`) — component-level questions (templates, hooks, props, ACA token, React Query wrapping) belong to that repo's own `agent-docs/`, not here. Cross-reference; don't reimplement its docs.
 
 ## Top pitfalls
@@ -78,13 +78,13 @@ Symptom → cause → fix.
 | | Older | Current |
 |---|---|---|
 | Component lib | `@civicactions/data-catalog-components` (~1.18) | `@civicactions/cmsds-open-data-components` (4.x) |
-| App scaffold | `data-catalog-app` (Vite, Node 16, DKAN 2.x) | cmsds-based site shells |
+| App scaffold | `data-catalog-app` (Vite, Node 18, DKAN 2.x) | cmsds-based site shells |
 | UI base | custom | CMS Design System (`@cmsgov/design-system`) |
 
 ## Version notes
 
 - Verified against DKAN 4.x's `dkan_js_frontend` (`core_version_requirement: ^10.2 || ^11`) and `cmsds-open-data-components` 4.x.
-- The `data-catalog-app` scaffold on its default branch still targets the older `data-catalog-components` library and DKAN 2.x (Node 16). New builds typically use a `cmsds-open-data-components`-based shell. Confirm the app's `package.json`.
+- The `data-catalog-app` scaffold on its default branch still targets the older `data-catalog-components` library and DKAN 2.x (Node 18). New builds typically use a `cmsds-open-data-components`-based shell. Confirm the app's `package.json`.
 - The component library is published to npm and consumed as `dist/main.js`; its repo's `agent-docs/` are the source of truth for component APIs.
 
 ## Cross-references

@@ -40,9 +40,10 @@ the single biggest hazard; treat every API below as version-contingent.
   0.6-only classes). Trust the **source + `composer.json`** over prose.
 - **`mcp_server` core has no Drupal module dependencies** — only `php` + `mcp/sdk`
   + `psr/simple-cache` at the Composer level. OAuth, admin UI, and the `drupal/tool`
-  bridge are submodules (see below).
-- Per its maintainer: *this module is unreleased — add no backwards-compatibility
-  layers or migrations in your solutions.*
+  bridge are separate companion projects (extracted from in-tree submodules
+  2026-06-09; see below).
+- First tag: `2.0.0-alpha1` (2026-06-11) — still pre-stable. Per its maintainer:
+  *add no backwards-compatibility layers or migrations in your solutions.*
 
 Always confirm the installed reality before relying on a signature:
 
@@ -53,8 +54,9 @@ ls <webroot>/modules/contrib/mcp_server/src/Plugin # confirm the plugin classes 
 
 If `mcp/sdk` resolves to `0.4`/`0.5` but `mcp_server` is on `2.x`, the module
 references SDK classes that **are not installed** and will fatal — bump the SDK
-or pin the module to a matching branch first. (This is exactly the state of
-`dkan-site` today; see [dkan-integration.md](reference/dkan-integration.md).)
+or pin the module to a matching branch first. (This was `dkan-site`'s state
+before its 2026-06 migration; see
+[dkan-integration.md](reference/dkan-integration.md).)
 
 ## When to use which extension point
 
@@ -67,7 +69,7 @@ or pin the module to a matching branch first. (This is exactly the state of
 | Autocomplete a prompt argument's values | **PromptArgumentCompletionProvider** | `#[PromptArgumentCompletionProvider]` under `src/Plugin/PromptArgumentCompletionProvider/` | [resources-prompts-notifications.md#completion-providers](reference/resources-prompts-notifications.md#completion-providers) |
 | Declare server-emitted notifications | **NotificationProvider** | `#[Notification]` under `src/Plugin/Notification/` | [resources-prompts-notifications.md#notifications](reference/resources-prompts-notifications.md#notifications) — **stub only, not yet wired** |
 | Gate who may call a tool / read a resource | **`RequestEvent` subscriber** | `event_subscriber` service | [auth-and-access.md](reference/auth-and-access.md) |
-| Expose an existing `drupal/tool` (Tool API) tool over MCP **without writing a plugin** | **`mcp_server_tool_bridge`** submodule | `McpToolConfig` entity (admin UI) | [mcp-overview.md#submodules](reference/mcp-overview.md#submodules) |
+| Expose an existing `drupal/tool` (Tool API) tool over MCP **without writing a plugin** | **`mcp_server_tool_bridge`** companion project | `McpToolConfig` entity (admin UI) | [mcp-overview.md#companion-projects](reference/mcp-overview.md#companion-projects) |
 | Just *call* the MCP server from a client | client config, no plugin | — | [mcp-overview.md#transports](reference/mcp-overview.md#transports) |
 
 Most work is **Tool plugins**. Reach for resources/prompts only when the client
@@ -81,7 +83,7 @@ should *read* artifacts or *reuse* prompt templates rather than invoke actions.
 4. **Derivative IDs use `.`, never `:`.** The MCP `NameValidator` rejects `:` in wire names; `mcp_server` swaps the core `base:derivative` separator to `base.derivative` on wire-exposed managers. `ToolPluginBase::DERIVATIVE_SEPARATOR` is already `.` — emit `.` from your deriver.
 5. **The handler signature is `execute(array $arguments, ClientGateway $gateway): mixed`** (0.6 API, from the SDK's `ToolHandlerInterface`). It is **not** on `ToolPluginBase` — you implement it. The `$gateway` (`Mcp\Server\ClientGateway`) is how a tool requests client sampling.
 6. **Schemas live in the `#[Tool]` attribute.** `inputSchema:` / `outputSchema:` on the attribute take precedence over the base accessors (which return empty). Write the JSON Schema in the attribute.
-7. **Admin/form code lives in `mcp_server_ui`, example plugins in `mcp_server_examples`** — not in core. Mirror the `views`/`views_ui` split.
+7. **Admin/form code lives in `mcp_server_ui`, example plugins in `mcp_server_examples`** — companion projects, not in core. Mirror the `views`/`views_ui` split.
 8. **`declare(strict_types=1);` + `final` classes + constructor promotion** — house style; phpcs (`Drupal,DrupalPractice`) and phpstan are enforced.
 
 ## Top pitfalls (full list: each reference doc)
@@ -128,11 +130,11 @@ specifics, the `dkan-module-author` skill is the companion.
 
 ## Reference
 
-- [reference/mcp-overview.md](reference/mcp-overview.md) — architecture (SDK bridge + Drupal plugins/config entities), extension-point map, transports, submodules, version landscape
+- [reference/mcp-overview.md](reference/mcp-overview.md) — architecture (SDK bridge + Drupal plugins/config entities), extension-point map, transports, companion projects, version landscape
 - [reference/tool-plugins.md](reference/tool-plugins.md) — `#[Tool]` attribute, `ToolPluginBase`, `execute()`, `ToolDefinition`, derivers, schemas, enablement
 - [reference/resources-prompts-notifications.md](reference/resources-prompts-notifications.md) — resource providers/templates, prompt config entities + completion providers, notification stub
-- [reference/auth-and-access.md](reference/auth-and-access.md) — `RequestEvent` gating, `McpAuthorizationDeniedException`, the unenforced-`checkAccess` gotcha, OAuth submodule, CORS, sessions
+- [reference/auth-and-access.md](reference/auth-and-access.md) — `RequestEvent` gating, `McpAuthorizationDeniedException`, the unenforced-`checkAccess` gotcha, the OAuth companion project, CORS, sessions
 - [reference/dkan-integration.md](reference/dkan-integration.md) — `dkan_mcp` today vs. the `mcp_server`-based target, tool mapping, permission model, client config
 - [reference/testing.md](reference/testing.md) — what to test (and not), unit + kernel patterns, standalone stubs
 - Upstream: https://www.drupal.org/project/mcp_server · GitLab issues/MRs (use `glab`, not `drupalorg-cli`) · the module's bundled `references/` (verify against code)
-- Canonical examples: `mcp_server_examples` submodule — `EchoTool`, `ContentLookupTool`, `ContentTypeListResource`, `ContentEntityResourceTemplate`, `EntityQueryCompletionProvider`
+- Canonical examples: the `mcp_server_examples` companion project — `EchoTool`, `ContentLookupTool`, `ContentTypeListResource`, `ContentEntityResourceTemplate`, `EntityQueryCompletionProvider`

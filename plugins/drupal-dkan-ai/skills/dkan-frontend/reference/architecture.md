@@ -78,7 +78,7 @@ compatible — different package names, props, imports, and docs. Always check t
 | | Older | Current |
 |---|---|---|
 | Package | `@civicactions/data-catalog-components` (~1.18) | `@civicactions/cmsds-open-data-components` (4.x) |
-| App scaffold | `data-catalog-app` (Vite, Node 16, targets DKAN 2.x) | cmsds-based site shells |
+| App scaffold | `data-catalog-app` (Vite, Node 18, targets DKAN 2.x) | cmsds-based site shells |
 | UI base | custom components | CMS Design System (`@cmsgov/design-system`) |
 | Build | Parcel/Vite | Parcel 2 |
 | Maintained | legacy | actively (GetDKAN, Node 22, Storybook, rich `agent-docs/`) |

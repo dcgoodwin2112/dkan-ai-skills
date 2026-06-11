@@ -13,7 +13,7 @@ a JSON-Schema-validated JSON object (not RDF).
 Lineage, so you don't conflate them:
 - **W3C DCAT** — the international RDF vocabulary for data catalogs.
 - **DCAT-US v1.1 / POD v1.1** — the US profile expressed as flat JSON (`data.json`). **This is what DKAN uses.**
-- **DCAT-US v3** — the newer RDF/JSON-LD profile aligned with W3C DCAT 3, published on resources.data.gov. **Not** implemented by DKAN 4.x.
+- **DCAT-US v3.0** — the RDF/JSON-LD profile aligned with W3C DCAT 3, published on resources.data.gov as the federal successor standard (v1.1 stays harvested during the transition). **Not** implemented by DKAN 4.x.
 
 DKAN also ships a **trimmed** POD schema: it drops the federal-agency-only fields
 (`bureauCode`, `programCode`, `landingPage`, `language`, `rights`, `dataQuality`,
@@ -71,7 +71,8 @@ internal storage detail, not the authoring shape.
 | In DKAN 4.x? | yes | no |
 
 Treat v3 as out of scope for DKAN work today. If a stakeholder asks about v3, the answer
-is "DKAN serves POD/DCAT-US v1.1 JSON; v3 is the federal RDF direction, not yet in DKAN."
+is "DKAN serves POD/DCAT-US v1.1 JSON; v3.0 is the published federal RDF standard, not
+yet in DKAN."
 
 ## Validation
 

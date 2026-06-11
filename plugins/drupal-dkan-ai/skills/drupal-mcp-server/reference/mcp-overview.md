@@ -73,9 +73,13 @@ available on both; scope access with a `RequestEvent` subscriber instead.
 > `/mcp`). **Verify your build's route** (`drush route | grep mcp`) before wiring
 > a client.
 
-## Submodules
+## Companion projects
 
-| Submodule | Adds |
+In-tree submodules until 2026-06-09, then extracted into separate drupal.org
+projects (issue #3585898) — each is now its own `composer require
+drupal/<name>` dependency. `mcp_server_oauth` has no tagged release yet.
+
+| Project | Adds |
 |---|---|
 | `mcp_server_ui` | All admin forms/pages: server settings, prompt CRUD, resource-provider settings. Core ships runtime only (the `views`/`views_ui` split). |
 | `mcp_server_oauth` | OAuth2 per-tool scope enforcement via a `RequestEvent` subscriber + RFC 9728 metadata discovery (needs `simple_oauth`/`simple_oauth_21`). |
@@ -87,7 +91,8 @@ available on both; scope access with a `RequestEvent` subscriber instead.
 See the volatility callout in [SKILL.md](../SKILL.md). In short: `mcp_server`
 `v2.x-dev` ⇒ `mcp/sdk: ^0.6` (0.6 API: `ToolHandlerInterface`,
 `ClientGateway`, `Builder::add()`); **`0.6.0` was tagged 2026-06-02**, so the module
-now pins a released SDK rather than `dev-main`; the `0.4`/`0.5` API is
+now pins a released SDK rather than `dev-main`; the module's first tag,
+`2.0.0-alpha1`, was cut 2026-06-11 (pre-stable); the `0.4`/`0.5` API is
 incompatible. Confirm with `composer show drupal/mcp_server mcp/sdk` and read the
 **source**, not the bundled prose, which can lag. `opis/json-schema 2.6.0` (the
 SDK's validator) matches DKAN's lock — no conflict on a DKAN site.

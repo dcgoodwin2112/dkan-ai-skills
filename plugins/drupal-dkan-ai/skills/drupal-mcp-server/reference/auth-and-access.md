@@ -30,7 +30,8 @@ instructions from the operator. Design accordingly:
   needs; no omnibus token shared across read and write.
 
 This maps to **OWASP LLM Top 10** — LLM01 (prompt injection), LLM05 (improper
-output handling), LLM06 (excessive agency) — and the **OWASP Agentic AI Top 10**.
+output handling), LLM06 (excessive agency) — and the **OWASP Top 10 for
+Agentic Applications**.
 The enforcement mechanics that make the split real follow below; this is the policy
 they implement.
 
@@ -164,9 +165,11 @@ public function onRequest(RequestEvent $event): void {
 }
 ```
 
-## The `mcp_server_oauth` submodule
+## The `mcp_server_oauth` companion project
 
-Enable it for OAuth2 scope enforcement (needs `simple_oauth` / `simple_oauth_21`).
+A separate project since 2026-06-09 (extracted from an in-tree submodule; no
+tagged release yet): `composer require drupal/mcp_server_oauth`, then enable it
+for OAuth2 scope enforcement (needs `simple_oauth` / `simple_oauth_21`).
 When on, its `McpAuthorizeOAuthSubscriber`:
 
 1. Subscribes to `RequestEvent`.
@@ -182,6 +185,8 @@ When on, its `McpAuthorizeOAuthSubscriber`:
 This keys off `mcp_tool_config` entities (the `drupal/tool` bridge), so it gates
 **bridged** tools; static native plugins (like `echo`) without a backing config
 are skipped. For native-plugin permission gating, use your own subscriber (above).
+DKAN's `dkan_mcp_server` does not use this project — it ships its own scope
+wiring on `simple_oauth_21` ([dkan-integration.md](dkan-integration.md)).
 
 ## Appending an auth provider to the route
 
