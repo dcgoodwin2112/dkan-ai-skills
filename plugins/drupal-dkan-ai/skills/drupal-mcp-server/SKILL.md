@@ -126,7 +126,7 @@ DKAN MCP on `dkan-site` is **`dkan_mcp_server`** — a contrib module
 at `/mcp` with OAuth-only auth (since 2026-06-10). The legacy hand-rolled
 `dkan_mcp` (a ~35-tool surface on `mcp/sdk ^0.4`) is retired. If you're touching
 DKAN MCP, read [dkan-integration.md](reference/dkan-integration.md) **first** —
-it tells you which world you're in and what carried over. For DKAN service/API
+architecture, tool roster, permission model, client config. For DKAN service/API
 specifics, the `dkan-module-author` skill is the companion.
 
 ## Reference
