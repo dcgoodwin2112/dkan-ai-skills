@@ -1,0 +1,1058 @@
+{
+  "eval": "live_currency",
+  "method": "Deterministic probes of a running DKAN dev site over MCP stdio (tools/list + read-only tools/call) plus 3 HTTP probes via curl, compared against expected values pinned from the skill docs' claims. Doc-tripwire regexes guard the claim text itself. No LLM, no writes; the writer session is used for tools/list only.",
+  "provenance": {
+    "date": "2026-06-11",
+    "site_url": "https://dkan-site.ddev.site",
+    "mcp_http_path": "/mcp",
+    "transport": {
+      "ro": "ddev drush dkan-mcp-server:serve --user=mcp_reader",
+      "rw": "ddev drush dkan-mcp-server:serve --user=mcp_writer \u2014 tools/list only"
+    },
+    "protocol": {
+      "client": "2025-03-26",
+      "server": "2025-11-25"
+    },
+    "site_fingerprint": {
+      "dkan": "4.1.1",
+      "drupal": "11.3.11",
+      "datasets_total": 10,
+      "distributions_total": 13,
+      "harvest_plans": 1
+    },
+    "probes_run": [
+      "http.anon",
+      "http.basic",
+      "http.prm",
+      "mcp_ro.call.get_schema_dataset",
+      "mcp_ro.call.get_site_status",
+      "mcp_ro.call.list_schemas",
+      "mcp_ro.tools_list",
+      "mcp_rw.tools_list"
+    ],
+    "caveats": [
+      "Snapshot of one pinned dev site (dkan_mcp_server 1.0.x on dkan-site DDEV), not upstream truth; counts will legitimately drift as the module evolves \u2014 that drift is the signal, but expect maintenance.",
+      "HTTP posture checks are three shallow probes scoped to the MCP endpoint only (deliberately silent on /api/1/*), not a security audit.",
+      "Deterministic = no LLM and stable given fixed site state; the site itself is mutable, so results are dated, not byte-reproducible forever."
+    ]
+  },
+  "summary": {
+    "checks": 27,
+    "passed": 22,
+    "failed": 5,
+    "skipped": 0,
+    "errors": 0,
+    "by_group": {
+      "mcp_surface": {
+        "pass": 8,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "metastore_schema": {
+        "pass": 5,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "site_posture": {
+        "pass": 9,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "doc_tripwire": {
+        "pass": 0,
+        "fail": 5,
+        "skip": 0,
+        "error": 0
+      }
+    },
+    "negatives_with_example": 4,
+    "negatives_live": 4
+  },
+  "per_check": [
+    {
+      "id": "ro_tool_count",
+      "group": "mcp_surface",
+      "probe": "mcp_ro.tools_list",
+      "op": "count",
+      "expected": 25,
+      "note": "reader surface is 25 read-only tools (docs said 22)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md",
+      "status": "pass",
+      "actual": [
+        "get_dataset",
+        "get_data_dictionary",
+        "distinct_values",
+        "sample_rows",
+        "get_harvest_plan",
+        "list_harvest_plans",
+        "get_harvest_run_result",
+        "get_distribution",
+        "get_site_status",
+        "get_dataset_info",
+        "get_datastore_schema",
+        "list_schemas",
+        "query_datastore",
+        "get_import_status",
+        "list_distributions",
+        "search_columns",
+        "get_schema",
+        "get_harvest_runs",
+        "list_datasets",
+        "query_datastore_join",
+        "get_datastore_stats",
+        "get_catalog",
+        "get_queue_status",
+        "search_datasets",
+        "resolve_resource"
+      ]
+    },
+    {
+      "id": "ro_tool_names",
+      "group": "mcp_surface",
+      "probe": "mcp_ro.tools_list",
+      "op": "contains",
+      "expected": [
+        "distinct_values",
+        "get_catalog",
+        "get_data_dictionary",
+        "get_dataset",
+        "get_dataset_info",
+        "get_datastore_schema",
+        "get_datastore_stats",
+        "get_distribution",
+        "get_harvest_plan",
+        "get_harvest_run_result",
+        "get_harvest_runs",
+        "get_import_status",
+        "get_queue_status",
+        "get_schema",
+        "get_site_status",
+        "list_datasets",
+        "list_distributions",
+        "list_harvest_plans",
+        "list_schemas",
+        "query_datastore",
+        "query_datastore_join",
+        "resolve_resource",
+        "sample_rows",
+        "search_columns",
+        "search_datasets"
+      ],
+      "note": "the full read tool roster the docs describe (metastore/datastore/search/harvest/resource/status reads)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md",
+      "status": "pass",
+      "actual": [
+        "get_dataset",
+        "get_data_dictionary",
+        "distinct_values",
+        "sample_rows",
+        "get_harvest_plan",
+        "list_harvest_plans",
+        "get_harvest_run_result",
+        "get_distribution",
+        "get_site_status",
+        "get_dataset_info",
+        "get_datastore_schema",
+        "list_schemas",
+        "query_datastore",
+        "get_import_status",
+        "list_distributions",
+        "search_columns",
+        "get_schema",
+        "get_harvest_runs",
+        "list_datasets",
+        "query_datastore_join",
+        "get_datastore_stats",
+        "get_catalog",
+        "get_queue_status",
+        "search_datasets",
+        "resolve_resource"
+      ]
+    },
+    {
+      "id": "ro_all_readonly_hint",
+      "group": "mcp_surface",
+      "probe": "mcp_ro.tools_list",
+      "op": "subset",
+      "expected": [
+        true
+      ],
+      "note": "every tool on the reader account is annotated read-only",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md",
+      "status": "pass",
+      "actual": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "id": "ro_no_write_tools",
+      "group": "mcp_surface",
+      "probe": "mcp_ro.tools_list",
+      "op": "absent",
+      "expected": [
+        "delete_dataset",
+        "delete_metastore_item",
+        "deregister_harvest",
+        "drop_datastore",
+        "import_resource",
+        "patch_dataset",
+        "patch_metastore_item",
+        "post_metastore_item",
+        "publish_dataset",
+        "register_harvest",
+        "run_harvest",
+        "unpublish_dataset",
+        "update_dataset"
+      ],
+      "note": "the read-only account must not see any write tool (the ro/rw split the docs describe)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md",
+      "status": "pass",
+      "actual": [
+        "get_dataset",
+        "get_data_dictionary",
+        "distinct_values",
+        "sample_rows",
+        "get_harvest_plan",
+        "list_harvest_plans",
+        "get_harvest_run_result",
+        "get_distribution",
+        "get_site_status",
+        "get_dataset_info",
+        "get_datastore_schema",
+        "list_schemas",
+        "query_datastore",
+        "get_import_status",
+        "list_distributions",
+        "search_columns",
+        "get_schema",
+        "get_harvest_runs",
+        "list_datasets",
+        "query_datastore_join",
+        "get_datastore_stats",
+        "get_catalog",
+        "get_queue_status",
+        "search_datasets",
+        "resolve_resource"
+      ]
+    },
+    {
+      "id": "rw_tool_count",
+      "group": "mcp_surface",
+      "probe": "mcp_rw.tools_list",
+      "op": "count",
+      "expected": 38,
+      "note": "writer surface is 38 tools = 25 read + 13 write (docs said ~35)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md",
+      "status": "pass",
+      "actual": [
+        "import_resource",
+        "patch_metastore_item",
+        "get_dataset",
+        "get_data_dictionary",
+        "distinct_values",
+        "drop_datastore",
+        "post_metastore_item",
+        "sample_rows",
+        "get_harvest_plan",
+        "list_harvest_plans",
+        "get_harvest_run_result",
+        "get_distribution",
+        "get_site_status",
+        "get_dataset_info",
+        "get_datastore_schema",
+        "run_harvest",
+        "list_schemas",
+        "query_datastore",
+        "deregister_harvest",
+        "delete_dataset",
+        "get_import_status",
+        "list_distributions",
+        "patch_dataset",
+        "search_columns",
+        "get_schema",
+        "publish_dataset",
+        "get_harvest_runs",
+        "update_dataset",
+        "list_datasets",
+        "register_harvest",
+        "query_datastore_join",
+        "unpublish_dataset",
+        "get_datastore_stats",
+        "get_catalog",
+        "get_queue_status",
+        "delete_metastore_item",
+        "search_datasets",
+        "resolve_resource"
+      ]
+    },
+    {
+      "id": "rw_write_tool_names",
+      "group": "mcp_surface",
+      "probe": "mcp_rw.tools_list",
+      "op": "named",
+      "expected": [
+        "delete_dataset",
+        "delete_metastore_item",
+        "deregister_harvest",
+        "drop_datastore",
+        "import_resource",
+        "patch_dataset",
+        "patch_metastore_item",
+        "post_metastore_item",
+        "publish_dataset",
+        "register_harvest",
+        "run_harvest",
+        "unpublish_dataset",
+        "update_dataset"
+      ],
+      "note": "the non-read-only set on the writer is exactly the 13 documented write verbs",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md",
+      "status": "pass",
+      "actual": [
+        "delete_dataset",
+        "delete_metastore_item",
+        "deregister_harvest",
+        "drop_datastore",
+        "import_resource",
+        "patch_dataset",
+        "patch_metastore_item",
+        "post_metastore_item",
+        "publish_dataset",
+        "register_harvest",
+        "run_harvest",
+        "unpublish_dataset",
+        "update_dataset"
+      ]
+    },
+    {
+      "id": "ro_subset_of_rw",
+      "group": "mcp_surface",
+      "probe": "mcp_rw.tools_list",
+      "op": "named",
+      "expected": [],
+      "note": "every reader tool also exists on the writer (expected = ro names missing from rw, i.e. none)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md",
+      "status": "pass",
+      "actual": []
+    },
+    {
+      "id": "tool_names_wire_safe",
+      "group": "mcp_surface",
+      "probe": "mcp_rw.tools_list",
+      "op": "matches",
+      "expected": "^[a-z0-9_]+$",
+      "note": "tool ids are MCP wire names \u2014 lowercase, no colons (NameValidator rejects ':')",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/tool-plugins.md",
+      "status": "pass",
+      "actual": [
+        "import_resource",
+        "patch_metastore_item",
+        "get_dataset",
+        "get_data_dictionary",
+        "distinct_values",
+        "drop_datastore",
+        "post_metastore_item",
+        "sample_rows",
+        "get_harvest_plan",
+        "list_harvest_plans",
+        "get_harvest_run_result",
+        "get_distribution",
+        "get_site_status",
+        "get_dataset_info",
+        "get_datastore_schema",
+        "run_harvest",
+        "list_schemas",
+        "query_datastore",
+        "deregister_harvest",
+        "delete_dataset",
+        "get_import_status",
+        "list_distributions",
+        "patch_dataset",
+        "search_columns",
+        "get_schema",
+        "publish_dataset",
+        "get_harvest_runs",
+        "update_dataset",
+        "list_datasets",
+        "register_harvest",
+        "query_datastore_join",
+        "unpublish_dataset",
+        "get_datastore_stats",
+        "get_catalog",
+        "get_queue_status",
+        "delete_metastore_item",
+        "search_datasets",
+        "resolve_resource"
+      ]
+    },
+    {
+      "id": "schemas_include_core",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.list_schemas",
+      "op": "contains",
+      "expected": [
+        "dataset",
+        "distribution",
+        "data-dictionary"
+      ],
+      "note": "core metastore schema ids the docs reference",
+      "skill": "dkan-module-author",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-overview.md",
+      "status": "pass",
+      "actual": [
+        "catalog",
+        "dataset",
+        "dataset.ui",
+        "publisher",
+        "publisher.ui",
+        "distribution",
+        "distribution.ui",
+        "theme",
+        "theme.ui",
+        "keyword",
+        "keyword.ui",
+        "data-dictionary"
+      ]
+    },
+    {
+      "id": "dataset_required_fields",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.get_schema_dataset",
+      "op": "equals",
+      "expected": [
+        "title",
+        "description",
+        "identifier",
+        "accessLevel",
+        "modified",
+        "keyword"
+      ],
+      "note": "the 6 required dataset fields",
+      "skill": "open-data-dcat",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dataset-fields.md",
+      "status": "pass",
+      "actual": [
+        "title",
+        "description",
+        "identifier",
+        "accessLevel",
+        "modified",
+        "keyword"
+      ]
+    },
+    {
+      "id": "access_level_enum",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.get_schema_dataset",
+      "op": "equals",
+      "expected": [
+        "public",
+        "restricted public",
+        "non-public"
+      ],
+      "note": "exact accessLevel enum, including the space in 'restricted public'",
+      "skill": "open-data-dcat",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dataset-fields.md",
+      "status": "pass",
+      "actual": [
+        "public",
+        "restricted public",
+        "non-public"
+      ]
+    },
+    {
+      "id": "omitted_pod_fields",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.get_schema_dataset",
+      "op": "absent",
+      "expected": [
+        "bureauCode",
+        "programCode",
+        "landingPage",
+        "language",
+        "rights",
+        "dataQuality",
+        "primaryITInvestmentUII",
+        "systemOfRecords"
+      ],
+      "note": "DKAN trims these 8 federal POD fields from the dataset schema",
+      "skill": "open-data-dcat",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dataset-fields.md",
+      "status": "pass",
+      "actual": {
+        "@type": {
+          "title": "Metadata Context",
+          "type": "string",
+          "description": "IRI for the JSON-LD data type. This should be dcat:Dataset for each Dataset.",
+          "default": "dcat:Dataset"
+        },
+        "title": {
+          "title": "Title",
+          "description": "Human-readable name of the asset. Should be in plain English and include sufficient detail to facilitate search and discovery.",
+          "type": "string",
+          "minLength": 1
+        },
+        "identifier": {
+          "title": "Unique Identifier",
+          "description": "A unique identifier for the dataset or API as maintained within an Agency catalog or database.",
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Human-readable description (e.g., an abstract) with sufficient detail to enable a user to quickly understand whether the asset is of interest.",
+          "type": "string",
+          "minLength": 1
+        },
+        "accessLevel": {
+          "description": "The degree to which this dataset could be made publicly-available, regardless of whether it has been made available. Choices: public (Data asset is or could be made publicly available to all without restrictions), restricted public (Data asset is available under certain use restrictions), or non-public (Data asset is not available to members of the public).",
+          "title": "Public Access Level",
+          "type": "string",
+          "enum": [
+            "public",
+            "restricted public",
+            "non-public"
+          ],
+          "default": "public"
+        },
+        "accrualPeriodicity": {
+          "title": "Frequency",
+          "description": "Frequency with which dataset is published.",
+          "type": "string",
+          "enum": [
+            "R/P10Y",
+            "R/P4Y",
+            "R/P1Y",
+            "R/P2M",
+            "R/P3.5D",
+            "R/P1D",
+            "R/P2W",
+            "R/P6M",
+            "R/P2Y",
+            "R/P3Y",
+            "R/P0.33W",
+            "R/P0.33M",
+            "R/PT1S",
+            "R/P1M",
+            "R/P3M",
+            "R/P0.5M",
+            "R/P4M",
+            "R/P1W",
+            "R/PT1H",
+            "irregular"
+          ],
+          "enumNames": [
+            "Decennial",
+            "Quadrennial",
+            "Annual",
+            "Bimonthly",
+            "Semiweekly",
+            "Daily",
+            "Biweekly",
+            "Semiannual",
+            "Biennial",
+            "Triennial",
+            "Three times a week",
+            "Three times a month",
+            "Continuously updated",
+            "Monthly",
+            "Quarterly",
+            "Semimonthly",
+            "Three times a year",
+            "Weekly",
+            "Hourly",
+            "Irregular"
+          ]
+        },
+        "describedBy": {
+          "title": "Data Dictionary",
+          "description": "URL to the data dictionary for the dataset or API. Note that documentation other than a data dictionary can be referenced using Related Documents as shown in the expanded fields.",
+          "type": "string",
+          "format": "uri"
+        },
+        "describedByType": {
+          "title": "Data Dictionary Type",
+          "description": "The machine-readable file format (IANA Media Type or MIME Type) of the distribution\u2019s describedBy URL.",
+          "type": "string"
+        },
+        "issued": {
+          "title": "Release Date",
+          "description": "Date of formal issuance.",
+          "type": "string"
+        },
+        "modified": {
+          "title": "Last Update",
+          "description": "Most recent date on which the dataset was changed, updated or modified.",
+          "type": "string"
+        },
+        "license": {
+          "title": "License",
+          "description": "The license dataset or API is published with. See <a href=\"https://resources.data.gov/open-licenses/\">Open Licenses</a> for more information.",
+          "type": "string",
+          "format": "uri"
+        },
+        "spatial": {
+          "title": "Spatial",
+          "description": "The <a href=\"https://project-open-data.cio.gov/v1.1/schema/#spatial\">spatial coverage</a> of the dataset. Could include a spatial region like a bounding box or a named place.",
+          "type": "string",
+          "minLength": 1
+        },
+        "temporal": {
+          "title": "Temporal",
+          "description": "The <a href=\"https://project-open-data.cio.gov/v1.1/schema/#temporal\">start and end dates</a> for which the dataset is applicable, separated by a \"/\" (i.e., 2000-01-15T00:45:00Z/2010-01-15T00:06:00Z).",
+          "type": "string"
+        },
+        "isPartOf": {
+          "title": "Collection",
+          "description": "The collection of which the dataset is a subset.",
+          "type": "string",
+          "minLength": 1
+        },
+        "publisher": {
+          "id": "https://project-open-data.cio.gov/v1.1/schema/organization.json#",
+          "title": "Organization",
+          "description": "A Dataset Publisher Organization.",
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "@type": {
+              "title": "Metadata Context",
+              "description": "IRI for the JSON-LD data type. This should be org:Organization for each publisher",
+              "type": "string",
+              "default": "org:Organization"
+            },
+            "name": {
+              "title": "Publisher Name",
+              "description": "",
+              "type": "string",
+              "minLength": 1
+            },
+            "subOrganizationOf": {
+              "title": "Parent Organization",
+              "type": "string"
+            }
+          }
+        },
+        "contactPoint": {
+          "id": "https://project-open-data.cio.gov/v1.1/schema/vcard.json#",
+          "title": "Project Open Data ContactPoint vCard",
+          "description": "A Dataset ContactPoint as a vCard object.",
+          "type": "object",
+          "required": [
+            "fn",
+            "hasEmail"
+          ],
+          "properties": {
+            "@type": {
+              "title": "Metadata Context",
+              "description": "IRI for the JSON-LD data type. This should be vcard:Contact for contactPoint.",
+              "enum": [
+                "vcard:Contact"
+              ],
+              "type": "string"
+            },
+            "fn": {
+              "title": "Contact Name",
+              "description": "A full formatted name, e.g. Firstname Lastname.",
+              "type": "string",
+              "minLength": 1
+            },
+            "hasEmail": {
+              "title": "Email",
+              "description": "Email address for the contact name.",
+              "pattern": "^mailto:[\\w\\_\\~\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=\\:.-]+@[\\w.-]+\\.[\\w.-]+?$|[\\w\\_\\~\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=\\:.-]+@[\\w.-]+\\.[\\w.-]+?$",
+              "type": "string"
+            }
+          }
+        },
+        "theme": {
+          "title": "Category",
+          "description": "Main thematic category of the dataset.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "title": "Category",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "keyword": {
+          "title": "Tags",
+          "description": "Tags (or keywords) help users discover your dataset; please include terms that would be used by technical and non-technical users.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "title": "Tag",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "distribution": {
+          "title": "Distribution",
+          "description": "A distribution is a container for the metadata specific to the data resource being shared. Each distribution should contain one <strong>Access URL</strong> or <strong>Download URL</strong>. When providing a Download URL, also include the format of the file. A distribution containing a Download URL to a csv or tsv file will generate queues that will import the data into a database table, this is referred to as a datastore. The datastore provides an API endpoint for users to run queries against the data.",
+          "type": "array",
+          "items": {
+            "title": "Data File",
+            "type": "object",
+            "properties": {
+              "@type": {
+                "title": "Metadata Context",
+                "description": "IRI for the JSON-LD data type. This should be dcat:Distribution for each Distribution.",
+                "default": "dcat:Distribution",
+                "type": "string",
+                "readOnly": true
+              },
+              "title": {
+                "title": "Title",
+                "description": "Human-readable name of the file.",
+                "type": "string",
+                "minLength": 1
+              },
+              "description": {
+                "title": "Description",
+                "description": "Human-readable description of the file.",
+                "type": "string",
+                "minLength": 1
+              },
+              "format": {
+                "title": "Format",
+                "description": "A human-readable description of the file format of a distribution (i.e. csv, pdf, xml, kml, etc.).",
+                "type": "string",
+                "examples": [
+                  "arcgis",
+                  "csv",
+                  "esri rest",
+                  "geojson",
+                  "json",
+                  "kml",
+                  "pdf",
+                  "tsv",
+                  "xls",
+                  "xlsx",
+                  "xml",
+                  "zip"
+                ]
+              },
+              "mediaType": {
+                "title": "Media Type",
+                "description": "The machine-readable file format (<a href=\"https://www.iana.org/assignments/media-types/media-types.xhtml\">IANA Media Type or MIME Type</a>) of the distribution\u2019s downloadURL.",
+                "type": "string"
+              },
+              "downloadURL": {
+                "title": "Download URL",
+                "description": "URL providing direct access to a downloadable file of a dataset.",
+                "type": "string",
+                "format": "uri"
+              },
+              "accessURL": {
+                "title": "Access URL",
+                "description": "URL providing indirect access to a dataset.",
+                "type": "string",
+                "format": "uri"
+              },
+              "conformsTo": {
+                "title": "Data Standard",
+                "description": "URI used to identify a standardized specification the distribution conforms to.",
+                "type": "string",
+                "format": "uri"
+              },
+              "describedBy": {
+                "title": "Data Dictionary",
+                "description": "URL to the data dictionary for the distribution found at the downloadURL.",
+                "type": "string",
+                "format": "uri"
+              },
+              "describedByType": {
+                "title": "Data Dictionary Type",
+                "description": "The machine-readable file format (IANA Media Type or MIME Type) of the distribution\u2019s describedBy URL.",
+                "pattern": "^[a-z\\/\\.\\+]+?$",
+                "type": "string"
+              }
+            },
+            "uniqueItems": true
+          },
+          "minItems": 1
+        },
+        "references": {
+          "title": "Related Documents",
+          "description": "Related documents such as technical information about a dataset, developer documentation, etc.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    {
+      "id": "accrual_periodicity_iso8601",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.get_schema_dataset",
+      "op": "matches",
+      "expected": "^(irregular|R/P(\\d+(\\.\\d+)?)?[YMWD]|R/PT\\d+[HMS])$",
+      "note": "every enum value is an ISO-8601 repeat interval or the 'irregular' literal \u2014 no prose words like 'annual'",
+      "skill": "open-data-dcat",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dataset-fields.md",
+      "status": "pass",
+      "actual": [
+        "R/P10Y",
+        "R/P4Y",
+        "R/P1Y",
+        "R/P2M",
+        "R/P3.5D",
+        "R/P1D",
+        "R/P2W",
+        "R/P6M",
+        "R/P2Y",
+        "R/P3Y",
+        "R/P0.33W",
+        "R/P0.33M",
+        "R/PT1S",
+        "R/P1M",
+        "R/P3M",
+        "R/P0.5M",
+        "R/P4M",
+        "R/P1W",
+        "R/PT1H",
+        "irregular"
+      ]
+    },
+    {
+      "id": "drupal_major_11",
+      "group": "site_posture",
+      "probe": "mcp_ro.call.get_site_status",
+      "op": "matches",
+      "expected": "^11\\.",
+      "note": "dev site runs Drupal 11",
+      "skill": "dkan-module-author",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-overview.md",
+      "status": "pass",
+      "actual": "11.3.11"
+    },
+    {
+      "id": "dkan_4x",
+      "group": "site_posture",
+      "probe": "mcp_ro.call.get_site_status",
+      "op": "matches",
+      "expected": "4\\.x$|^4\\.",
+      "note": "dev site runs DKAN 4.x (live: dev-4.x)",
+      "skill": "dkan-module-author",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/dkan-module-author/SKILL.md",
+      "status": "pass",
+      "actual": "4.1.1"
+    },
+    {
+      "id": "dkan_modules_enabled",
+      "group": "site_posture",
+      "probe": "mcp_ro.call.get_site_status",
+      "op": "named",
+      "expected": [
+        "dkan_metastore",
+        "dkan_datastore",
+        "dkan_harvest",
+        "dkan_common"
+      ],
+      "note": "the 4.x module namespaces the docs name are enabled (dkan_metastore_search deliberately not asserted \u2014 optional elsewhere)",
+      "skill": "dkan-module-author",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/dkan-module-author/SKILL.md",
+      "status": "pass",
+      "actual": {
+        "dkan_metastore": "enabled",
+        "dkan_datastore": "enabled",
+        "dkan_harvest": "enabled",
+        "dkan_common": "enabled"
+      }
+    },
+    {
+      "id": "mcp_anon_unauthorized",
+      "group": "site_posture",
+      "probe": "http.anon",
+      "op": "equals",
+      "expected": 401,
+      "note": "anonymous MCP POST gets an auth challenge, not content and not a silent 403",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md",
+      "status": "pass",
+      "actual": 401
+    },
+    {
+      "id": "prm_resolves",
+      "group": "site_posture",
+      "probe": "http.prm",
+      "op": "equals",
+      "expected": 200,
+      "note": "RFC 9728 protected-resource metadata is published",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md",
+      "status": "pass",
+      "actual": 200
+    },
+    {
+      "id": "prm_resource_field",
+      "group": "site_posture",
+      "probe": "http.prm",
+      "op": "contains",
+      "expected": [
+        "resource"
+      ],
+      "note": "PRM document carries the required 'resource' member",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md",
+      "status": "pass",
+      "actual": {
+        "resource": "https://dkan-site.ddev.site/",
+        "authorization_servers": [
+          "https://dkan-site.ddev.site/"
+        ],
+        "bearer_methods_supported": [
+          "header",
+          "body",
+          "query"
+        ],
+        "scopes_supported": [
+          "dkan_mcp:read",
+          "dkan_mcp:write"
+        ]
+      }
+    },
+    {
+      "id": "prm_scopes",
+      "group": "site_posture",
+      "probe": "http.prm",
+      "op": "contains",
+      "expected": [
+        "dkan_mcp:read",
+        "dkan_mcp:write"
+      ],
+      "note": "the read/write OAuth scopes are advertised for discovery",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md",
+      "status": "pass",
+      "actual": [
+        "dkan_mcp:read",
+        "dkan_mcp:write"
+      ]
+    },
+    {
+      "id": "mcp_basic_not_accepted",
+      "group": "site_posture",
+      "probe": "http.basic",
+      "op": "equals",
+      "expected": 403,
+      "note": "HTTP Basic credentials no longer grant MCP access (OAuth-only since 2026-06-10); skips without EVAL_DKAN_BASIC_PROBE",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md",
+      "status": "pass",
+      "actual": 403
+    },
+    {
+      "id": "mcp_basic_jsonrpc_forbidden",
+      "group": "site_posture",
+      "probe": "http.basic",
+      "op": "equals",
+      "expected": -32002,
+      "note": "the rejection is a proper JSON-RPC -32002 Forbidden, not an HTML error page; skips without EVAL_DKAN_BASIC_PROBE",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md",
+      "status": "pass",
+      "actual": -32002
+    },
+    {
+      "id": "doc_no_old_serve_cmd",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "op": "must_not_match",
+      "expected": "dkan-mcp:serve",
+      "note": "live serve command is dkan-mcp-server:serve (the regex cannot substring-match it: ':serve' must follow 'dkan-mcp')",
+      "skill": "drupal-mcp-server",
+      "doc_ref": null,
+      "status": "fail",
+      "actual": "matched at line 26: 'dkan-mcp:serve'"
+    },
+    {
+      "id": "doc_no_35_tools",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "op": "must_not_match",
+      "expected": "~35 tools",
+      "note": "live writer surface is 38 tools (see rw_tool_count)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": null,
+      "status": "fail",
+      "actual": "matched at line 29: '~35 tools'"
+    },
+    {
+      "id": "doc_no_22_read",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "op": "must_not_match",
+      "expected": "22 read",
+      "note": "live reader surface is 25 read tools (see ro_tool_count)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": null,
+      "status": "fail",
+      "actual": "matched at line 30: '22 read'"
+    },
+    {
+      "id": "doc_skill_no_35",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "op": "must_not_match",
+      "expected": "~35 ",
+      "note": "SKILL.md repeats the stale ~35 count",
+      "skill": "drupal-mcp-server",
+      "doc_ref": null,
+      "status": "fail",
+      "actual": "matched at line 120: '~35 '"
+    },
+    {
+      "id": "doc_names_current_serve_cmd",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "op": "must_match",
+      "expected": "dkan-mcp-server:serve",
+      "note": "the doc should name the current serve command (most opinionated tripwire \u2014 droppable if the docs PR restructures the file)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": null,
+      "status": "fail",
+      "actual": "no match in file"
+    }
+  ]
+}

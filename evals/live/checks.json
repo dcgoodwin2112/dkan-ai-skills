@@ -1,0 +1,316 @@
+{
+  "_about": "Live-currency gate: factual claims from the skill docs about the DKAN/MCP surface, pinned as deterministic checks against a RUNNING DKAN dev site (MCP stdio + 3 HTTP probes). Enforced by evals/lib/check_live.py — no LLM, no writes. Complements /check-skill-currency (claims vs upstream docs) by checking claims vs the running system.",
+  "_schema": {
+    "live check": "{id, group, probe, extract, op, expected, note, skill, doc_ref}. extract = dotted path into the probe result; 'foo[]' maps over a list. A path that stops resolving is an ERROR (gate fails) — a check can never pass vacuously.",
+    "ops": "equals (opt \"unordered\": true for set-compare) | count | contains (every expected item present) | absent (no expected item present; extraction must be non-empty) | subset (every observed value is in expected; non-empty) | matches (re.search; on a list every item must match; non-empty) | named (dispatched by id to NAMED_CHECKS in check_live.py; expected stays here)",
+    "doc tripwire": "{id, group: doc_tripwire, probe: doc, path, assert: must_match|must_not_match, re, neg_example (required for must_not_match), note, skill}. Liveness: a must_not_match whose re cannot match its own neg_example is VACUOUS and fails the gate (same rule as the scaffold gate)."
+  },
+  "probes": {
+    "mcp_ro.tools_list": "tools/list over stdio as the read-only account",
+    "mcp_ro.call.get_site_status": "tools/call get_site_status {} (also feeds provenance fingerprint)",
+    "mcp_ro.call.list_schemas": "tools/call list_schemas {}",
+    "mcp_ro.call.get_schema_dataset": "tools/call get_schema {schemaId: dataset}",
+    "mcp_rw.tools_list": "tools/list over stdio as the writer account — the ONLY rw operation; the runner has no rw tools/call path",
+    "http.anon": "POST {site}{mcp_path} initialize body, no credentials",
+    "http.basic": "same with -u $EVAL_DKAN_BASIC_PROBE (checks skip when unset)",
+    "http.prm": "GET {site}/.well-known/oauth-protected-resource (RFC 9728)",
+    "doc": "a repo file read from disk — no site connection"
+  },
+  "checks": [
+    {
+      "id": "ro_tool_count",
+      "group": "mcp_surface",
+      "probe": "mcp_ro.tools_list",
+      "extract": "tools[].name",
+      "op": "count",
+      "expected": 25,
+      "note": "reader surface is 25 read-only tools (docs said 22)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md"
+    },
+    {
+      "id": "ro_tool_names",
+      "group": "mcp_surface",
+      "probe": "mcp_ro.tools_list",
+      "extract": "tools[].name",
+      "op": "contains",
+      "expected": ["distinct_values", "get_catalog", "get_data_dictionary", "get_dataset", "get_dataset_info", "get_datastore_schema", "get_datastore_stats", "get_distribution", "get_harvest_plan", "get_harvest_run_result", "get_harvest_runs", "get_import_status", "get_queue_status", "get_schema", "get_site_status", "list_datasets", "list_distributions", "list_harvest_plans", "list_schemas", "query_datastore", "query_datastore_join", "resolve_resource", "sample_rows", "search_columns", "search_datasets"],
+      "note": "the full read tool roster the docs describe (metastore/datastore/search/harvest/resource/status reads)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md"
+    },
+    {
+      "id": "ro_all_readonly_hint",
+      "group": "mcp_surface",
+      "probe": "mcp_ro.tools_list",
+      "extract": "tools[].annotations.readOnlyHint",
+      "op": "subset",
+      "expected": [true],
+      "note": "every tool on the reader account is annotated read-only",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
+    },
+    {
+      "id": "ro_no_write_tools",
+      "group": "mcp_surface",
+      "probe": "mcp_ro.tools_list",
+      "extract": "tools[].name",
+      "op": "absent",
+      "expected": ["delete_dataset", "delete_metastore_item", "deregister_harvest", "drop_datastore", "import_resource", "patch_dataset", "patch_metastore_item", "post_metastore_item", "publish_dataset", "register_harvest", "run_harvest", "unpublish_dataset", "update_dataset"],
+      "note": "the read-only account must not see any write tool (the ro/rw split the docs describe)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
+    },
+    {
+      "id": "rw_tool_count",
+      "group": "mcp_surface",
+      "probe": "mcp_rw.tools_list",
+      "extract": "tools[].name",
+      "op": "count",
+      "expected": 38,
+      "note": "writer surface is 38 tools = 25 read + 13 write (docs said ~35)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md"
+    },
+    {
+      "id": "rw_write_tool_names",
+      "group": "mcp_surface",
+      "probe": "mcp_rw.tools_list",
+      "op": "named",
+      "expected": ["delete_dataset", "delete_metastore_item", "deregister_harvest", "drop_datastore", "import_resource", "patch_dataset", "patch_metastore_item", "post_metastore_item", "publish_dataset", "register_harvest", "run_harvest", "unpublish_dataset", "update_dataset"],
+      "note": "the non-read-only set on the writer is exactly the 13 documented write verbs",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md"
+    },
+    {
+      "id": "ro_subset_of_rw",
+      "group": "mcp_surface",
+      "probe": "mcp_rw.tools_list",
+      "op": "named",
+      "expected": [],
+      "note": "every reader tool also exists on the writer (expected = ro names missing from rw, i.e. none)",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
+    },
+    {
+      "id": "tool_names_wire_safe",
+      "group": "mcp_surface",
+      "probe": "mcp_rw.tools_list",
+      "extract": "tools[].name",
+      "op": "matches",
+      "expected": "^[a-z0-9_]+$",
+      "note": "tool ids are MCP wire names — lowercase, no colons (NameValidator rejects ':')",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/tool-plugins.md"
+    },
+    {
+      "id": "schemas_include_core",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.list_schemas",
+      "extract": "schemas",
+      "op": "contains",
+      "expected": ["dataset", "distribution", "data-dictionary"],
+      "note": "core metastore schema ids the docs reference",
+      "skill": "dkan-module-author",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-overview.md"
+    },
+    {
+      "id": "dataset_required_fields",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.get_schema_dataset",
+      "extract": "schema.required",
+      "op": "equals",
+      "unordered": true,
+      "expected": ["title", "description", "identifier", "accessLevel", "modified", "keyword"],
+      "note": "the 6 required dataset fields",
+      "skill": "open-data-dcat",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dataset-fields.md"
+    },
+    {
+      "id": "access_level_enum",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.get_schema_dataset",
+      "extract": "schema.properties.accessLevel.enum",
+      "op": "equals",
+      "unordered": true,
+      "expected": ["public", "restricted public", "non-public"],
+      "note": "exact accessLevel enum, including the space in 'restricted public'",
+      "skill": "open-data-dcat",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dataset-fields.md"
+    },
+    {
+      "id": "omitted_pod_fields",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.get_schema_dataset",
+      "extract": "schema.properties",
+      "op": "absent",
+      "expected": ["bureauCode", "programCode", "landingPage", "language", "rights", "dataQuality", "primaryITInvestmentUII", "systemOfRecords"],
+      "note": "DKAN trims these 8 federal POD fields from the dataset schema",
+      "skill": "open-data-dcat",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dataset-fields.md"
+    },
+    {
+      "id": "accrual_periodicity_iso8601",
+      "group": "metastore_schema",
+      "probe": "mcp_ro.call.get_schema_dataset",
+      "extract": "schema.properties.accrualPeriodicity.enum",
+      "op": "matches",
+      "expected": "^(irregular|R/P(\\d+(\\.\\d+)?)?[YMWD]|R/PT\\d+[HMS])$",
+      "note": "every enum value is an ISO-8601 repeat interval or the 'irregular' literal — no prose words like 'annual'",
+      "skill": "open-data-dcat",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/open-data-dcat/reference/dataset-fields.md"
+    },
+    {
+      "id": "drupal_major_11",
+      "group": "site_posture",
+      "probe": "mcp_ro.call.get_site_status",
+      "extract": "drupal.version",
+      "op": "matches",
+      "expected": "^11\\.",
+      "note": "dev site runs Drupal 11",
+      "skill": "dkan-module-author",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/dkan-module-author/reference/dkan-overview.md"
+    },
+    {
+      "id": "dkan_4x",
+      "group": "site_posture",
+      "probe": "mcp_ro.call.get_site_status",
+      "extract": "dkan.version",
+      "op": "matches",
+      "expected": "4\\.x$|^4\\.",
+      "note": "dev site runs DKAN 4.x (live: dev-4.x)",
+      "skill": "dkan-module-author",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/dkan-module-author/SKILL.md"
+    },
+    {
+      "id": "dkan_modules_enabled",
+      "group": "site_posture",
+      "probe": "mcp_ro.call.get_site_status",
+      "op": "named",
+      "expected": ["dkan_metastore", "dkan_datastore", "dkan_harvest", "dkan_common"],
+      "note": "the 4.x module namespaces the docs name are enabled (dkan_metastore_search deliberately not asserted — optional elsewhere)",
+      "skill": "dkan-module-author",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/dkan-module-author/SKILL.md"
+    },
+    {
+      "id": "mcp_anon_unauthorized",
+      "group": "site_posture",
+      "probe": "http.anon",
+      "extract": "status",
+      "op": "equals",
+      "expected": 401,
+      "note": "anonymous MCP POST gets an auth challenge, not content and not a silent 403",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
+    },
+    {
+      "id": "prm_resolves",
+      "group": "site_posture",
+      "probe": "http.prm",
+      "extract": "status",
+      "op": "equals",
+      "expected": 200,
+      "note": "RFC 9728 protected-resource metadata is published",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
+    },
+    {
+      "id": "prm_resource_field",
+      "group": "site_posture",
+      "probe": "http.prm",
+      "extract": "json",
+      "op": "contains",
+      "expected": ["resource"],
+      "note": "PRM document carries the required 'resource' member",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
+    },
+    {
+      "id": "prm_scopes",
+      "group": "site_posture",
+      "probe": "http.prm",
+      "extract": "json.scopes_supported",
+      "op": "contains",
+      "expected": ["dkan_mcp:read", "dkan_mcp:write"],
+      "note": "the read/write OAuth scopes are advertised for discovery",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
+    },
+    {
+      "id": "mcp_basic_not_accepted",
+      "group": "site_posture",
+      "probe": "http.basic",
+      "extract": "status",
+      "op": "equals",
+      "expected": 403,
+      "note": "HTTP Basic credentials no longer grant MCP access (OAuth-only since 2026-06-10); skips without EVAL_DKAN_BASIC_PROBE",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
+    },
+    {
+      "id": "mcp_basic_jsonrpc_forbidden",
+      "group": "site_posture",
+      "probe": "http.basic",
+      "extract": "json.error.code",
+      "op": "equals",
+      "expected": -32002,
+      "note": "the rejection is a proper JSON-RPC -32002 Forbidden, not an HTML error page; skips without EVAL_DKAN_BASIC_PROBE",
+      "skill": "drupal-mcp-server",
+      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
+    },
+    {
+      "id": "doc_no_old_serve_cmd",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "path": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md",
+      "assert": "must_not_match",
+      "re": "dkan-mcp:serve",
+      "neg_example": "stdio via **`drush dkan-mcp:serve`**",
+      "note": "live serve command is dkan-mcp-server:serve (the regex cannot substring-match it: ':serve' must follow 'dkan-mcp')",
+      "skill": "drupal-mcp-server"
+    },
+    {
+      "id": "doc_no_35_tools",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "path": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md",
+      "assert": "must_not_match",
+      "re": "~35 tools",
+      "neg_example": "It exposes **~35 tools** across metastore/datastore",
+      "note": "live writer surface is 38 tools (see rw_tool_count)",
+      "skill": "drupal-mcp-server"
+    },
+    {
+      "id": "doc_no_22_read",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "path": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md",
+      "assert": "must_not_match",
+      "re": "22 read",
+      "neg_example": "**22 read-only** are surfaced over HTTP",
+      "note": "live reader surface is 25 read tools (see ro_tool_count)",
+      "skill": "drupal-mcp-server"
+    },
+    {
+      "id": "doc_skill_no_35",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "path": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/SKILL.md",
+      "assert": "must_not_match",
+      "re": "~35 ",
+      "neg_example": "exposing ~35 metastore/datastore/harvest tools",
+      "note": "SKILL.md repeats the stale ~35 count",
+      "skill": "drupal-mcp-server"
+    },
+    {
+      "id": "doc_names_current_serve_cmd",
+      "group": "doc_tripwire",
+      "probe": "doc",
+      "path": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/dkan-integration.md",
+      "assert": "must_match",
+      "re": "dkan-mcp-server:serve",
+      "note": "the doc should name the current serve command (most opinionated tripwire — droppable if the docs PR restructures the file)",
+      "skill": "drupal-mcp-server"
+    }
+  ]
+}
