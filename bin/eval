@@ -22,6 +22,14 @@
 #                     about absent. Optionally lints REAL generated output with
 #                     phpcs where a Drupal/DDEV env exists (skip-guarded).
 #
+#   live              Live-currency gate (env-gated; no auth, no LLM, no tokens
+#                     — runs fine inside a Claude Code session). Verifies the
+#                     skill docs' factual claims about the DKAN/MCP surface
+#                     against a RUNNING DKAN dev site over MCP stdio plus three
+#                     curl probes; strictly read-only (the writer connection is
+#                     used for tools/list only). SKIPs cleanly when no site is
+#                     configured; exits 2 if configured but unreachable.
+#
 # AUTH REQUIREMENT: the trigger eval spawns `claude -p` once per query, so the
 # shell must be AUTHENTICATED for the Anthropic API — a normal `claude login`
 # terminal, or ANTHROPIC_API_KEY set (e.g. in CI). It does NOT work inside a
@@ -44,6 +52,14 @@
 #                             defaults to `phpcs` on PATH, skips if neither found.
 #   EVAL_SCAFFOLD_OUTPUT_DIR  dir of generated scaffold output to lint; unset ->
 #                             phpcs layer skips cleanly (structural gate still runs).
+#
+# Live gate env (see docs/EVALS.md for details):
+#   EVAL_DKAN_SITE_DIR        DKAN site checkout (DDEV); unset -> clean SKIP.
+#   EVAL_DKAN_MCP_CMD_RO/_RW  stdio command overrides (default: ddev drush
+#                             dkan-mcp-server:serve --user=mcp_reader|mcp_writer).
+#   EVAL_DKAN_SITE_URL        site base URL (default: derived from .ddev/config.yaml).
+#   EVAL_DKAN_MCP_HTTP_PATH   MCP endpoint path (default /mcp).
+#   EVAL_DKAN_BASIC_PROBE     "user:pass" for the Basic-rejected probes; unset -> skip.
 
 set -uo pipefail
 
@@ -139,6 +155,13 @@ cmd_scaffolds() {
   echo "   phpcs clean" >&2
 }
 
+cmd_live() {
+  command -v python3 >/dev/null 2>&1 || die "python3 not found"
+  echo "== live-currency gate (skill docs vs running DKAN over MCP) ==" >&2
+  python3 "$evals_dir/lib/check_live.py"
+  return $?
+}
+
 cmd_task() {
   command -v python3 >/dev/null 2>&1 || die "python3 not found"
   echo "== task-outcome benchmark: regrade recorded runs + regenerate demo ==" >&2
@@ -152,5 +175,6 @@ case "${1:-}" in
   trigger)   shift; cmd_trigger "${1:-}" ;;
   task)      shift; cmd_task ;;
   scaffolds) shift; cmd_scaffolds ;;
-  *) echo "usage: bin/eval <trigger [skill] | task | scaffolds>" >&2; exit 2 ;;
+  live)      shift; cmd_live ;;
+  *) echo "usage: bin/eval <trigger [skill] | task | scaffolds | live>" >&2; exit 2 ;;
 esac

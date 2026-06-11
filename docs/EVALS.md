@@ -3,18 +3,19 @@
 How `dkan-ai-skills` measures whether the skills work, and how to reproduce it. The
 harness lives in `evals/`; the runner is `bin/eval`.
 
-Three evals, two roles:
+Four evals, two roles:
 
 | eval | asks | role | command | needs |
 |---|---|---|---|---|
 | **triggering** | does a skill's `description` attract the model for the right prompts (and not sibling near-misses)? | enforced gate | `bin/eval trigger [skill]` | authenticated `claude` |
 | **task outcome** | does the packaged skill beat a no-skill baseline on real DKAN/Drupal tasks? | evidence artifact | `bin/eval task` | `python3` (regrade); in-session (fresh runs) |
 | **scaffold correctness** | do the scaffold commands' code templates stay spec-conformant? | enforced gate | `bin/eval scaffolds` | `python3` (+ optional phpcs) |
+| **live currency** | do the docs' factual claims about the DKAN/MCP surface match a running DKAN site? | enforced gate (env-gated) | `bin/eval live` | `python3` + a running DKAN site (DDEV); SKIPs cleanly if unconfigured |
 
-**Gate vs. artifact.** The enforced, automatable gates are **triggering** and
-**scaffold-correctness** — cheap, stable, deterministic. The **task-outcome** benchmark is
-a *reported evidence/demo artifact*: 3 binary runs/arm is too coarse to gate on, so it is
-regenerated on demand, not enforced.
+**Gate vs. artifact.** The enforced, automatable gates are **triggering**,
+**scaffold-correctness**, and (where a dev site exists) **live currency** — cheap, stable,
+deterministic. The **task-outcome** benchmark is a *reported evidence/demo artifact*: 3 binary
+runs/arm is too coarse to gate on, so it is regenerated on demand, not enforced.
 
 Each eval has a detailed report next to its data — read those for method and results:
 `evals/triggering/REPORT.md`, `evals/tasks/REPORT.md`, `evals/scaffolds/REPORT.md`.
@@ -54,6 +55,16 @@ auth.** Optionally lints **real generated output** with phpcs where a Drupal/DDE
 set `EVAL_PHPCS` (e.g. `"ddev exec vendor/bin/phpcs"`) and `EVAL_SCAFFOLD_OUTPUT_DIR`; absent
 either, the phpcs layer skips cleanly and the structural gate still runs.
 
+### `bin/eval live`
+Verifies skill-doc claims (tool surface, metastore schemas, auth posture) against a **running**
+DKAN dev site over MCP stdio (`ddev drush dkan-mcp-server:serve`, read-only `tools/call`; the
+writer connection is `tools/list` only) plus three curl probes, and greps the docs for stale
+claim text. **No LLM, no tokens, no nested `claude -p`** — unlike the trigger eval it runs fine
+inside a Claude Code session. Set `EVAL_DKAN_SITE_DIR` (DDEV checkout; unset → clean SKIP,
+exit 0) and optionally `EVAL_DKAN_BASIC_PROBE="user:pass"` for the Basic-rejected probes;
+overrides for non-DDEV setups: `EVAL_DKAN_MCP_CMD_RO/_RW`, `EVAL_DKAN_SITE_URL`,
+`EVAL_DKAN_MCP_HTTP_PATH`. Exit: 0 pass/SKIP, 1 gate failure, 2 configured-but-unreachable.
+
 ## What the numbers do / don't claim
 
 - **triggering** is a **description-attraction proxy**, not production auto-load, and is
@@ -63,6 +74,10 @@ either, the phpcs layer skips cleanly and the structural gate still runs.
   with-skill arm *reads* the docs) — not auto-load, and 3 binary runs/arm is coarse.
 - **scaffold correctness** is a **golden/regression gate** on the shipped templates, not proof
   of world-correctness — phpcs lint and the commands' own runtime-discovery steps own that.
+- **live currency** checks claims against **one pinned dev site** (dkan-site DDEV,
+  `dkan_mcp_server` 1.0.x), not upstream truth — `/check-skill-currency` owns docs-vs-upstream
+  drift; this gate owns docs-vs-running-system drift. Its counts legitimately move as the
+  module evolves; that drift is the signal.
 
 ## Add an eval
 
@@ -72,6 +87,9 @@ either, the phpcs layer skips cleanly and the structural gate still runs.
   apt, an `assert_neg` for a known hallucination; calibrate (below); collect runs; `bin/eval task`.
 - **scaffold** — add a command's assertions to `evals/scaffolds/checks.json`: `assert_pos`
   required forms, `assert_neg` fabricated forms (always `code`-scoped) each with a `neg_example`.
+- **live** — add a check to `evals/live/checks.json`: pick a probe + extract path + op, pin
+  `expected` to the verified live value, set `doc_ref`; doc `must_not_match` tripwires require
+  a `neg_example`.
 
 ## Calibration & discrimination
 
@@ -82,12 +100,15 @@ the discipline is making assertions *discriminate*:
   **fails the baseline on ≥1 run**; drop non-discriminating assertions (they inflate both arms).
 - **scaffold** — every `assert_neg` carries a `neg_example`; the checker **fails the gate** if a
   negative cannot match its own example, so a typo'd negative can't pass silently.
+- **live** — same `neg_example` liveness rule for doc tripwires, plus: an extraction path that
+  stops resolving is an **error that fails the gate** (never a silent pass), and
+  `absent`/`subset`/`matches` reject empty extractions.
 
 ## Cost
 
 `trigger` and fresh `task` runs spend tokens + time (`claude -p` / subagents) — keep the corpus
 small (≤12 tasks × 3 runs; ~100 trigger queries) and report spend. `task` regrade, the viewer,
-and the `scaffolds` gate are **free** (no model).
+and the `scaffolds` and `live` gates are **free** (no model).
 
 ## Provenance
 
@@ -99,6 +120,8 @@ Each eval records date, `claude` CLI version, model, and runs in its results JSO
 - **scaffold gate** — run on every change (no deps).
 - **triggering gate** — run on description changes (cheap); needs `ANTHROPIC_API_KEY`.
 - **task benchmark** — on demand only (coarse; not a gate).
+- **live gate** — skipped in CI (needs a running DDEV site); run locally before/after touching
+  the `drupal-mcp-server`, `open-data-dcat`, or `dkan-module-author` reference docs.
 
 ## Live demo
 
