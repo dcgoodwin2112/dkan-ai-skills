@@ -31,7 +31,9 @@ tool under `src/Plugin/Tool/`, each a thin adapter over an MCP-agnostic service:
   `mcp_server.base_path` container parameter. **OAuth 2.1 Bearer only** (Basic
   removed 2026-06-10): anonymous → 401 challenge; RFC 9728 metadata at
   `/.well-known/oauth-protected-resource` advertises the `dkan_mcp:read` /
-  `dkan_mcp:write` scopes.
+  `dkan_mcp:write` scopes. The OAuth wiring is `dkan_mcp_server`'s own
+  (`DkanMcpScopes`, `OAuthRouteSubscriber` on `simple_oauth_21`) — the contrib
+  `mcp_server_oauth` companion project is not installed.
 - **Per-tool access enforced** by a shipped `ToolAccessSubscriber` — it gates
   `tools/call` AND filters `tools/list`, so a read-only account never sees the
   13 write tools ([auth-and-access.md](auth-and-access.md)).

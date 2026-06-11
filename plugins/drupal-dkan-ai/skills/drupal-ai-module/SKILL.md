@@ -33,7 +33,7 @@ If the user just wants to *use* AI from existing code (call chat, generate embed
 
 1. **Key module is required.** Every provider resolves API keys via `\Drupal::service('key.repository')`. Add `key:key` to the module's `*.info.yml` dependencies. Never store raw secrets in `config/install/*.yml` — use Key entity references only.
 2. **Run `drush cr` after adding a plugin.** Plugin attribute discovery is cached. New providers/tools/agents won't appear until cache rebuild. The scaffold commands run this automatically.
-3. **Target `^1.3`, not `^2.0`.** As of June 2026, the current stable line is `1.4.x` (latest `1.4.1`; a `1.5.x-dev` branch is open; `^1.3` resolves to the stable line); `2.0.x` is dev with breaking provider lifecycle changes per the upstream issue tracker.
+3. **Target `^1.3`, not `^2.0`.** As of June 2026, the current stable line is `1.4.x` (latest `1.4.2`; a `1.5.x-dev` branch is open; `^1.3` resolves to the stable line); `2.0.x` is dev with breaking provider lifecycle changes per the upstream issue tracker.
 4. **Plugin directory casing matters.** `src/Plugin/AiFunctionCall/` (singular `Call`, PascalCase) — `AiFunctionCalls/` is silently ignored.
 5. **Operation-type interface ↔ supportedOperationTypes() must agree.** A provider implementing `ChatInterface` must also list `'chat'` in `getSupportedOperationTypes()`, or `hasProvidersForOperationType('chat')` returns false and the provider is invisible.
 

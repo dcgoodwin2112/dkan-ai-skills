@@ -37,7 +37,7 @@ class WidgetHooks {
 
 - The class is **autowired** — type-hint dependencies in the constructor, no
   `services.yml` entry needed.
-- **Preprocess functions** also support the OOP form (D11.1):
+- **Preprocess functions** also support the OOP form (D11.2; backported to 11.1.8):
   `#[Hook('preprocess_node')]`.
 - **Ordering:** pass `order:` on the attribute, or use `#[ReorderHook]` (D11.2) to move
   another module's hook relative to yours.

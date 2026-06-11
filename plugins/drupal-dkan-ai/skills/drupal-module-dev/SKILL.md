@@ -128,7 +128,8 @@ Symptom → cause → fix.
 ## Version & deprecation notes
 
 - **OOP hooks:** `#[Hook]` (D11.1) supersedes procedural hooks for most cases; preprocess
-  functions gained OOP support in D11.1. `#[LegacyHook]` is the D10 back-compat bridge;
+  functions gained OOP support in D11.2 (backported to 11.1.8). `#[LegacyHook]` is the
+  D10 back-compat bridge;
   hook ordering uses `order:` on the attribute or `#[ReorderHook]` (D11.2).
 - **Recipes & config actions** (D10.3+) are stabilizing across the 11.x line — treat the
   exact action set (`createIfNotExists`, `simpleConfigUpdate`, `setProperties` added

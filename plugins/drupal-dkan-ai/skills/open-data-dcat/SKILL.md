@@ -72,5 +72,5 @@ Symptom → cause → fix.
 ## Version notes
 
 - DKAN 4.x implements **Project Open Data Metadata Schema v1.1** (≈ DCAT-US v1.1), trimmed of the federal-agency-only fields (rule 6). Verify against `schema/collections/dataset.json` in your build.
-- **DCAT-US v3** (RDF/JSON-LD, aligned with W3C DCAT 3, published on resources.data.gov) is the federal direction but is **not** implemented in DKAN 4.x's JSON schema. Don't assume v3 fields or RDF serialization.
+- **DCAT-US v3.0** (RDF/JSON-LD, aligned with W3C DCAT 3) is the published federal successor standard — v1.1 stays harvested during the transition — but is **not** implemented in DKAN 4.x's JSON schema. Don't assume v3 fields or RDF serialization.
 - DKAN validates metadata against the installed schema via `ValidMetadataFactory` / `RootedJsonData` ([dcat-us-overview.md#validation](reference/dcat-us-overview.md#validation)).
