@@ -33,6 +33,9 @@ def main():
     tasks = {t["id"]: t for t in json.loads((TASKS_DIR / "tasks.json").read_text())["tasks"]}
     s = b["summary"]
     ws, bl = s["with_skill"], s["baseline"]
+    cons, sub = s["consistency"], s["discriminating_subset"]
+    k = s.get("runs_per_arm", b["provenance"].get("runs_per_arm", 3))
+    nt = s.get("n_tasks", len(b["per_task"]))
 
     def representative(arm, tid):
         for it in b["outputs"][arm]["1"]:
@@ -119,6 +122,8 @@ footer{{color:var(--mut);font-size:13px;border-top:1px solid var(--bd);padding-t
     <div class="row"><span class="lbl">with skill</span>{bar(ws["rate"], "var(--g)")}</div>
     <div class="row"><span class="lbl">baseline (no skill)</span>{bar(bl["rate"], "var(--r)")}</div>
     <div class="sub" style="margin:8px 0 0">{ws["pass"]}/{ws["total"]} vs {bl["pass"]}/{bl["total"]} assertions passed · {s["discriminating_tasks"]} of {len(b["per_task"])} tasks discriminate</div>
+    <div class="sub" style="margin:6px 0 0">consistency (pass^{k}): <b>{cons["with_skill"]["pass_caret_k"]}/{nt}</b> vs <b>{cons["baseline"]["pass_caret_k"]}/{nt}</b> tasks pass every run · normalized gain g={s["normalized_gain"]:.2f}</div>
+    <div class="sub" style="margin:4px 0 0">drift-prone subset ({len(sub["tasks"])} tasks parametric knowledge gets wrong): <b>{sub["with_skill"]["rate"]*100:.0f}%</b> vs <b>{sub["baseline"]["rate"]*100:.0f}%</b> (+{sub["delta_pp"]:.0f}pp)</div>
   </div>
 </div>
 

@@ -25,6 +25,19 @@ descriptions the labels came from), here the skill must actually *change the out
 | **baseline (no skill)** | 10/21 | **48%** |
 | **delta** | | **+52 pts** |
 
+**Consistency & variance (3 runs/arm).** A pooled rate hides whether the skill helps on *every*
+run or just *some*:
+
+| metric | with skill | baseline |
+|---|---|---|
+| pass^3 — tasks passing on **all 3** runs | **7/7** | 3/7 |
+| pass@3 — tasks passing on **any** run | 7/7 | 4/7 |
+| per-run pass rate (mean ± stddev) | 100% ± 0% | 48% ± 8% |
+
+With-skill is perfectly consistent; baseline's pass@3 (4/7) exceeds its pass^3 (3/7) because task 4
+passes only 1 of 3 runs. **Normalized gain g = 1.00** (Hake's g = (r_skill − r_base) / (1 − r_base) —
+the skill closes 100% of the achievable gap, not just +52 raw points).
+
 | # | skill | with | base | result |
 |---|---|---|---|---|
 | 1 | drupal-module-dev | 3/3 | 3/3 | — tie |
@@ -35,8 +48,10 @@ descriptions the labels came from), here the skill must actually *change the out
 | 6 | drupal-mcp-server | 3/3 | 0/3 | ✅ skill wins |
 | 7 | dkan-frontend | 3/3 | 0/3 | ✅ skill wins |
 
-**4 of 7 tasks discriminate.** On those, baseline didn't just score lower — it produced
-confident, **plausible-but-wrong** answers (the failure mode the skills exist to prevent):
+**4 of 7 tasks discriminate** — on that drift-prone subset the contrast is **12/12 vs 1/12
+(+92pp)**; the 3 ties dilute the pooled headline. On the discriminating tasks baseline didn't just
+score lower — it produced confident, **plausible-but-wrong** answers (the failure mode the skills
+exist to prevent):
 
 | task | correct (with skill) | baseline hallucinated |
 |---|---|---|
