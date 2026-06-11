@@ -117,10 +117,15 @@ Each eval records date, `claude` CLI version, model, and runs in its results JSO
 
 ## CI
 
-- **scaffold gate** — run on every change (no deps).
-- **triggering gate** — run on description changes (cheap); needs `ANTHROPIC_API_KEY`.
-- **task benchmark** — on demand only (coarse; not a gate).
-- **live gate** — skipped in CI (needs a running DDEV site); run locally before/after touching
+`.github/workflows/ci.yml` runs the free deterministic gates on every push/PR: `bin/test`,
+the scaffold gate, a task-regrade determinism check (`bin/eval task` must reproduce the
+committed `evals/tasks/` artifacts byte-for-byte), and the live gate's unconfigured-SKIP path.
+
+Not in CI:
+
+- **triggering gate** — run locally on description changes (cheap); needs `ANTHROPIC_API_KEY`.
+- **task benchmark** (fresh runs) — on demand only (coarse; not a gate). CI only checks the regrade.
+- **live gate** (real run) — needs a running DDEV site; run locally before/after touching
   the `drupal-mcp-server`, `open-data-dcat`, or `dkan-module-author` reference docs.
 
 ## Live demo
