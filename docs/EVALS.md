@@ -24,10 +24,20 @@ Each eval has a detailed report next to its data — read those for method and r
 ### `bin/eval trigger [skill]`
 Spawns `claude -p` per query against an **isolated temp project root**, detecting whether the
 named skill's description attracts a `Skill`/`Read` call. Per-skill sets are derived from
-`evals/triggering/routing.json`. **Auth:** needs a logged-in `claude` or `ANTHROPIC_API_KEY`;
-it does **not** work inside a sandboxed Claude Code session (nested `claude -p` returns 401).
-Knobs: `EVAL_RUNS`, `EVAL_WORKERS`, `EVAL_TIMEOUT`, `EVAL_MODEL`. The in-session complement
-(no auth) is `evals/triggering/results/judge_routing.json`.
+`evals/triggering/routing.json`. **Auth:** needs a logged-in `claude` or `ANTHROPIC_API_KEY`.
+Knobs: `EVAL_RUNS`, `EVAL_WORKERS`, `EVAL_TIMEOUT`, `EVAL_MODEL`. Aggregate per-skill outputs into
+a committable snapshot (`results/run_eval_summary.json`) with `evals/lib/aggregate_trigger.py`; the
+in-session complement is `results/judge_routing.json`. No snapshot is committed yet — a 2026-06-08
+in-session run (1 run/query) showed near-zero positive triggering, indistinguishable from a harness
+artifact (when nothing fires, near-miss resistance passes for free); validate detection on obvious
+positives with `EVAL_RUNS=3` from a normal terminal before committing numbers.
+
+**Running from inside a Claude Code session** (e.g. an agent turn) needs two workarounds:
+- Nested `claude -p` returns HTTP 401 because the session injects `ANTHROPIC_BASE_URL` and
+  host-managed OAuth isn't visible to child processes — clear it: `env -u ANTHROPIC_BASE_URL bin/eval trigger`.
+- Temporarily disable the globally-installed plugin (`claude plugin disable drupal-dkan-ai@dkan-ai-skills`,
+  re-enable after) so its real skills don't out-compete run_eval's synthetic per-skill command and
+  depress the measured rate.
 
 ### `bin/eval task`
 Regrades the recorded paired runs (`evals/tasks/runs/raw_runs.json`) with the deterministic

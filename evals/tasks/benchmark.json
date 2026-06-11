@@ -23,7 +23,51 @@
       "rate": 0.4762
     },
     "delta_pp": 52.4,
-    "discriminating_tasks": 4
+    "discriminating_tasks": 4,
+    "n_tasks": 7,
+    "runs_per_arm": 3,
+    "consistency": {
+      "with_skill": {
+        "pass_caret_k": 7,
+        "pass_at_k": 7,
+        "tasks": 7
+      },
+      "baseline": {
+        "pass_caret_k": 3,
+        "pass_at_k": 4,
+        "tasks": 7
+      }
+    },
+    "per_run_rate": {
+      "with_skill": {
+        "mean": 1.0,
+        "stddev": 0.0
+      },
+      "baseline": {
+        "mean": 0.4762,
+        "stddev": 0.0825
+      }
+    },
+    "normalized_gain": 1.0,
+    "discriminating_subset": {
+      "tasks": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "with_skill": {
+        "pass": 12,
+        "total": 12,
+        "rate": 1.0
+      },
+      "baseline": {
+        "pass": 1,
+        "total": 12,
+        "rate": 0.0833
+      },
+      "delta_pp": 91.7
+    }
   },
   "per_task": [
     {
