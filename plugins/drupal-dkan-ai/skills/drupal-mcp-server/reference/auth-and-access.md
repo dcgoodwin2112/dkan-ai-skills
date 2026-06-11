@@ -201,8 +201,7 @@ Browser clients need CORS on the endpoint. In this module CORS is handled in-cor
 client fails preflight, verify the response exposes `Mcp-Session-Id` and allows
 `Mcp-Protocol-Version`; if the in-core set is too narrow for your client, add a
 thin response subscriber. (DKAN's `dkan_mcp_server` augments the in-core set via
-a compiler pass, `McpCorsAuthHeaderPass`; the legacy `dkan_mcp` carried its own
-`McpCorsSubscriber`.)
+a compiler pass, `McpCorsAuthHeaderPass`.)
 
 ## Sessions
 

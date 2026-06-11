@@ -68,10 +68,10 @@ available on both; scope access with a `RequestEvent` subscriber instead.
   requests via `SharedTempStoreSessionStore` (SharedTempStore / `keyvalue.expirable`,
   ~1-week TTL).
 
-> **Route path caveat:** this checkout's `mcp_server.routing.yml` declares
-> `/_mcp`. Upstream work makes the path configurable (some builds default to
-> `/mcp`). **Verify your build's route** (`drush route | grep mcp`) before wiring
-> a client.
+> **Route path:** `mcp_server.routing.yml` declares `/_mcp`, but the
+> `mcp_server.base_path` container parameter (default `/mcp`) re-paths the
+> route via a route subscriber. **Verify your build's route**
+> (`drush route | grep mcp`) before wiring a client.
 
 ## Companion projects
 

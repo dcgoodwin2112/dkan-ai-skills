@@ -16,9 +16,9 @@ with the **`dkan-module-author`** skill for DKAN service/API specifics.
 > (https://www.drupal.org/project/dkan_mcp_server). This repo's `bin/eval live`
 > gate verifies the counts and auth claims below against the running site.
 
-## Which world am I in?
+## Architecture
 
-**`dkan_mcp_server` today — built ON `mcp_server`.** One `#[Tool]` plugin per
+**Built ON `mcp_server`.** One `#[Tool]` plugin per
 tool under `src/Plugin/Tool/`, each a thin adapter over an MCP-agnostic service:
 
 - **38 tools: 25 read-only + 13 write**, in groups metastore / datastore / search /
@@ -40,25 +40,11 @@ tool under `src/Plugin/Tool/`, each a thin adapter over an MCP-agnostic service:
   `tools/call` AND filters `tools/list`, so a read-only account never sees the
   13 write tools ([auth-and-access.md](auth-and-access.md)).
 
-**`dkan_mcp` legacy — hand-rolled, retired.** Ran its own server directly on
-`mcp/sdk ^0.4` (own factory, controller, CORS subscriber, and serve command,
-`McpServeCommand`), exposing a ~35-tool surface with transport-level read-only
-subsetting (22 of them over HTTP). None of the contrib `#[Tool]` plugin model
-applies there — if a DKAN site still runs it, check `drush pml` before assuming
-anything below.
-
-## What carried over vs. what was replaced
-
-| `dkan_mcp` legacy | In `dkan_mcp_server` | Status |
-|---|---|---|
-| Tool **logic** classes (`src/Tools/*` + shared `dkan_query_tools` services) | **Unchanged** — `#[Tool]` plugins delegate to them verbatim | Kept |
-| `McpServerFactory` + `TOOL_GROUPS` + `ToolServiceContainer` | `ToolPluginManager` discovery; native `enabled` via `defaultConfiguration()` | Deleted |
-| `McpServeCommand` (legacy serve command) | `drush dkan-mcp-server:serve --user=NAME` | Replaced |
-| `McpController` (own `/mcp` route) + `FileSessionStore` | contrib handler re-pathed to `/mcp` + `SharedTempStoreSessionStore` | Replaced |
-| Transport-level read-only subsetting (22-of-35 over HTTP) | **Per-tool access** (`checkAccess()` + `ToolAccessSubscriber`) on *both* transports | Replaced |
-| `McpCorsSubscriber` | contrib in-core CORS + `McpCorsAuthHeaderPass` augmentation | Replaced |
-| HTTP Basic auth | OAuth 2.1 + RFC 9728 discovery | Replaced (2026-06-10) |
-| `input`/`output` schemas (3 explicit; rest auto-generated) | `#[Tool]` `inputSchema`/`outputSchema` — explicit for all | Ported |
+**History.** `dkan_mcp_server` replaced the hand-rolled `dkan_mcp` (its own
+server on `mcp/sdk ^0.4`; never released, retired and removed from the site
+2026-06-11). The MCP-agnostic tool logic carried over verbatim; everything
+transport-, session-, CORS-, and auth-shaped was replaced by contrib
+`mcp_server` equivalents.
 
 The tool logic classes (`HarvestTools`, `WriteTools`, `ResourceTools`,
 `StatusTools`, plus the `dkan_query_tools` services) are MCP-agnostic plain
