@@ -31,6 +31,14 @@ sources:
     repo: https://git.drupalcode.org/project/mcp_server
     sdk: https://github.com/modelcontextprotocol/php-sdk
     notes: Pre-release and volatile; expect churn between checks. mcp/sdk 0.6.0 tagged 2026-06-02 (Packagist mcp/sdk = modelcontextprotocol/php-sdk, PHP Foundation + Symfony). First module tag 2.0.0-alpha1 2026-06-11; in-tree submodules (oauth/tool_bridge/ui/examples) extracted to separate companion projects 2026-06-09 (issue 3585898).
+  dkan_mcp_server:
+    project: https://www.drupal.org/project/dkan_mcp_server
+    repo: https://git.drupalcode.org/project/dkan_mcp_server
+    notes: DKAN-side MCP module; migrated to drupal.org 2026-06 (1.0.x, alpha releases). bin/eval live verifies skill-doc claims against the running site. Legacy dkan_mcp retired 2026-06-11.
+  dkan_ai_query:
+    project: https://www.drupal.org/project/dkan_ai_query
+    repo: https://git.drupalcode.org/project/dkan_ai_query
+    notes: Renamed from dkan_drupal_ai_query and migrated to drupal.org 2026-06-11 (0.x).
   dkan:
     repo: https://github.com/GetDKAN/dkan
     releases: https://www.drupal.org/project/dkan/releases
@@ -159,6 +167,12 @@ skills:
         cadence: monthly
         volatility: medium
         last_verified: 2026-06-11
+      - subject: DKAN grounding module
+        claim: "testing-ai-plugins.md patterns are grounded in dkan_ai_query (drupal.org 0.x; renamed 2026-06 from dkan_drupal_ai_query), mock submodule dkan_ai_query_mock."
+        source: dkan_ai_query/project
+        cadence: quarterly
+        volatility: medium
+        last_verified: 2026-06-11
 
   drupal-mcp-server:
     targets: "mcp_server v2.x-dev on the mcp/sdk 0.6 API (pre-release, volatile)"
@@ -186,6 +200,12 @@ skills:
         source: ai_security/mcp_security
         cadence: quarterly
         volatility: medium
+        last_verified: 2026-06-11
+      - subject: DKAN MCP modules
+        claim: "dkan_mcp_server is a drupal.org contrib project (1.0.x, alpha releases); the legacy hand-rolled dkan_mcp is retired (no drupal.org project; removed from dkan-site)."
+        source: dkan_mcp_server/project
+        cadence: monthly
+        volatility: high
         last_verified: 2026-06-11
 
   open-data-dcat:

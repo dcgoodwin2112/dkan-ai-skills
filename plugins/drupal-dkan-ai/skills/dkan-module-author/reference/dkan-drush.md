@@ -13,7 +13,7 @@ ddev drush dkan:harvest:status sample_content
 
 Commands taking a confirmation (e.g. `dkan:harvest:deregister`, `dkan:harvest:cleanup`) accept `-y` / `--no-interaction` to auto-confirm.
 
-These statuses are also introspectable live via the `dkan_mcp` MCP tools when that module is installed (e.g. `get_import_status`), but drush is the canonical CLI.
+These statuses are also introspectable live via the `dkan_mcp_server` MCP tools when that module is installed (e.g. `get_import_status`), but drush is the canonical CLI.
 
 ## Datastore
 

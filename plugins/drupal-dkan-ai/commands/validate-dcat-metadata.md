@@ -21,8 +21,8 @@ define the field tiers, vocabularies, and validation rules applied below.
 
 1. **Obtain the JSON.**
    - A file path → read it.
-   - A UUID and a DKAN site is reachable → fetch it: prefer a connected `dkan_mcp` tool
-     (e.g. `get_dataset_info`), else REST
+   - A UUID and a DKAN site is reachable → fetch it: prefer a connected `dkan_mcp_server` tool
+     (e.g. `get_dataset`), else REST
      `GET /api/1/metastore/schemas/{schema}/items/{uuid}`, else
      `ddev drush` equivalent. Decode to work with the flat POD shape (cast
      `RootedJsonData` to string and `json_decode` if it comes from a DKAN service).

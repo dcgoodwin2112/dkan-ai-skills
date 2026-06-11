@@ -3,7 +3,7 @@
 Operational diagnostics for a running DKAN site: logs, stuck queues, and permission
 misconfiguration. This complements [dkan-drush.md](dkan-drush.md) (the DKAN command
 catalog) with the generic Drupal diagnostics that aren't DKAN-specific commands, plus
-the `dkan_mcp` status tools (`get_site_status`, `get_queue_status`, `get_import_status`).
+the `dkan_mcp_server` status tools (`get_site_status`, `get_queue_status`, `get_import_status`).
 
 The earlier generic Drupal-introspection MCP tools (log/permission/service readers)
 were removed; `drush` covers that ground and is available to any local agent. Run drush
@@ -38,10 +38,10 @@ ddev drush cron                        # process all queues + scheduled work
 A stuck import usually means cron isn't draining a queue. Check item counts, then
 inspect the resource (import commands themselves are in [dkan-drush.md](dkan-drush.md)):
 
-- `dkan_mcp` `get_queue_status` — DKAN queue item counts (same data, agent-friendly).
-- `dkan_mcp` `get_import_status` — per-resource import state (`done` / `pending` /
+- `dkan_mcp_server` `get_queue_status` — DKAN queue item counts (same data, agent-friendly).
+- `dkan_mcp_server` `get_import_status` — per-resource import state (`done` / `pending` /
   `not_imported`, row counts).
-- `dkan_mcp` `get_site_status` — module versions, dataset/distribution counts,
+- `dkan_mcp_server` `get_site_status` — module versions, dataset/distribution counts,
   aggregate import state.
 
 ## Permission misconfiguration

@@ -110,7 +110,7 @@ Seven auto-loading skills under `plugins/drupal-dkan-ai/skills/`:
 - **`dkan-module-author`** — loads when editing files under `web/modules/custom/` or `docroot/modules/custom/`, or working with `Drupal\dkan_metastore\*`, `Drupal\dkan_datastore\*`, `Drupal\dkan_harvest\*`, or `Drupal\dkan_common\*` namespaces. Targets DKAN 4.x on Drupal `^10.2 || ^11`.
 - **`dkan-core-contributor`** — loads when working *inside* DKAN core: editing the `drupal/dkan` package source (`modules/contrib/dkan/` or a `dkan/` checkout), changing `Drupal\dkan_*` core classes, or touching DKAN's tests/CI. Internals at modification depth (storage factories, schema validation, reference lifecycle, queues), the in-repo PHPUnit harness, and the contribution/CI workflow. For *using* DKAN from a custom module, use `dkan-module-author` instead. Targets DKAN 4.x (GitHub `GetDKAN/dkan`).
 - **`open-data-dcat`** — loads when working with dataset/distribution metadata, `schema/collections/*.json`, or a `data.json` catalog, or asking what a metadata field means or its allowed values. The DCAT-US / Project Open Data v1.1 spec DKAN implements: required fields, vocabularies (`accessLevel`, `accrualPeriodicity`), `downloadURL` vs `accessURL`, the `data.json` catalog and harvest sources. The domain layer beneath the DKAN code skills; pairs with `/validate-dcat-metadata`.
-- **`drupal-mcp-server`** — loads when authoring `#[Tool]`/`#[ResourceProvider]`/prompt/notification plugins for the contrib `mcp_server` module, working with `Drupal\mcp_server\*` or `mcp/sdk`, or editing `dkan_mcp`. Extension-point decision table, the unenforced-`checkAccess` gotcha, and the DKAN MCP migration. Targets `mcp_server` v2.x-dev on the `mcp/sdk` 0.6 API — **pre-release and volatile**.
+- **`drupal-mcp-server`** — loads when authoring `#[Tool]`/`#[ResourceProvider]`/prompt/notification plugins for the contrib `mcp_server` module, working with `Drupal\mcp_server\*` or `mcp/sdk`, or editing `dkan_mcp_server`. Extension-point decision table, the unenforced-`checkAccess` gotcha, and the DKAN MCP migration. Targets `mcp_server` v2.x-dev on the `mcp/sdk` 0.6 API — **pre-release and volatile**.
 - **`dkan-frontend`** — loads when working with DKAN's decoupled JavaScript frontend: the `dkan_js_frontend` Drupal module or its `dkan_js_frontend.config`, the React app served from the docroot `/frontend` (`data-catalog-app`), a DKAN React component library (`cmsds-open-data-components` / `data-catalog-components`), or the ddev frontend install/build commands. The integration/architecture layer — how Drupal serves the SPA, the config-driven routes, the `datastore_query_api` switch, the two library lineages — cross-referencing the component library's own `agent-docs/` for component detail.
 
 Example paths in the docs use `<webroot>/modules/...`; substitute your Drupal web root (`docroot/` in DKAN's recommended-project, `web/` elsewhere).
@@ -193,7 +193,7 @@ Honest by construction: the **gates** are cheap and deterministic; the task benc
 - `dkan-workflows.md` — CSV import pipeline, event system, harvest ETL, publish flow
 - `dkan-harvest.md` — authoring custom harvest extractors/transformers/loaders (ETL class-strings)
 - `dkan-drush.md` — every DKAN drush command (datastore, harvest, metastore, sample content)
-- `dkan-diagnostics.md` — operational diagnostics: watchdog logs, stuck queues, permission misconfig, the `dkan_mcp` status tools
+- `dkan-diagnostics.md` — operational diagnostics: watchdog logs, stuck queues, permission misconfig, the `dkan_mcp_server` status tools
 - `dkan-testing.md` — unit/kernel/functional patterns, mock-chain, standalone stubs
 
 ### DKAN core contribution (`plugins/drupal-dkan-ai/skills/dkan-core-contributor/reference/`)
@@ -222,7 +222,7 @@ Honest by construction: the **gates** are cheap and deterministic; the task benc
 - `tool-plugins.md` — `#[Tool]` attribute, `ToolPluginBase`, `execute(array, ClientGateway)`, `ToolDefinition`, derivers, schemas, enablement
 - `resources-prompts-notifications.md` — resource providers/templates, `McpPromptConfig` + completion providers, notification stub
 - `auth-and-access.md` — `RequestEvent` gating, `McpAuthorizationDeniedException`, the unenforced-`checkAccess` gotcha, OAuth submodule, CORS, sessions
-- `dkan-integration.md` — `dkan_mcp` today vs. the `mcp_server`-based target, tool mapping, permission model, client config
+- `dkan-integration.md` — DKAN's `dkan_mcp_server` (vs. the retired `dkan_mcp`), tool mapping, permission model, client config
 - `testing.md` — what to test (and not), unit + kernel patterns, standalone stubs
 - Upstream: https://www.drupal.org/project/mcp_server (GitLab issues/MRs — use `glab`)
 

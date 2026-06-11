@@ -65,7 +65,7 @@ Reference and decision support for writing custom modules that extend the Drupal
 
 ### drupal-mcp-server
 
-Reference and decision support for writing custom modules that extend the contrib MCP Server module (drupal/mcp_server) — the bridge that exposes Drupal/DKAN capabilities to AI assistants over the Model Context Protocol (mcp/sdk). Loads when authoring #[Tool], #[ResourceProvider], #[ResourceTemplateProvider], #[PromptArgumentCompletionProvider], or #[Notification] plugins; working with Drupal\mcp_server\* namespaces, the mcp/sdk, or RequestEvent authorization; or editing under modules/contrib/mcp_server or a module that depends on mcp_server:mcp_server (including DKAN's dkan_mcp). Targets mcp_server v2.x-dev on the mcp/sdk 0.6 API (0.6.0 tagged 2026-06-02) — pre-release and volatile.
+Reference and decision support for writing custom modules that extend the contrib MCP Server module (drupal/mcp_server) — the bridge that exposes Drupal/DKAN capabilities to AI assistants over the Model Context Protocol (mcp/sdk). Loads when authoring #[Tool], #[ResourceProvider], #[ResourceTemplateProvider], #[PromptArgumentCompletionProvider], or #[Notification] plugins; working with Drupal\mcp_server\* namespaces, the mcp/sdk, or RequestEvent authorization; or editing under modules/contrib/mcp_server or a module that depends on mcp_server:mcp_server (including DKAN's dkan_mcp_server). Targets mcp_server v2.x-dev on the mcp/sdk 0.6 API (0.6.0 tagged 2026-06-02) — pre-release and volatile.
 
 - Guide: [`plugins/drupal-dkan-ai/skills/drupal-mcp-server/SKILL.md`](plugins/drupal-dkan-ai/skills/drupal-mcp-server/SKILL.md)
 - Reference docs:

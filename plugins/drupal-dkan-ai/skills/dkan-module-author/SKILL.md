@@ -9,7 +9,7 @@ This skill loads when you're writing custom code that integrates with DKAN. Its 
 
 > **Path convention**: example paths are written as `<webroot>/modules/...`, relative to the project's Drupal web root. Substitute your project's actual root — `docroot/` in DKAN's recommended-project template, `web/` in many other Drupal builds. Confirm with `ls` if unsure.
 
-If the `dkan_mcp` module is installed, prefer its MCP tools over manual code-spelunking for runtime introspection (querying the catalog, inspecting harvest runs, reading logs) — see `<webroot>/modules/custom/dkan_mcp/README.md`.
+If the `dkan_mcp_server` module is installed (https://www.drupal.org/project/dkan_mcp_server), prefer its MCP tools over manual code-spelunking for runtime introspection (querying the catalog, inspecting harvest runs, checking import/queue status).
 
 ## Pick the right doc for the task
 
@@ -29,7 +29,7 @@ If the `dkan_mcp` module is installed, prefer its MCP tools over manual code-spe
 | Scaffolding a new DKAN module from scratch | run `/scaffold-dkan-module`; see [reference/dkan-services.md](reference/dkan-services.md) + [reference/dkan-testing.md](reference/dkan-testing.md) |
 | Standard Drupal 10/11 conventions (DI, render arrays, routing, entities, hooks, config, testing) | [`drupal-module-dev`](../drupal-module-dev/SKILL.md) |
 
-If your question is "what data exists right now?" — that's a `dkan_mcp` query, not a docs lookup.
+If your question is "what data exists right now?" — that's a `dkan_mcp_server` query, not a docs lookup.
 
 ## Always-true rules (the things people get wrong on first attempt)
 
@@ -69,16 +69,16 @@ When you need to inject a DKAN service in a custom plugin or controller, the mos
 
 Full table with method signatures: [reference/dkan-services.md](reference/dkan-services.md). Add the corresponding submodule (`dkan:dkan_metastore`, `dkan:dkan_datastore`, `dkan:dkan_harvest`, `dkan:dkan_metastore_search`) to your module's `*.info.yml` dependencies.
 
-## When to reach for `dkan_mcp` instead
+## When to reach for `dkan_mcp_server` instead
 
 The MCP server is the right surface when the task is "discover or manipulate live data," not "write code that runs in production":
 
 - Auditing the catalog before a migration → `list_datasets`, `get_dataset_info`, `search_datasets`
 - Debugging a failing import → `get_import_status`, `get_queue_status` (for watchdog logs use `drush watchdog:show` — see [reference/dkan-diagnostics.md](reference/dkan-diagnostics.md))
 - Reproducing a query a user reported → `query_datastore`, `get_datastore_schema`
-- Permission / route checks while reasoning about a controller → `drush` + [reference/dkan-diagnostics.md](reference/dkan-diagnostics.md) (the generic Drupal-introspection MCP tools were removed; `dkan_mcp` is now DKAN-data-focused)
+- Permission / route checks while reasoning about a controller → `drush` + [reference/dkan-diagnostics.md](reference/dkan-diagnostics.md) (the MCP surface is DKAN-data-focused; it ships no generic Drupal-introspection tools)
 
-For the full tool list, see `<webroot>/modules/custom/dkan_mcp/docs/tools.md` (when the `dkan_mcp` module is installed). Skill content directs to MCP tools deliberately; do not duplicate their parameter schemas here.
+For the full tool list, call `tools/list` on a connected server or see https://www.drupal.org/project/dkan_mcp_server. Skill content directs to MCP tools deliberately; do not duplicate their parameter schemas here.
 
 ## Version notes
 

@@ -1,6 +1,6 @@
 ---
 name: drupal-mcp-server
-description: Reference and decision support for writing custom modules that extend the contrib MCP Server module (drupal/mcp_server) — the bridge that exposes Drupal/DKAN capabilities to AI assistants over the Model Context Protocol (mcp/sdk). Loads when authoring #[Tool], #[ResourceProvider], #[ResourceTemplateProvider], #[PromptArgumentCompletionProvider], or #[Notification] plugins; working with Drupal\mcp_server\* namespaces, the mcp/sdk, or RequestEvent authorization; or editing under modules/contrib/mcp_server or a module that depends on mcp_server:mcp_server (including DKAN's dkan_mcp). Targets mcp_server v2.x-dev on the mcp/sdk 0.6 API (0.6.0 tagged 2026-06-02) — pre-release and volatile.
+description: Reference and decision support for writing custom modules that extend the contrib MCP Server module (drupal/mcp_server) — the bridge that exposes Drupal/DKAN capabilities to AI assistants over the Model Context Protocol (mcp/sdk). Loads when authoring #[Tool], #[ResourceProvider], #[ResourceTemplateProvider], #[PromptArgumentCompletionProvider], or #[Notification] plugins; working with Drupal\mcp_server\* namespaces, the mcp/sdk, or RequestEvent authorization; or editing under modules/contrib/mcp_server or a module that depends on mcp_server:mcp_server (including DKAN's dkan_mcp_server). Targets mcp_server v2.x-dev on the mcp/sdk 0.6 API (0.6.0 tagged 2026-06-02) — pre-release and volatile.
 ---
 
 # MCP Server Module — Plugin Author's Reference
@@ -118,12 +118,13 @@ Full method signatures: [tool-plugins.md](reference/tool-plugins.md),
 
 ## DKAN integration
 
-DKAN MCP on `dkan-site` is **`dkan_mcp_server`** — a custom module built ON
+DKAN MCP on `dkan-site` is **`dkan_mcp_server`** — a contrib module
+(drupal.org project, `1.0.x` alpha releases) built ON
 `mcp_server` (`mcp/sdk ^0.6`) exposing **38 tools (25 read / 13 write)** as
 `#[Tool]` plugins, with per-tool `checkAccess()` enforced by a shipped
 `ToolAccessSubscriber`; stdio via `drush dkan-mcp-server:serve --user=NAME`, HTTP
 at `/mcp` with OAuth-only auth (since 2026-06-10). The legacy hand-rolled
-`dkan_mcp` (a ~35-tool surface on `mcp/sdk ^0.4`) is disabled. If you're touching
+`dkan_mcp` (a ~35-tool surface on `mcp/sdk ^0.4`) is retired. If you're touching
 DKAN MCP, read [dkan-integration.md](reference/dkan-integration.md) **first** —
 it tells you which world you're in and what carried over. For DKAN service/API
 specifics, the `dkan-module-author` skill is the companion.
@@ -134,7 +135,7 @@ specifics, the `dkan-module-author` skill is the companion.
 - [reference/tool-plugins.md](reference/tool-plugins.md) — `#[Tool]` attribute, `ToolPluginBase`, `execute()`, `ToolDefinition`, derivers, schemas, enablement
 - [reference/resources-prompts-notifications.md](reference/resources-prompts-notifications.md) — resource providers/templates, prompt config entities + completion providers, notification stub
 - [reference/auth-and-access.md](reference/auth-and-access.md) — `RequestEvent` gating, `McpAuthorizationDeniedException`, the unenforced-`checkAccess` gotcha, the OAuth companion project, CORS, sessions
-- [reference/dkan-integration.md](reference/dkan-integration.md) — `dkan_mcp` today vs. the `mcp_server`-based target, tool mapping, permission model, client config
+- [reference/dkan-integration.md](reference/dkan-integration.md) — DKAN's `dkan_mcp_server` (vs. the retired `dkan_mcp`), tool mapping, permission model, client config
 - [reference/testing.md](reference/testing.md) — what to test (and not), unit + kernel patterns, standalone stubs
 - Upstream: https://www.drupal.org/project/mcp_server · GitLab issues/MRs (use `glab`, not `drupalorg-cli`) · the module's bundled `references/` (verify against code)
 - Canonical examples: the `mcp_server_examples` companion project — `EchoTool`, `ContentLookupTool`, `ContentTypeListResource`, `ContentEntityResourceTemplate`, `EntityQueryCompletionProvider`

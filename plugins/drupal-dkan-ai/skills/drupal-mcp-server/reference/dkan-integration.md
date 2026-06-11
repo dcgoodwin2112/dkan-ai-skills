@@ -4,15 +4,17 @@ How DKAN exposes itself over MCP, and how that maps onto `mcp_server`. Pair this
 with the **`dkan-module-author`** skill for DKAN service/API specifics.
 
 > **⏱ Time-sensitive (as of 2026-06-11).** The migration **executed**: `dkan-site`
-> runs **`dkan_mcp_server`** (custom module built ON contrib `mcp_server` `dev-2.x`
-> / `mcp/sdk ^0.6`); the legacy hand-rolled `dkan_mcp` is **disabled** (source
-> still in-tree). HTTP auth went **OAuth-only on 2026-06-10**. Check the live state:
+> runs **`dkan_mcp_server`** — now a drupal.org contrib project (`1.0.x`, alpha
+> releases) built ON contrib `mcp_server` `dev-2.x` / `mcp/sdk ^0.6`; the legacy
+> hand-rolled `dkan_mcp` is **retired** (source removed from the site). HTTP auth
+> went **OAuth-only on 2026-06-10**. Check the live state:
 > ```bash
-> drush pml --filter=mcp      # dkan_mcp_server Enabled / dkan_mcp Disabled
+> drush pml --filter=mcp      # dkan_mcp_server Enabled (legacy dkan_mcp retired)
 > composer show mcp/sdk       # v0.6.x
 > ```
-> Source of truth: `dkan_mcp_server/docs/`. This repo's `bin/eval live` gate
-> verifies the counts and auth claims below against the running site.
+> Source of truth: the project's `docs/`
+> (https://www.drupal.org/project/dkan_mcp_server). This repo's `bin/eval live`
+> gate verifies the counts and auth claims below against the running site.
 
 ## Which world am I in?
 
@@ -38,7 +40,7 @@ tool under `src/Plugin/Tool/`, each a thin adapter over an MCP-agnostic service:
   `tools/call` AND filters `tools/list`, so a read-only account never sees the
   13 write tools ([auth-and-access.md](auth-and-access.md)).
 
-**`dkan_mcp` legacy — hand-rolled, disabled.** Ran its own server directly on
+**`dkan_mcp` legacy — hand-rolled, retired.** Ran its own server directly on
 `mcp/sdk ^0.4` (own factory, controller, CORS subscriber, and serve command,
 `McpServeCommand`), exposing a ~35-tool surface with transport-level read-only
 subsetting (22 of them over HTTP). None of the contrib `#[Tool]` plugin model
