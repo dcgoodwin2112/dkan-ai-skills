@@ -36,39 +36,32 @@ standards — for Drupal 10.2+ / 11 on PHP 8.3.
 
 ## Always-true rules (the things people get wrong on first attempt)
 
-1. **Inject services; never `\Drupal::service()` in a DI-capable class.** Controllers,
-   forms, plugins, services, and subscribers all get dependencies via constructor
-   injection (`create()` or `services.yml`). `\Drupal::` static access is only correct
-   in procedural contexts (`.module`/`.install` files, static `#pre_render`/`#lazy_builder`
-   callbacks) where no container is wired. ([services-and-di.md](reference/services-and-di.md))
-2. **`->accessCheck(TRUE|FALSE)` is mandatory on every entity query.** Deprecated in
+1. **`->accessCheck(TRUE|FALSE)` is mandatory on every entity query.** Deprecated in
    9.2, **throws since Drupal 10** if omitted — enforced across this skill's entire
    `^10.2` range. Decide explicitly: `TRUE` for user-facing lists, `FALSE` for
    system/internal logic. ([routing-forms-rendering.md](reference/routing-forms-rendering.md), [config-and-entities.md](reference/config-and-entities.md))
-3. **PHP attributes are the default for plugins.** Available for all plugin types by
+2. **PHP attributes are the default for plugins.** Available for all plugin types by
    D10.2–11.2; `@Annotation` discovery is deprecated. Omitting the attribute class is
    deprecated in **D11.2**, required in **D12**, annotations removed in **D13**. New
    code uses attributes; `@Translation()` becomes `new TranslatableMarkup()`.
    ([hooks-events-plugins.md](reference/hooks-events-plugins.md))
-4. **Prefer OOP `#[Hook]` for new code** (D11.1, a class in `src/Hook/`, autowired). For
+3. **Prefer OOP `#[Hook]` for new code** (D11.1, a class in `src/Hook/`, autowired). For
    a module that must also run on D10, keep one procedural `hook_x()` that delegates and
    mark the OOP method `#[LegacyHook]` so the hook doesn't fire twice. Install/update/
    schema/requirements hooks stay procedural. ([hooks-events-plugins.md](reference/hooks-events-plugins.md))
-5. **Config schema is effectively required.** Tests run with strict schema checking
+4. **Config schema is effectively required.** Tests run with strict schema checking
    (D10.2) and config is constraint-validated; unschema'd keys fail. Mark validatable
    config `FullyValidatable` (D10.3) and give every property a type + constraints.
    ([config-and-entities.md](reference/config-and-entities.md))
-6. **`hook_update_N` = schema/raw-DB only; `hook_post_update_NAME` = entity/config CRUD.**
+5. **`hook_update_N` = schema/raw-DB only; `hook_post_update_NAME` = entity/config CRUD.**
    Update hooks run before the container/entity definitions are guaranteed current —
    doing entity or config API work there breaks. Use `post_update` for anything touching
    entities, config objects, or services. ([module-lifecycle.md](reference/module-lifecycle.md))
-7. **`hook_requirements` is split (D11.2).** Runtime checks → `hook_runtime_requirements`;
+6. **`hook_requirements` is split (D11.2).** Runtime checks → `hook_runtime_requirements`;
    update-time → `hook_update_requirements`; install-time → an
    `InstallRequirementsInterface` class at `src/Install/Requirements/`. The combined
    `hook_requirements` is deprecated. ([module-lifecycle.md](reference/module-lifecycle.md))
-8. **Prefer events over hooks** when both exist — a tagged `event_subscriber` service is
-   testable and DI-aware. ([hooks-events-plugins.md](reference/hooks-events-plugins.md))
-9. **Template filename hyphens vs theme-hook underscores must match.** Theme hook /
+7. **Template filename hyphens vs theme-hook underscores must match.** Theme hook /
    `#theme` value use underscores (`my_module_widget`); the Twig file uses hyphens
    (`my-module-widget.html.twig`). A mismatch silently falls back to default markup.
    ([routing-forms-rendering.md](reference/routing-forms-rendering.md))
@@ -78,7 +71,7 @@ standards — for Drupal 10.2+ / 11 on PHP 8.3.
 Symptom → cause → fix.
 
 1. **`QueryException`/fatal on an entity query.** Cause: no `accessCheck()`. Fix: add
-   `->accessCheck(TRUE)` or `->accessCheck(FALSE)` explicitly (rule 2).
+   `->accessCheck(TRUE)` or `->accessCheck(FALSE)` explicitly (rule 1).
 2. **`ConfigFormBase` saves nothing.** Cause: `getEditableConfigNames()` not implemented
    (or returns the wrong object name). Fix: return the exact config object name(s) the
    form edits.
@@ -89,12 +82,7 @@ Symptom → cause → fix.
    `hook_x()` doing the same work. Fix: mark the OOP method `#[LegacyHook]` and have the
    procedural shim only delegate (or delete it if D11-only).
 5. **Update breaks on entity/config access.** Cause: entity or config API calls in
-   `hook_update_N`. Fix: move them to `hook_post_update_NAME` (rule 6).
-6. **Translated string renders with literal `@`/concatenated fragments.** Cause:
-   concatenating `t()` calls or using the wrong placeholder prefix. Fix: a single `t()`
-   with `@`/`%`/`:` placeholders — never string concatenation.
-7. **`Error: Class "Drupal" not found` / null container in a class.** Cause:
-   `\Drupal::service()` in a DI-capable class. Fix: inject via constructor (rule 1).
+   `hook_update_N`. Fix: move them to `hook_post_update_NAME` (rule 5).
 
 ## Cheat sheets
 

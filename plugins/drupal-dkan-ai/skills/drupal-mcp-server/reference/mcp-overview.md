@@ -5,16 +5,11 @@ against. Read this first; the other reference docs go deep on each surface.
 
 ## What it is
 
-`mcp_server` bridges the **Model Context Protocol** PHP SDK (`mcp/sdk` — the
-official `modelcontextprotocol/php-sdk`, a PHP Foundation + Symfony collaboration)
-into Drupal. It lets AI clients (Claude Desktop, IDE agents, etc.) discover and invoke
-Drupal capabilities over MCP's JSON-RPC 2.0 protocol — as **tools** (actions),
-**resources** (readable artifacts), and **prompts** (reusable templated messages).
-
-The module supplies the transport, discovery, registration, session, and
-authorization plumbing. **You** supply the domain behavior as Drupal plugins and
-config entities. Core has **no Drupal module dependencies** — only `php` +
-`mcp/sdk` + `psr/simple-cache` at the Composer level.
+`mcp_server` bridges the official MCP PHP SDK (`mcp/sdk`) into Drupal: AI clients
+discover and invoke Drupal capabilities as **tools** (actions), **resources**
+(readable artifacts), and **prompts** (reusable templated messages). The module
+supplies the transport, discovery, registration, session, and authorization
+plumbing; **you** supply the domain behavior as Drupal plugins and config entities.
 
 ## Architecture
 
@@ -88,14 +83,10 @@ drupal/<name>` dependency. `mcp_server_oauth` has no tagged release yet.
 
 ## Version landscape
 
-See the volatility callout in [SKILL.md](../SKILL.md). In short: `mcp_server`
-`v2.x-dev` ⇒ `mcp/sdk: ^0.6` (0.6 API: `ToolHandlerInterface`,
-`ClientGateway`, `Builder::add()`); **`0.6.0` was tagged 2026-06-02**, so the module
-now pins a released SDK rather than `dev-main`; the module's first tag,
-`2.0.0-alpha1`, was cut 2026-06-11 (pre-stable); the `0.4`/`0.5` API is
-incompatible. Confirm with `composer show drupal/mcp_server mcp/sdk` and read the
-**source**, not the bundled prose, which can lag. `opis/json-schema 2.6.0` (the
-SDK's validator) matches DKAN's lock — no conflict on a DKAN site.
+Version facts live in the volatility callout in [SKILL.md](../SKILL.md) — they are
+deliberately not restated here. One compatibility note unique to this doc:
+`opis/json-schema 2.6.0` (the SDK's validator) matches DKAN's lock — no conflict on
+a DKAN site.
 
 ## Build / quality commands
 
