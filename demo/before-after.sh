@@ -16,10 +16,9 @@
 # Usage:
 #   demo/before-after.sh ["your question"]
 #
-# Requires an AUTHENTICATED claude (claude login, or ANTHROPIC_API_KEY). Like
-# `bin/eval trigger`, it spawns `claude -p`, so it will NOT work inside a
-# sandboxed Claude Code agent session (nested claude -p returns HTTP 401). Run it
-# from a normal terminal.
+# Requires an AUTHENTICATED claude (claude login, or ANTHROPIC_API_KEY). It
+# spawns `claude -p`, so it will NOT work inside a sandboxed Claude Code agent
+# session (nested claude -p returns HTTP 401). Run it from a normal terminal.
 #
 # Env:
 #   DEMO_MODEL    pin both arms to one model id (default: your configured model)

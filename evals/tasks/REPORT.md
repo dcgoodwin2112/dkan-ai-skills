@@ -1,8 +1,7 @@
-# Phase 2 — Task-outcome eval
+# Task-outcome eval
 
 The headline, **non-circular** eval: does having the skill produce better answers on real
-DKAN/Drupal tasks than no skill? Unlike Phase 1's triggering judge (which reads the same
-descriptions the labels came from), here the skill must actually *change the output*.
+DKAN/Drupal tasks than no skill? The skill must actually *change the output*.
 
 ## Method
 
@@ -70,32 +69,24 @@ parametric knowledge is stale or absent.
   docs, available to read) vs no skill — not SKILL.md prose in isolation. That's what a user
   actually gets.
 - **In-session, not production triggering.** with-skill here *reads* the docs; whether the skill
-  auto-loads in the first place is Phase 1's question.
+  auto-loads in the first place is not measured by this eval.
 - **3 binary runs/arm is coarse** — this is a reported evidence/demo artifact, not a pass/fail
-  gate. (The cheap, stable gate is Phase 1 triggering + Phase 3 scaffold checks.)
+  gate. (The cheap, stable gates are the scaffold and live-currency checks.)
 - **Grader calibration done by design:** deterministic regex grading (no judge); during a
   verification pass I dropped a brittle `functional0` negative (correct answers mention it to
   dismiss it) and tightened the `#[Tool]` pattern. See `tasks.json` notes.
-
-## Demo artifact
-
-`evals/tasks/benchmark.html` — a self-contained page (no server/JS). Open it to see the headline,
-the per-task table, and each task's **with-skill vs baseline answers side by side** with pass/fail
-and the matched/missing tokens. This is the zero-setup developer demo.
 
 ## Reproduce
 
 ```bash
 python3 evals/lib/grade_tasks.py        # re-grade runs/raw_runs.json -> benchmark.json
-python3 evals/lib/generate_viewer.py    # benchmark.json -> benchmark.html
 ```
 To collect fresh runs, re-run the paired subagents over `tasks.json` (in-session; the grading
-and viewer steps are deterministic).
+step is deterministic).
 
 ## Files
 
 - `tasks.json` — corpus + deterministic assertions (source of truth)
 - `runs/raw_runs.json` — recorded paired runs (3/arm)
 - `benchmark.json` — graded results (per-task + overall + embedded answers)
-- `benchmark.html` — self-contained demo viewer
-- `../lib/grade_tasks.py`, `../lib/generate_viewer.py` — grader + viewer generator
+- `../lib/grade_tasks.py` — grader

@@ -167,14 +167,13 @@ The plugin ships two read-only review subagents for the independent-review gates
 
 ## Does it actually work?
 
-An eval harness in `evals/` measures whether the skills change outcomes, four ways (run via `bin/eval`; full method in **[docs/EVALS.md](docs/EVALS.md)**):
+An eval harness in `evals/` measures whether the skills change outcomes, three ways (run via `bin/eval`; full method in **[docs/EVALS.md](docs/EVALS.md)**):
 
-- **Task outcome** — the same model, **with the skill vs. without**, on real DKAN/Drupal tasks, graded deterministically (no LLM judge). Headline: **100% vs 48%** of assertions pass (**+52 pts**); with-skill passes **every** run (pass^3: 7/7 tasks vs 3/7), and on the drift-prone subset the gap is **12/12 vs 1/12 (+92 pts)** — a normalized gain of **g = 1.00**. There the no-skill baseline produced confident, *plausible-but-wrong* answers — stale version constraints, invented service/method names, nonexistent config keys — the exact failure mode the skills prevent. Open **`evals/tasks/benchmark.html`** to see the with-vs-without answers side by side ([`evals/tasks/REPORT.md`](evals/tasks/REPORT.md)).
-- **Triggering gate** — does each skill's `description` attract the model for the right prompts and **not** for sibling-domain near-misses? ([`evals/triggering/REPORT.md`](evals/triggering/REPORT.md))
+- **Task outcome** — the same model, **with the skill vs. without**, on real DKAN/Drupal tasks, graded deterministically (no LLM judge). Headline: **100% vs 48%** of assertions pass (**+52 pts**); with-skill passes **every** run (pass^3: 7/7 tasks vs 3/7), and on the drift-prone subset the gap is **12/12 vs 1/12 (+92 pts)** — a normalized gain of **g = 1.00**. There the no-skill baseline produced confident, *plausible-but-wrong* answers — stale version constraints, invented service/method names, nonexistent config keys — the exact failure mode the skills prevent ([`evals/tasks/REPORT.md`](evals/tasks/REPORT.md)).
 - **Scaffold-correctness gate** — `bin/eval scaffolds` deterministically checks that every scaffold command's code template stays spec-conformant: required attribute / base class / method signature present, AI-fabricated forms absent ([`evals/scaffolds/REPORT.md`](evals/scaffolds/REPORT.md)).
 - **Live-currency gate** — `bin/eval live` verifies the docs' factual claims about the DKAN/MCP surface (tool rosters, metastore schemas, auth posture) against a **running** DKAN dev site over MCP stdio — no LLM, ~6s, skips cleanly without a site. On day one it caught real drift the site created under the docs ([`evals/live/REPORT.md`](evals/live/REPORT.md)).
 
-Honest by construction: the **gates** are cheap and deterministic; the task benchmark is a **reported evidence artifact** (3 runs/arm, regenerated on demand), not a pass/fail gate; triggering is a description-attraction proxy, not production auto-load. For a live demo, **`demo/before-after.sh "<question>"`** answers one question with and without the skill, side by side.
+Honest by construction: the **gates** are cheap and deterministic; the task benchmark is a **reported evidence artifact** (3 runs/arm, regenerated on demand), not a pass/fail gate. For a live demo, **`demo/before-after.sh "<question>"`** answers one question with and without the skill, side by side.
 
 ## Reference docs
 

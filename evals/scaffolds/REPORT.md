@@ -1,12 +1,13 @@
-# Phase 3 — Scaffold-correctness gate
+# Scaffold-correctness gate
 
-The second **enforced gate** (Phase 1 triggering is the first). Each scaffold command
+An **enforced gate**. Each scaffold command
 embeds the canonical code it instructs Claude to emit (fenced templates) plus a
-**"Pitfall checks"** list. This phase turns that documented contract into deterministic
+**"Pitfall checks"** list. This gate turns that documented contract into deterministic
 assertions — a **regression gate over the shipped command templates**.
 
-Unlike Phase 2 (does the model produce good output?) this checks the **artifact we
-commit**: no LLM, no PHP, no network, so it is fully reproducible and runs anywhere.
+Unlike the task-outcome eval (does the model produce good output?) this checks the
+**artifact we commit**: no LLM, no PHP, no network, so it is fully reproducible and
+runs anywhere.
 
 ## Method
 

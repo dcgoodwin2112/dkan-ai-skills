@@ -1,7 +1,6 @@
-# Free, deterministic gates only — no model calls, no site. The triggering
-# eval (needs ANTHROPIC_API_KEY + claude CLI) and real live-gate runs (need a
-# DDEV site) stay local; the live step here only guards its unconfigured SKIP
-# path. See docs/EVALS.md "CI".
+# Free, deterministic gates only — no model calls, no site. Real live-gate
+# runs (need a DDEV site) stay local; the live step here only guards its
+# unconfigured SKIP path. See docs/EVALS.md "CI".
 name: CI
 
 on:

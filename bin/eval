@@ -2,17 +2,10 @@
 # Skill-effectiveness eval runner for dkan-ai-skills.
 #
 # Subcommands:
-#   trigger [skill]   Description-attraction triggering eval via run_eval.py.
-#                     Runs one skill (or all if omitted). Tests whether each
-#                     skill's description causes Claude to invoke it for a set
-#                     of realistic queries (positives) and NOT for sibling
-#                     near-misses (negatives). Per-skill sets are derived from
-#                     evals/triggering/routing.json by build_trigger_sets.py.
-#
-#   task              Regrade the recorded task-outcome runs and regenerate the
-#                     static demo (benchmark.json + benchmark.html). Deterministic,
-#                     no auth — operates on evals/tasks/runs/raw_runs.json. Collect
-#                     fresh runs in-session first (see docs/EVALS.md).
+#   task              Regrade the recorded task-outcome runs (benchmark.json).
+#                     Deterministic, no auth — operates on
+#                     evals/tasks/runs/raw_runs.json. Collect fresh runs
+#                     in-session first (see docs/EVALS.md).
 #
 #   scaffolds         Scaffold-correctness gate (no auth, no deps — runs
 #                     anywhere). Deterministic string/regex assertions over each
@@ -29,23 +22,6 @@
 #                     curl probes; strictly read-only (the writer connection is
 #                     used for tools/list only). SKIPs cleanly when no site is
 #                     configured; exits 2 if configured but unreachable.
-#
-# AUTH REQUIREMENT: the trigger eval spawns `claude -p` once per query, so the
-# shell must be AUTHENTICATED for the Anthropic API — a normal `claude login`
-# terminal, or ANTHROPIC_API_KEY set (e.g. in CI). It does NOT work inside a
-# sandboxed Claude Code agent session: host-managed OAuth is not visible to
-# child processes there, so every call returns HTTP 401. (The in-session judge
-# routing eval, evals/triggering/results/judge_routing.json, is the complement
-# that does run inside a session.)
-#
-# HERMETIC: each skill runs against a throwaway temp project root, so the temp
-# command files run_eval.py writes never touch your real ./.claude/.
-#
-# Env knobs:
-#   EVAL_RUNS    runs per query   (default 3)
-#   EVAL_WORKERS parallel workers (default 6)
-#   EVAL_TIMEOUT per-query secs   (default 45)
-#   EVAL_MODEL   claude model id  (default: your configured model)
 #
 # Scaffold phpcs layer (optional, skip-guarded — mirrors bin/test's jq/git skips):
 #   EVAL_PHPCS                phpcs command (e.g. "ddev exec vendor/bin/phpcs");
@@ -65,54 +41,8 @@ set -uo pipefail
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 evals_dir="$repo_root/evals"
-trig_dir="$evals_dir/triggering"
-sets_dir="$trig_dir/sets"
-results_dir="$trig_dir/results"
 
 die() { echo "error: $*" >&2; exit 1; }
-
-cmd_trigger() {
-  command -v python3 >/dev/null 2>&1 || die "python3 not found"
-  command -v claude  >/dev/null 2>&1 || die "claude CLI not found"
-
-  # Refresh per-skill sets from the master routing.json.
-  python3 "$evals_dir/lib/build_trigger_sets.py" >/dev/null || die "build_trigger_sets.py failed"
-
-  local only="${1:-}"
-  local runs="${EVAL_RUNS:-3}" workers="${EVAL_WORKERS:-6}" timeout="${EVAL_TIMEOUT:-45}"
-  local model_args=()
-  [[ -n "${EVAL_MODEL:-}" ]] && model_args=(--model "$EVAL_MODEL")
-  mkdir -p "$results_dir"
-
-  local skills
-  if [[ -n "$only" ]]; then
-    skills="$only"
-  else
-    skills="$(cd "$sets_dir" && ls ./*.json 2>/dev/null | sed 's#\./##; s#\.json$##')"
-  fi
-  [[ -n "$skills" ]] || die "no eval sets found in $sets_dir"
-
-  local skill set_file skill_dir tmp
-  for skill in $skills; do
-    set_file="$sets_dir/$skill.json"
-    skill_dir="$repo_root/plugins/drupal-dkan-ai/skills/$skill"
-    [[ -f "$set_file" ]]  || die "no eval set for '$skill' ($set_file)"
-    [[ -d "$skill_dir" ]] || die "no skill dir for '$skill' ($skill_dir)"
-
-    tmp="$(mktemp -d)"
-    mkdir -p "$tmp/.claude/commands"
-    echo "== trigger eval: $skill (runs/query=$runs) ==" >&2
-    # stdout (JSON) -> results file; stderr (verbose summary) -> terminal.
-    ( cd "$tmp" && PYTHONPATH="$evals_dir" python3 -m lib.run_eval \
-        --eval-set "$set_file" --skill-path "$skill_dir" \
-        --runs-per-query "$runs" --num-workers "$workers" --timeout "$timeout" \
-        --verbose "${model_args[@]+"${model_args[@]}"}" ) > "$results_dir/$skill.run_eval.json"
-    local rc=$?
-    rm -rf "$tmp"
-    [[ $rc -eq 0 ]] || die "run_eval failed for '$skill' (rc=$rc)"
-    echo "   -> $results_dir/$skill.run_eval.json" >&2
-  done
-}
 
 cmd_scaffolds() {
   command -v python3 >/dev/null 2>&1 || die "python3 not found"
@@ -164,17 +94,15 @@ cmd_live() {
 
 cmd_task() {
   command -v python3 >/dev/null 2>&1 || die "python3 not found"
-  echo "== task-outcome benchmark: regrade recorded runs + regenerate demo ==" >&2
-  python3 "$evals_dir/lib/grade_tasks.py"     || die "grade_tasks.py failed"
-  python3 "$evals_dir/lib/generate_viewer.py" || die "generate_viewer.py failed"
-  echo "   -> evals/tasks/benchmark.json + evals/tasks/benchmark.html" >&2
+  echo "== task-outcome benchmark: regrade recorded runs ==" >&2
+  python3 "$evals_dir/lib/grade_tasks.py" || die "grade_tasks.py failed"
+  echo "   -> evals/tasks/benchmark.json" >&2
   echo "   (collect fresh runs in-session before regrading — see docs/EVALS.md)" >&2
 }
 
 case "${1:-}" in
-  trigger)   shift; cmd_trigger "${1:-}" ;;
   task)      shift; cmd_task ;;
   scaffolds) shift; cmd_scaffolds ;;
   live)      shift; cmd_live ;;
-  *) echo "usage: bin/eval <trigger [skill] | task | scaffolds | live>" >&2; exit 2 ;;
+  *) echo "usage: bin/eval <task | scaffolds | live>" >&2; exit 2 ;;
 esac
