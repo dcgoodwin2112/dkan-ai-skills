@@ -92,7 +92,8 @@ matter who — or which agent — picks it up.
 - **Untracked-scratch allowlist**: planning/scratch docs stay local. **Example:**
   `docs/.gitignore` tracks only `ARCHITECTURE.md`, `ROADMAP.md`, `.gitignore`;
   every plan doc is untracked history. Deferred work graduates from a plan into the
-  tracked `ROADMAP`.
+  tracked `ROADMAP`. (Deliberate exception: a long-running effort can promote its
+  plan to a tracked living `docs/PLAN.md` — see §4.)
 
 ## 3. Plan from an empirical baseline
 
@@ -107,7 +108,15 @@ assertions.
 
 ## 4. Write a phased plan doc
 
-One markdown doc, untracked, with a fixed shape:
+One markdown doc with a fixed shape. Two modes — pick by lifespan:
+
+- **Untracked scratch plan** (the default; §2): single-session or short multi-phase
+  work. Local history, never committed.
+- **Tracked living plan** (`docs/PLAN.md`): work spanning many sessions and phases,
+  cold-start handoffs, or an external maintainer in the merge loop. Structure and
+  cadence below.
+
+The fixed shape (both modes):
 
 - **Goal + scope fence** — one sentence of intent, then an explicit non-goal
   ("**No new features.**").
@@ -115,11 +124,34 @@ One markdown doc, untracked, with a fixed shape:
 - **Sequencing rationale** — why this order; which phases are in your control vs.
   blocked on upstream/decisions.
 - **Phases** — each tagged `[category, size, risk]`, numbered steps, and an
-  explicit **"Done when:"** acceptance line. A phase with no crisp done-condition
-  isn't ready to start.
+  explicit **"Done when:"** acceptance line that **names its proof** — the tests
+  and live checks that verify the phase (a `*Verify:*` list). A phase with no
+  crisp done-condition isn't ready to start.
 - **Cross-cutting** — branch/PR/commit norms that apply to every phase.
 - **Decisions for the user** — open questions you can't resolve in code, each with
   a recommendation.
+
+**Writing conventions** (both modes): durable identifiers over prose
+("squash-merged as `b95d987` via MR !8", dataset UUIDs, pipeline numbers);
+absolute dates; record *why* a deviation happened, not just what; deferred items
+get a "Deferred / not scheduled" entry naming the action to take when picked up.
+**Changing anything pinned by a test (check IDs, weights) requires updating doc
+and test together — and the doc says so.**
+
+**The living plan** splits labor with the §2 contract — state the rule in the plan
+itself ("**Mechanics stay in AGENTS.md**") and never duplicate: `PLAN.md` records
+context, decisions with rationale, architecture, phases, risks, and deferrals (the
+things later phases must respect); `AGENTS.md` keeps day-to-day build mechanics
+(commands, test ground rules, gotchas) plus a phase checklist and one
+"Architecture (phase N slice)" section per phase. Below the phase list, append
+chronological `## Phase N notes (date)` sections (decisions made while building,
+then the live-verification record) and — when a fresh session will pick up the
+work — a `## Phase N handoff (date)` (repo state, dev-site state, what to consume,
+known gaps). Keep exactly one `## Current state (date, post-phase-N)` section that
+is **rewritten, not appended**: stale claims are replaced ("MR !9 pending merge"
+becomes "phase 8 squash-merged as `577e4bf` via MR !9"). Plan-only commits go
+straight to the default branch and are pushed — no branch or MR for docs-only
+planning changes.
 
 Draft and present it in **plan mode**. **Pause after approval** — don't start
 editing; let the human review context, adjust effort, or redirect first.
@@ -135,6 +167,12 @@ fresh-context Claude reviewer handed the plan doc, reporting the same classes
 (sequencing errors, missing risks, scope creep, unstated decisions); note the
 substitution in the plan doc rather than skip the gate. (`/code-review` reviews
 diffs, not plans, so it is not the stand-in here.)
+
+**Scope the review to what's about to be built.** For a living plan, review the
+*unbuilt phase*, not the whole document: codex `focus` on that phase's section,
+`context_globs` pointing at the real code it touches. Fold accepted findings into
+the phase entry and stamp it — `(Amended <date> after a codex review_plan pass:
+<one-line list of changes>)` — so the gate is auditable later.
 
 This is the highest-leverage review in the loop: a flaw caught here costs one doc
 edit; the same flaw caught after implementation costs a whole phase.
@@ -206,11 +244,12 @@ surface that exposes tools or data to an AI agent.
   so it loses codex's cross-family diversity: for high-risk / security changes,
   escalate §9 (more lenses, `opus` + `sonnet`) and re-run codex once it is back.
 - **Verify the diff against the plan, not just for bugs.** Confirm *every* plan
-  requirement landed and nothing out of scope crept in — codex `plan_vs_diff`,
-  and/or the bundled `plan-diff-reviewer` subagent (a fresh-context Claude reviewer
-  handed only the diff + the plan, reporting requirement gaps, not style). The
-  built-in `/code-review` is a separate, optional in-session correctness + cleanup
-  pass.
+  requirement landed and nothing out of scope crept in — codex `plan_vs_diff`
+  (mode `staged` for local work; mode `range` against the integration branch for a
+  long-lived phase branch), and/or the bundled `plan-diff-reviewer` subagent (a
+  fresh-context Claude reviewer handed only the diff + the plan, reporting
+  requirement gaps, not style). Record the pass in the phase notes. The built-in
+  `/code-review` is a separate, optional in-session correctness + cleanup pass.
 - **Gotcha:** new/untracked files aren't in the `working` diff. `git add` them and
   review in `staged` mode, or they're silently skipped.
 - **Integrate validated findings; decline noise with a recorded rationale.**
@@ -273,7 +312,13 @@ at low confidence; the adversarial pass confirmed it was real before it shipped.
   with the generated-with line.
 - **After merge, clean up:** `git checkout main && git pull --ff-only`, delete the
   merged local branch, `git fetch --prune`. Leaves only `main`, working tree clean,
-  ready for the next phase.
+  ready for the next phase. After a **squash merge**, ancestry detection breaks —
+  `git branch -d` refuses; use `-D` for the verified-merged branch.
+- **When an external maintainer owns the merge** (e.g. a drupal.org contrib
+  module): never self-merge — the maintainer squash-merges via the web UI, usually
+  deleting the source branch. After their merge, do the cleanup above, then a small
+  plan-only commit to the default branch recording the squash sha and MR number in
+  the living plan's Current state (§4).
 - **Before the next phase, capture what you learned.** If this phase surfaced a
   durable, non-obvious finding that caused a correction, write it into the repo's
   procedural memory now (§12) — while the context is fresh.
