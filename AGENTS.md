@@ -83,6 +83,7 @@ Conventions and decision support for writing or modifying any custom/contrib Dru
 - Guide: [`plugins/drupal-dkan-ai/skills/drupal-module-dev/SKILL.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/SKILL.md)
 - Reference docs:
   - [`config-and-entities.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/config-and-entities.md)
+  - [`drupalorg-gitlab.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/drupalorg-gitlab.md)
   - [`hooks-events-plugins.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/hooks-events-plugins.md)
   - [`module-lifecycle.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/module-lifecycle.md)
   - [`routing-forms-rendering.md`](plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/routing-forms-rendering.md)

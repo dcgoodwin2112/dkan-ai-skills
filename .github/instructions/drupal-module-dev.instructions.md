@@ -12,6 +12,7 @@ Before writing or modifying code here, read the canonical guide and its detail d
 
 - Guide: `plugins/drupal-dkan-ai/skills/drupal-module-dev/SKILL.md`
 - `plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/config-and-entities.md`
+- `plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/drupalorg-gitlab.md`
 - `plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/hooks-events-plugins.md`
 - `plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/module-lifecycle.md`
 - `plugins/drupal-dkan-ai/skills/drupal-module-dev/reference/routing-forms-rendering.md`

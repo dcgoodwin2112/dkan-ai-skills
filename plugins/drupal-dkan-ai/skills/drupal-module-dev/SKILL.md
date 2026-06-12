@@ -32,6 +32,7 @@ standards — for Drupal 10.2+ / 11 on PHP 8.3.
 | Read/write config; config schema & validation; define a content or config entity | [reference/config-and-entities.md](reference/config-and-entities.md) |
 | `.info.yml`; install/uninstall/schema; `hook_update_N` vs `post_update`; requirements; recipes | [reference/module-lifecycle.md](reference/module-lifecycle.md) |
 | Write a unit/kernel/functional test; deprecation testing; phpcs/phpstan | [reference/testing-and-standards.md](reference/testing-and-standards.md) |
+| Push an MR / check CI for a module hosted on drupal.org (`git.drupal.org` remote, drupalcode GitLab CI) | [reference/drupalorg-gitlab.md](reference/drupalorg-gitlab.md) |
 | Scaffold a service / route / event subscriber | run `/scaffold-drupal-service`, `/add-drupal-route`, `/add-event-subscriber` |
 
 ## Always-true rules (the things people get wrong on first attempt)

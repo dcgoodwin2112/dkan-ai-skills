@@ -39,6 +39,7 @@ detail doc.
 | Adding a built-in plugin (DatasetInfo, DkanApiDocs, ResourceProcessor), a harvest ETL class, a queue worker, or a new metastore schema | [reference/extending-core.md](reference/extending-core.md) |
 | Writing or running a DKAN core test (PHPUnit suites, base classes, traits, `@group`) | [reference/testing-core.md](reference/testing-core.md) — or run `/dkan-core-test` to scaffold one |
 | DDEV setup, phpcs/standards, CI gates, update hooks, opening a PR | [reference/contributing-and-ci.md](reference/contributing-and-ci.md) |
+| Publishing a contrib module on drupal.org GitLab (MRs, drupalcode CI) — *not* DKAN core's GitHub flow | [drupal-module-dev/drupalorg-gitlab.md](../drupal-module-dev/reference/drupalorg-gitlab.md) |
 | Consumer concerns: injecting a DKAN service, the REST API shapes, events, custom-module patterns | [../dkan-module-author/SKILL.md](../dkan-module-author/SKILL.md) — don't re-derive these here |
 
 ## Always-true rules (the things people get wrong on first attempt)
