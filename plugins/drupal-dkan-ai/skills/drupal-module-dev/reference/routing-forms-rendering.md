@@ -44,39 +44,10 @@ return AccessResult::allowedIf($account->hasPermission('administer my_module'))
 
 ## Form API
 
-| Method | `FormBase` | `ConfigFormBase` |
-|---|---|---|
-| `getFormId()` | required | required |
-| `buildForm()` | required | required (call `parent::buildForm()`) |
-| `submitForm()` | required | required (call `parent::submitForm()`) |
-| `getEditableConfigNames()` | — | **required** |
-| `validateForm()` | optional | optional |
-
-`ConfigFormBase::getEditableConfigNames()` must return the exact config object names the
-form edits; omit it and `parent::submitForm()` saves nothing.
-
-### `#states` — client-side conditional visibility
-
-```php
-'#states' => [
-  'visible' => [
-    ':input[name="source"]' => ['value' => 'api'],
-  ],
-],
-```
-
-### Element `#type` quick reference
-
-| `#type` | Key properties |
-|---|---|
-| `textfield` | `#title`, `#default_value`, `#required`, `#description`, `#maxlength` |
-| `select` | `#options` (assoc), `#default_value`, `#empty_option` |
-| `checkbox` / `checkboxes` | `#title`, `#default_value`, `#options` |
-| `radios` | `#options`, `#default_value` |
-| `number` | `#min`, `#max`, `#step` |
-| `email` / `url` | textfield + format validation |
-| `managed_file` | `#upload_location`, `#upload_validators` |
-| `submit` | `#value` (button text) |
+Extend `FormBase`, or `ConfigFormBase` for settings forms. The `ConfigFormBase`
+gotcha: `getEditableConfigNames()` must return the exact config object names the form
+edits — omit it and `parent::submitForm()` saves nothing — and `buildForm()`/
+`submitForm()` must call their `parent::` implementations.
 
 ## Render arrays
 
@@ -104,17 +75,6 @@ return [
   ],
 ];
 ```
-
-### Common `#type` values
-
-| `#type` | Purpose |
-|---|---|
-| `table` | `#header`, `#rows`, `#empty`, `#sticky` |
-| `pager` | `#element`, `#parameters` |
-| `container` | wrapper `<div>` + `#attributes` |
-| `html_tag` | arbitrary element via `#tag`, `#value`, `#attributes` |
-| `link` | `#title`, `#url` (a `Url` object) |
-| `details` | collapsible fieldset + `#open` |
 
 ### `#cache`
 

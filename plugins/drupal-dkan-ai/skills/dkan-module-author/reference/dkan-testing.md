@@ -1,22 +1,10 @@
 # DKAN Testing Reference
 
-## Test Types
-
-| Type | Base Class | Drupal Bootstrap | Use Case |
-|---|---|---|---|
-| Unit | `PHPUnit\Framework\TestCase` | No | Pure logic, isolated services, mock all deps |
-| Kernel | `Drupal\KernelTests\KernelTestBase` | Yes (container + DB) | Service integration, entity operations |
-| Functional | `Drupal\Tests\BrowserTestBase` | Yes (full HTTP) | API endpoints, UI, full stack |
-
-## Directory & Namespace Conventions
-
-```
-modules/{module}/tests/src/Unit/        → Drupal\Tests\{module}\Unit\
-modules/{module}/tests/src/Kernel/      → Drupal\Tests\{module}\Kernel\
-modules/{module}/tests/src/Functional/  → Drupal\Tests\{module}\Functional\
-```
-
-- Class naming: `{ClassName}Test.php`, base classes `*TestBase.php`
+DKAN-specific testing patterns. For the general unit/kernel/functional base classes,
+`tests/src/` directory layout, and deprecation-testing conventions, see
+[drupal-module-dev/testing-and-standards.md](../../drupal-module-dev/reference/testing-and-standards.md).
+This doc covers what DKAN adds: the standalone (no-bootstrap) harness, the mock-chain
+library, and DKAN's own test base classes.
 
 ## PHPUnit Configuration
 

@@ -13,7 +13,7 @@ a JSON-Schema-validated JSON object (not RDF).
 Lineage, so you don't conflate them:
 - **W3C DCAT** — the international RDF vocabulary for data catalogs.
 - **DCAT-US v1.1 / POD v1.1** — the US profile expressed as flat JSON (`data.json`). **This is what DKAN uses.**
-- **DCAT-US v3.0** — the RDF/JSON-LD profile aligned with W3C DCAT 3, published on resources.data.gov as the federal successor standard (v1.1 stays harvested during the transition). **Not** implemented by DKAN 4.x.
+- **DCAT-US v3.0** — the RDF/JSON-LD profile aligned with W3C DCAT 3, published on resources.data.gov as the federal successor standard (v1.1 stays harvested during the transition). **Not** implemented by DKAN 4.x. If a stakeholder asks about v3, the answer is "DKAN serves POD/DCAT-US v1.1 JSON; v3.0 is the published federal RDF standard, not yet in DKAN."
 
 DKAN also ships a **trimmed** POD schema: it drops the federal-agency-only fields
 (`bureauCode`, `programCode`, `landingPage`, `language`, `rights`, `dataQuality`,
@@ -22,22 +22,12 @@ DKAN also ships a **trimmed** POD schema: it drops the federal-agency-only field
 
 ## Catalog, dataset, distribution
 
-Three nested levels (same in POD and in DKAN):
-
-```
-catalog (data.json)          ── { conformsTo, dataset: [ … ] }
-  └─ dataset                 ── title, identifier, accessLevel, keyword, …
-       └─ distribution[]     ── a data resource: downloadURL/accessURL, mediaType, …
-```
-
-- A **catalog** is the whole collection, serialized as a `data.json` document.
-- A **dataset** is one logical data asset (its metadata record).
-- A **distribution** is one accessible form of that asset (a CSV file, an API endpoint).
-  One dataset has many distributions. See
-  [distributions-and-resources.md](distributions-and-resources.md).
-
-Datasets also reference **publisher**, **contactPoint**, **theme**, **keyword**, and
-(via distributions) **data dictionaries**.
+Standard POD nesting, same in DKAN: a **catalog** (the `data.json` document) contains
+datasets; each **dataset** record carries one or more **distributions** — the
+accessible forms of the asset (a CSV file, an API endpoint; see
+[distributions-and-resources.md](distributions-and-resources.md)). Datasets also
+reference **publisher**, **contactPoint**, **theme**, **keyword**, and (via
+distributions) **data dictionaries**.
 
 ## How it maps to DKAN
 
@@ -61,18 +51,6 @@ The spec's flat JSON is reshaped by DKAN's metastore for storage:
 The practical upshot: author and reason about metadata in its **flat POD form** (what a
 client POSTs and what `/data.json` emits); the `{identifier, data}` wrappers are an
 internal storage detail, not the authoring shape.
-
-## Versions: v1.1 vs v3
-
-| | DCAT-US v1.1 / POD (DKAN) | DCAT-US v3 |
-|---|---|---|
-| Serialization | flat JSON (`data.json`) | RDF / JSON-LD |
-| Vocab base | POD 1.1 | W3C DCAT 3 |
-| In DKAN 4.x? | yes | no |
-
-Treat v3 as out of scope for DKAN work today. If a stakeholder asks about v3, the answer
-is "DKAN serves POD/DCAT-US v1.1 JSON; v3.0 is the published federal RDF standard, not
-yet in DKAN."
 
 ## Validation
 

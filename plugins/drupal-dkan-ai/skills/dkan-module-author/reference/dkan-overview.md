@@ -48,15 +48,13 @@ Schemas loaded from `<webroot>/modules/contrib/dkan/schema/collections/` at runt
 | `data-dictionary` | Table Schema spec (field names, types, formats) |
 | `catalog` | Full DCAT catalog (assembled dynamically) |
 
-### Dataset Schema
+### Dataset & distribution fields
 
-**Required**: title, description, identifier, accessLevel, modified, keyword
-
-**Key optional**: @type, distribution (array, minItems: 1), publisher (object with required name), contactPoint (fn, hasEmail), theme, references, accrualPeriodicity, spatial, temporal, license, issued
-
-### Distribution Schema
-
-**Required**: identifier, data (object containing downloadURL, mediaType, format, title, description, accessURL, conformsTo, describedBy)
+Required dataset fields: title, description, identifier, accessLevel, modified,
+keyword. Field-by-field requirements and enums are in
+[open-data-dcat/dataset-fields.md](../../open-data-dcat/reference/dataset-fields.md);
+distributions (stored as `{identifier, data}` wrappers) are in
+[open-data-dcat/distributions-and-resources.md](../../open-data-dcat/reference/distributions-and-resources.md).
 
 ## Key Concepts
 

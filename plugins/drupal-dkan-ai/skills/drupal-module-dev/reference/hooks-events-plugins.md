@@ -75,32 +75,12 @@ Install-phase and schema hooks are **not** OOP-discovered and remain functions i
 ## Events (preferred over hooks)
 
 When a subscribable event exists for what you need, prefer it — a subscriber is a normal
-DI-injected, unit-testable service.
-
-```php
-class MySubscriber implements EventSubscriberInterface {
-
-  public function __construct(
-    protected WidgetBuilder $builder,
-  ) {}
-
-  public static function getSubscribedEvents(): array {
-    return [
-      KernelEvents::REQUEST => ['onRequest', 100],   // [method, priority]
-    ];
-  }
-
-  public function onRequest(RequestEvent $event): void {
-    // ...
-  }
-
-}
-```
-
+DI-injected, unit-testable service implementing `EventSubscriberInterface`
+(`getSubscribedEvents()` maps event → `[method, priority]`; higher priority runs first).
 Register with the `event_subscriber` tag (see
 [services-and-di.md](services-and-di.md#event-subscriber-tag)); with `autoconfigure: true`
-the tag is applied automatically from the implemented interface. Higher priority runs
-first.
+the tag is applied automatically from the implemented interface. `/add-event-subscriber`
+scaffolds one.
 
 ## Plugins: attribute discovery
 
