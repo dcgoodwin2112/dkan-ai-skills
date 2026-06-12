@@ -99,4 +99,5 @@ drush cache:rebuild
 ```
 
 Issues/MRs live on **GitLab** — use the `glab` CLI, not `drupalorg-cli`, for this
-project.
+project. The raw-API invocation form and the drupalcode CI gotchas are in
+[drupal-module-dev/drupalorg-gitlab.md](../../drupal-module-dev/reference/drupalorg-gitlab.md).

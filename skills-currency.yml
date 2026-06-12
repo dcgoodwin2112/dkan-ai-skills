@@ -59,6 +59,10 @@ sources:
     owasp_agentic: https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
     mcp_security: https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html
     notes: OWASP GenAI lists revise periodically — verify the cited IDs/threats match the current published list. MCP protocol security guidance lives in the MCP spec + the OWASP MCP cheat sheet.
+  drupalcode:
+    gitlab: https://git.drupalcode.org
+    glab_releases: https://gitlab.com/gitlab-org/cli/-/releases
+    notes: drupal.org's GitLab instance. The git remote host (git.drupal.org) differs from the web/API host (git.drupalcode.org) — the mismatch glab's high-level commands trip on. A glab release could fix the host handling and obsolete the raw-API workaround.
 
 skills:
 
@@ -107,6 +111,12 @@ skills:
         cadence: monthly
         volatility: medium
         last_verified: 2026-06-11
+      - subject: drupal.org GitLab / glab workflow
+        claim: "glab high-level commands (mr create, …) fail on the git.drupal.org vs git.drupalcode.org host mismatch — use the raw API form (GITLAB_HOST + --hostname + numeric project id, params as -f fields, never query strings in a POST path); MR-branch pushes don't reliably auto-spawn merged-result pipelines (trigger via POST merge_requests/<iid>/pipelines); allow_failure jobs (e.g. cspell) require per-job status checks; job traces 401 via API but public at /-/jobs/<id>/raw."
+        source: drupalcode/glab_releases
+        cadence: quarterly
+        volatility: low
+        last_verified: 2026-06-12
       - subject: Requirements split
         claim: "hook_requirements split in D11.2 into hook_runtime_requirements / hook_update_requirements / InstallRequirementsInterface (src/Install/Requirements/)."
         source: drupal_core/change_records
