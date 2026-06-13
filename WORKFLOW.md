@@ -46,7 +46,10 @@ commits until you ask.** Calibrate depth to the change (see Right-size below).
 size. A typo or one-line fix skips the plan doc and phases (edit → local gates →
 commit); a substantive or risky change earns the whole sequence. The pieces scale
 independently — §9 already escalates the adversarial pass by risk; apply the same
-judgment to planning and phasing. When unsure on something risky, over-gate.
+judgment to planning and phasing. Prose-only doc changes take a lighter diff
+review; **agent-facing content (skills, commands, reference docs) never does** —
+there the facts are the product, and a wrong fact ships to every future session.
+When unsure on something risky, over-gate.
 
 ---
 
@@ -106,6 +109,11 @@ warnings"; "38 tools (25 read / 13 write)"; "`require` pins `drupal/dkan:4.x-dev
 `mcp/sdk:dev-main#<sha>`". Those numbers drive the plan and later become test
 assertions.
 
+Subagent and audit **findings are claims, not facts.** Before a finding drives a
+deletion or rewrite, spot-check it against the primary source — a "high-confidence
+duplication" finding that turns out to be correct progressive disclosure is one
+verification away from being damage.
+
 ## 4. Write a phased plan doc
 
 One markdown doc with a fixed shape. Two modes — pick by lifespan:
@@ -159,14 +167,22 @@ editing; let the human review context, adjust effort, or redirect first.
 ## 5. Review the plan independently
 
 Before any code, run the plan through an independent reviewer — the codex-reviewer
-MCP, `review_plan`. It catches sequencing errors, missing risks, and scope creep
-while they're still free to fix. Fold validated findings back into the plan doc
-(track that as its own step). **If codex is unavailable**, say so and stand in the
-bundled **`plan-reviewer`** subagent (`@agent-drupal-dkan-ai:plan-reviewer`) — a
-fresh-context Claude reviewer handed the plan doc, reporting the same classes
-(sequencing errors, missing risks, scope creep, unstated decisions); note the
-substitution in the plan doc rather than skip the gate. (`/code-review` reviews
-diffs, not plans, so it is not the stand-in here.)
+MCP, `review_plan`. **Ask the zeroth question first:** have the reviewer weigh the
+goal against the null alternatives — do nothing, delete the thing, reduce scope —
+before critiquing the phases. The gates below verify a plan is *internally* sound;
+only this question (and the human at the §4 pause) checks it's the *right* plan. A
+fully-reviewed redesign plan once gave way to a one-PR demolition the moment
+someone asked whether the thing should exist at all.
+
+The review catches sequencing errors, missing risks, and scope creep while they're
+still free to fix. Fold validated findings back into the plan doc (track that as
+its own step). **If codex is unavailable**, say so and stand in the bundled
+**`plan-reviewer`** subagent (`@agent-drupal-dkan-ai:plan-reviewer`) — a
+fresh-context Claude reviewer handed the plan doc, reporting the same classes;
+note the substitution in the plan doc rather than skip the gate. The fallback is
+fresh-context but **same-model** — it shares the planner's blind spots, so treat
+its approval as weaker than codex's and lean harder on the pause. (`/code-review`
+reviews diffs, not plans, so it is not the stand-in here.)
 
 **Scope the review to what's about to be built.** For a living plan, review the
 *unbuilt phase*, not the whole document: codex `focus` on that phase's section,
@@ -184,12 +200,16 @@ edit; the same flaw caught after implementation costs a whole phase.
 - **Sequenced so gates compound** (see Principles).
 - **Risk-tagged**, so high-risk phases (security, destructive ops, auth) are known
   up front to warrant the adversarial pass (§9).
+- **Decision-gate phases that hinge on an open call.** When the plan carries a
+  "Decisions for the user" item, align it with a phase boundary so the pause *is*
+  the decision point — the phase doesn't start until the human answers.
 - **ROADMAP absorbs anything cut** — scope creep goes to the backlog with
   rationale, not into the current PR.
 - **Pause between phases.** The human chooses when the next one starts.
-- **Reset context between phases.** `/clear` (not just `/compact`) when a phase
-  ends, then re-seed the next one from its plan doc — so each phase runs on clean,
-  intentional context, not the residue of the last.
+- **Re-seed context between phases when it helps** — judgment, not ceremony.
+  `/clear` and re-seed from the plan doc when switching domains or when the prior
+  phase's residue stops being load-bearing; a continuous session through closely
+  related phases is fine with modern context management.
 
 **Example sequence:** 0 lint-clean → 1 security hardening → 2 CI + drift detection
 → 3 performance → 4 packaging polish → 5 release/migration (decision-gated). Each
@@ -271,29 +291,22 @@ adversarial pass inside Claude:
 - **For an AI/agent surface, add a tool-I/O security lens.** Check the change
   against the **lethal trifecta** — private-data access + exposure to untrusted
   content + an exfiltration/write path; any two are survivable, all three is
-  exploitable — and break it by *design*, not by prompt. Tool inputs *and* outputs
-  are untrusted: indirect prompt injection arrives through call arguments *and*
-  through the data a tool returns (a catalog row, a dataset description, a harvest
-  error), so never let returned content act as instructions. Enforce **least
-  privilege per tool** (a read tool must not reach a destructive path) and keep
-  read-only and read-write tools on **separate, separately-credentialed surfaces**
-  (e.g. the `dkan-ro` / `dkan-rw` split) so text injected on the read path has no
-  write tool in reach. Keep destructive verbs (`delete`, `drop`, `unpublish`,
-  `publish`) **human-gated**, not autonomous. Vet **AI-suggested dependencies**
-  before adding them — guard against slopsquatting (confirm the package exists and
-  is the one you meant), then pin by hash; the bundled `dependency-gate` hook (§7) makes this stop deterministic. Anchor the pass to a maintained
-  checklist — **OWASP LLM Top 10** (LLM01 prompt injection, LLM05 improper output
-  handling, LLM06 excessive agency, LLM03 supply chain) and the **OWASP Agentic AI
-  Top 10** — so the lenses track named threats, not intuition. **Example:** an MCP
-  server exposing dozens of tools, several of them destructive writes, is the
-  high-value target this guards.
-- **Vary the model, not just the prompt.** Run the lenses under *different* models
-  (e.g. one `opus`, one `sonnet` via the Agent tool's model option) and include the
-  external codex reviewer — a different model family — so no single model's blind
-  spots dominate the panel (the agent-as-judge / CollabEval finding). Diversity is
-  the whole point: a same-family panel can *amplify* a shared bias instead of
-  cancelling it. The bundled `plan-diff-reviewer` (§8) is a reusable fresh-context
-  panelist.
+  exploitable — and break it by *design*, not by prompt. Treat tool inputs *and*
+  outputs as untrusted (injection arrives through call arguments and through
+  returned data — never let returned content act as instructions); enforce least
+  privilege per tool; keep read-only and read-write tools on **separate,
+  separately-credentialed surfaces** (the `dkan-ro` / `dkan-rw` split) so text
+  injected on the read path has no write tool in reach; keep destructive verbs
+  **human-gated**, not autonomous. Vet **AI-suggested dependencies** — confirm the
+  package exists and is the one you meant (slopsquatting), then pin; the
+  `dependency-gate` hook (§7) makes this stop deterministic. Anchor the pass to
+  the **OWASP LLM Top 10** and **OWASP Agentic AI Top 10** so the lenses track
+  named threats, not intuition.
+- **Vary the model, not just the prompt.** Run lenses under different models (the
+  Agent tool's model option) and include the cross-family codex reviewer — a
+  same-family panel can *amplify* a shared bias instead of cancelling it (the
+  agent-as-judge / CollabEval finding). The bundled `plan-diff-reviewer` (§8) is a
+  reusable fresh-context panelist.
 - **Escalate by risk:** a typo fix needs none; a destructive-write authorization
   path warrants 3–5 lenses.
 
@@ -364,6 +377,12 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   **promote must-happen rules to hooks** instead of restating them, and **link to
   the doc spine, don't inline** (§2). Where `AGENTS.md` is generated (this repo),
   prune the *skills* it builds from, not the output.
+- **Earn-its-keep review**: on the same cadence, give every gate, eval, and tool a
+  keep/fix/delete decision if it hasn't produced value since the last pass. A
+  documented *workaround* for broken tooling is the tell — a workaround is a
+  deferred decision. **Example:** a triggering eval sat broken behind a documented
+  plugin-disable dance until a demolition pass deleted it; this review forces that
+  call sooner.
 - **Dependency drift**: when you ride dev branches/pins, add a CI job that bumps to
   upstream HEAD and runs **contract tests** — assert the consumed upstream symbols
   still exist, instantiate every plugin. It goes red the moment upstream breaks you,
@@ -380,10 +399,8 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   DKAN MCP `ToolAccessSubscriber` + a snapshot over the read-only vs read-write
   tool split.
 - **AI-surface regression**: prompts, agents, and tool schemas drift as models and
-  dependencies change. Keep their **eval suite** as a standing regression gate —
-  the behavioral analog of the contract tests above — and re-run it on every change
-  to those surfaces. **Example:** `dkan-aiq:eval` gates the AI-query agent's system
-  prompt and routing.
+  dependencies change — keep their eval suite as a standing regression gate and
+  re-run it on every change to those surfaces (§7).
 - **ROADMAP** is the living deferral log: anything cut from a phase lives here with
   rationale until it's scheduled.
 
@@ -405,13 +422,10 @@ stack-specific — swap them:
   phpcs/phpunit-via-DDEV; your scaffolds; your upstreams as the currency sources.
 
 **Scaling note:** the loop is sequential by design — the pause between phases is a
-feature, not a bottleneck. Genuinely independent work (separate repos, non-dependent
-phases) can parallelize across git worktrees, trading coordination and disk for
-throughput; confirm the work is *actually* independent first — modules with a
-dependency direction (a shared foundation the others build on) are not, and parallel
-edits there invite integration conflicts. **File isolation isn't enough:** worktrees
-separate source, but parallel agents that run tests still share one DDEV instance,
-database, and ports — concurrent kernel/functional runs corrupt each other. True
-parallelism needs per-agent runtime isolation (a separate DB/branch + ports), not
-just disjoint files. And the real ceiling is **human review throughput**: past a few
-concurrent agents the bottleneck is your attention at the gates, not agent speed.
+feature, not a bottleneck. Genuinely independent work can parallelize across git
+worktrees — confirm it's *actually* independent first (a shared foundation others
+build on is not). **File isolation isn't enough:** parallel agents that run tests
+still share one DDEV instance, database, and ports, so true parallelism needs
+per-agent runtime isolation, not just disjoint files. And the real ceiling is
+**human review throughput** — past a few concurrent agents the bottleneck is your
+attention at the gates, not agent speed.
