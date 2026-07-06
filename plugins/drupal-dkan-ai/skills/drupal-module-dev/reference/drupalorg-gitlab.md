@@ -35,8 +35,12 @@ Contribution Records system on drupal.org, never from commits alone. A direct
 push or an issue-less MR earns no credit. So on drupal.org-hosted projects,
 **one phase = one GitLab issue + one MR**.
 
-- These projects use **GitLab issues** on drupalcode (classic drupal.org queues
-  are being retired, 2026 migration). Create the issue via the raw API before
+- These projects track issues on **drupalcode GitLab** (the classic
+  drupal.org queues were migrated in the 2026 GitLab-issues rollout; the old
+  `drupal.org/project/issues/<name>` URLs **301-redirect** to
+  `git.drupalcode.org/project/<name>/-/work_items`, and issue numbers are
+  preserved as GitLab IIDs). GitLab now labels the UI **"work items"**, but the
+  REST resource is still `/issues` — create the issue via the raw API before
   starting the branch:
 
   ```bash
@@ -45,6 +49,9 @@ push or an issue-less MR earns no credit. So on drupal.org-hosted projects,
     -f title="..." -f description="..."
   # response JSON: .iid (issue number), .web_url
   ```
+
+  Post-migration, **only maintainers** can set labels, status, or issue-board
+  columns — a contributor opens the issue and participates, but can't triage it.
 
 - Put `Closes #<iid>` in the MR description so merge closes the issue.
 - **Disclose AI assistance** in the issue or MR — drupal.org's credit-abuse
