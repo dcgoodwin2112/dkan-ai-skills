@@ -1,6 +1,6 @@
 # Drupal AI Module — Common Pitfalls
 
-Failure modes when extending the Drupal AI module, with symptoms and fixes. Targets `drupal/ai ^1.3` (current stable 1.4.2; verified against 1.3.5 + `ai_agents` 1.2.3 + `ai_provider_anthropic` 1.2.2). Order is rough frequency.
+Failure modes when extending the Drupal AI module, with symptoms and fixes. Targets `drupal/ai ^1.3` (current stable 1.4.3, a security release; verified against 1.3.5 + `ai_agents` 1.2.3 + `ai_provider_anthropic` 1.2.2). Order is rough frequency.
 
 ## 1. Forgot to rebuild cache
 
