@@ -196,7 +196,10 @@ edit; the same flaw caught after implementation costs a whole phase.
 ## 6. Break work into scoped phases
 
 - **One phase = one focused branch = one PR.** Small enough to review in one
-  sitting.
+  sitting. **On drupal.org-hosted projects, an issue fronts the pair** — one
+  GitLab issue per phase, created before the branch: drupal.org contribution
+  credit is issue-based, so an issue-less MR ships the work but forfeits the
+  credit (see the `drupalorg-gitlab` reference doc).
 - **Sequenced so gates compound** (see Principles).
 - **Risk-tagged**, so high-risk phases (security, destructive ops, auth) are known
   up front to warrant the adversarial pass (§9).
@@ -332,6 +335,11 @@ at low confidence; the adversarial pass confirmed it was real before it shipped.
   deleting the source branch. After their merge, do the cleanup above, then a small
   plan-only commit to the default branch recording the squash sha and MR number in
   the living plan's Current state (§4).
+- **When you own the drupal.org project**, the merge is also where credit lands:
+  before squash-merging, grant credit on the issue's Contribution Record
+  (drupal.org, human step) and use its generated commit message. Disclose AI
+  assistance on the issue/MR; never backfill issues for merged work. Mechanics in
+  the `drupalorg-gitlab` reference doc.
 - **Before the next phase, capture what you learned.** If this phase surfaced a
   durable, non-obvious finding that caused a correction, write it into the repo's
   procedural memory now (§12) — while the context is fresh.

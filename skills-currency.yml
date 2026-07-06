@@ -178,17 +178,17 @@ skills:
     targets: "drupal/ai 1.4.x (current stable 1.4.3, a security release; docs verified against 1.3.5; refuses 2.0.x)"
     claims:
       - subject: Version line
-        claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (latest 1.4.3, 2026-06-24, a security release; 1.5.x-dev branch open; docs verified against 1.3.5); refuses 2.0.x (dev, breaking provider lifecycle changes; no 2.0.x branch on the releases page as of 2026-06-29 — re-confirm the rationale via the issue tracker)."
+        claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (latest 1.4.3, 2026-06-24, a security release; 1.5.x-dev branch open; docs verified against 1.3.5); refuses 2.0.x (dev, breaking provider lifecycle changes; no 2.0.x branch on the releases page as of 2026-07-06 — re-confirm the rationale via the issue tracker)."
         source: drupal_ai/releases
         cadence: monthly
         volatility: high
-        last_verified: 2026-06-29
+        last_verified: 2026-07-06
       - subject: Core requirement
         claim: "drupal/ai 1.4.x requires Drupal ^10.5 || ^11.2 (unchanged from 1.3.x)."
         source: drupal_ai/project
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-29
+        last_verified: 2026-07-06
       - subject: DKAN grounding module
         claim: "testing-ai-plugins.md patterns are grounded in dkan_ai_query (drupal.org 0.x; renamed 2026-06 from dkan_drupal_ai_query), mock submodule dkan_ai_query_mock."
         source: dkan_ai_query/project
@@ -204,13 +204,13 @@ skills:
         source: mcp_server/project
         cadence: monthly
         volatility: high
-        last_verified: 2026-06-29
+        last_verified: 2026-07-06
       - subject: SDK API surface
         claim: "Extension points: #[Tool]/#[ResourceProvider]/prompt/notification plugins; ClientGateway in execute(); checkAccess() gating. mcp_server_tool_bridge (separate companion project since 2026-06-09, like mcp_server_oauth/_ui/_examples) bridges drupal/tool tools via McpToolConfig entities."
         source: mcp_server/repo
         cadence: monthly
         volatility: high
-        last_verified: 2026-06-29
+        last_verified: 2026-07-06
       - subject: AI-surface threat checklist
         claim: "Security lens anchors to OWASP LLM Top 10 (LLM01 prompt injection, LLM05 improper output handling, LLM06 excessive agency, LLM03 supply chain — 2025 list) and the OWASP Top 10 for Agentic Applications; tool outputs are untrusted (indirect injection); enforce read/write separation + least privilege + human-gated destructive verbs."
         source: ai_security/owasp_llm
@@ -228,7 +228,7 @@ skills:
         source: dkan_mcp_server/project
         cadence: monthly
         volatility: high
-        last_verified: 2026-06-29
+        last_verified: 2026-07-06
 
   open-data-dcat:
     targets: "Project Open Data / DCAT-US v1.1 as implemented by DKAN 4.x"
