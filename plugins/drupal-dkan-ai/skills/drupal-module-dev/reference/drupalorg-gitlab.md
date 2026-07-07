@@ -53,15 +53,26 @@ push or an issue-less MR earns no credit. So on drupal.org-hosted projects,
   Post-migration, **only maintainers** can set labels, status, or issue-board
   columns — a contributor opens the issue and participates, but can't triage it.
 
+- **`DrupalBot` auto-posts the first comment** on the new issue, carrying the
+  two links credit rides on: the issue's **Contribution Record** (drupal.org,
+  where credit is granted) and the **fork-management** page (create/request a
+  fork, open the MR). Credit accrues from *issue participation* — every comment
+  syncs to the record automatically — **not** from MR timing, so there's no hard
+  "wait for the bot or lose credit" gate. What matters: the **issue exists
+  before the MR** (so its record exists and the fork link is available), and the
+  MR references it. Order in practice: create the issue → let DrupalBot comment →
+  open the MR. On a project you don't maintain, open the fork/MR from that
+  fork-management link (or comment `/do:fork`); on your own project, branch and
+  MR directly.
 - Put `Closes #<iid>` in the MR description so merge closes the issue.
 - **Disclose AI assistance** in the issue or MR — drupal.org's credit-abuse
   policy treats undisclosed AI-generated contributions as credit farming.
 - **Credit is granted on drupal.org, not GitLab** (human step, browser): issue
   participants sync automatically to the issue's **Contribution Record**. Before
-  merging, the maintainer opens the record, checks the credit boxes (self and/or
-  attributed organization), and copies the record's **generated commit message**
-  for the squash merge — that message is what links the commit to the credited
-  issue.
+  merging, the maintainer opens the record (linked from DrupalBot's comment),
+  checks the credit boxes (self and/or attributed organization), and copies the
+  record's **generated commit message** for the squash merge — that message is
+  what links the commit to the credited issue.
 - **Never backfill** issues for already-merged work — retroactive or bulk
   low-effort issues match drupal.org's definition of credit farming. The issue
   precedes the branch.
