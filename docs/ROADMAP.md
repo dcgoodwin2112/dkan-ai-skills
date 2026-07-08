@@ -110,9 +110,11 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       not restated here").
       — done 2026-07-08, PR #56. Three pointers, manifest annotated; spray check
       confirms 1.4.3 lives only in SKILL.md.
-- [ ] 13. **MCP tool counts → dkan-integration.md only.** Soften
+- [x] 13. **MCP tool counts → dkan-integration.md only.** Soften
       drupal-mcp-server/SKILL.md:124's hard "38 tools (25 read / 13 write)" to
       "~38 — see dkan-integration.md; verify live"; the live gate owns the number.
+      — done 2026-07-08, PR #57. Tripwire interaction checked (regexes target
+      stale ~35/22 only); live gate 25/25 with the change.
 - [ ] 14. **justinrainbow→opis migration note → core-internals.md:66–73 only**
       (also stated in dkan-core-contributor SKILL.md:29–31, :49, and
       core-overview.md:90–91). Feature-branch state; will invalidate all four.

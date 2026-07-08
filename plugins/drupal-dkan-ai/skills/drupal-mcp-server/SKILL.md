@@ -120,7 +120,9 @@ Full method signatures: [tool-plugins.md](reference/tool-plugins.md),
 
 DKAN MCP on `dkan-site` is **`dkan_mcp_server`** — a contrib module
 (drupal.org project, `1.0.x` alpha releases) built ON
-`mcp_server` (`mcp/sdk ^0.6`) exposing **38 tools (25 read / 13 write)** as
+`mcp_server` (`mcp/sdk ^0.6`) exposing **~38 tools** (read/write split and exact
+counts live in [dkan-integration.md](reference/dkan-integration.md), pinned to the
+running site by the live-currency gate — deliberately not restated here) as
 `#[Tool]` plugins, with per-tool `checkAccess()` enforced by a shipped
 `ToolAccessSubscriber`; stdio via `drush dkan-mcp-server:serve --user=NAME`, HTTP
 at `/mcp` with OAuth-only auth (since 2026-06-10). The legacy hand-rolled
