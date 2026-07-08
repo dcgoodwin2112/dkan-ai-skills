@@ -62,14 +62,18 @@ The flow:
    a `RootedData\RootedJsonData` (`getdkan/rooted-json-data`) — JSON-path-addressable
    and schema-validated. Invalid metadata throws here.
 
-> **Validator-library caveat (the branch trap).** On **`4.x`**, `RootedJsonData`
-> validates via **`justinrainbow/json-schema`** (`^5.2 || ^6.6.1`), with
-> `getdkan/rooted-json-data ^0.2.2`. A migration to **`opis/json-schema`** is in
-> flight on a feature branch (which pins `opis/json-schema` and a `rooted-json-data`
-> dev branch) and is **not on `4.x`**. If your checkout shows `opis/json-schema`,
-> you're on that branch — confirm the target's validator with
-> `git show 4.x:composer.json` before writing schema/validation code or tests, because
-> error shapes and edge cases differ between the two libraries.
+> **Validator-library caveat (verify your branch).** The justinrainbow → opis
+> migration **landed on `4.x`** (verified 2026-07-08: PR #4706 "Migrate to
+> opis/json-schema v2" + #4730, which adds the Opis-based
+> `dkan.metastore.schema_validator` service, `Drupal\dkan_metastore\SchemaValidator`).
+> `4.x` now requires **both** libraries — `opis/json-schema ^2.4` (metastore schema
+> validation) and `justinrainbow/json-schema ^5.2 || ^6.6.1` (still used on some
+> paths, e.g. the datastore query controller) — with `getdkan/rooted-json-data ^1.0`;
+> the `m1x0n` error presenter was dropped. Checkouts from either side of that merge
+> disagree with mainline: confirm with `git show 4.x:composer.json` before writing
+> schema/validation code or tests — error shapes and edge cases differ between the
+> two libraries. **This callout is the single home for this fact; other docs link
+> here.**
 
 Adding or changing a schema affects validation, the API, and the JSON form widget — and
 usually needs an update hook. See [extending-core.md](extending-core.md#adding-a-schema).

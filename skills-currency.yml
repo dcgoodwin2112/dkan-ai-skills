@@ -167,6 +167,12 @@ skills:
   dkan-core-contributor:
     targets: "DKAN 4.x (GitHub GetDKAN/dkan, 4.x branch)"
     claims:
+      - subject: JSON-schema validator migration
+        claim: "The justinrainbow -> opis migration landed on 4.x (PRs #4706/#4730): opis/json-schema ^2.4 (metastore SchemaValidator service dkan.metastore.schema_validator) + justinrainbow/json-schema still required on some paths; rooted-json-data ^1.0; m1x0n presenter dropped. Single-sourced in core-internals.md#schema-validation."
+        source: dkan/repo
+        cadence: quarterly
+        volatility: medium
+        last_verified: 2026-07-08
       - subject: Branch / CI
         claim: "Active development on 4.x; CircleCI matrix (~10.5 on PHP 8.1-8.4; ~10.6/~11.2/~11.3 on PHP 8.3-8.4) with pcov coverage; phpcs via Qlty config (not a CI job); in-repo PHPUnit harness with DKAN traits (@group dkan / functionalN)."
         source: dkan/repo

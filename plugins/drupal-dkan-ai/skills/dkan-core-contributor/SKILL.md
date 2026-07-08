@@ -26,8 +26,9 @@ detail doc.
 > `3.x`, and `4.x` branches. A working tree may sit on a feature branch whose APIs
 > and dependencies differ from mainline. Before relying on a class, signature, or
 > dependency, confirm it on the branch you're targeting: `git show 4.x:<path>`.
-> (Concrete example: a `justinrainbow/json-schema` → `opis/json-schema` migration
-> lives on a feature branch and is **not** on `4.x` — see
+> (Concrete example: the `justinrainbow/json-schema` → `opis/json-schema` migration
+> lived on a feature branch before landing on `4.x` in 2026 — a checkout from either
+> side of that merge disagrees with mainline. Current state:
 > [reference/core-internals.md](reference/core-internals.md#schema-validation).)
 
 ## Pick the right doc for the task
