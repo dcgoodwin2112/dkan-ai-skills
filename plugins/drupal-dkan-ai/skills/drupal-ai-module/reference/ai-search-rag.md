@@ -2,7 +2,7 @@
 
 RAG, embeddings, and vector search with the Drupal AI module. Targets the `drupal/ai` 1.x line — current-version facts live in [SKILL.md](../SKILL.md) rule 3 and are deliberately not restated here (doc verified against `1.3.5`). Sourced from installed code under `<webroot>/modules/contrib/ai/`. Verify against the installed version before code-gen.
 
-**Install status (this checkout):** `ai_search` submodule **is present** at `<webroot>/modules/contrib/ai/modules/ai_search/` (v1.3.5, `lifecycle: experimental`, depends on `ai:ai` + `search_api:search_api`). The VdbProvider plugin type lives in the **parent `ai` module**, not `ai_search`. **No concrete VDB backend module is installed** (no `ai_vdb_provider_milvus`/`_pinecone`/`_qdrant`/`_postgres` under `contrib/`); the only VdbProvider in-tree is the test `EchoProvider`. To actually run RAG you must install + configure one VDB provider module. The registry of known providers is `<webroot>/modules/contrib/ai/resources/ai.vdb_provider_registry.yml`.
+**Install layout (verify on your site):** the `ai_search` submodule ships inside `drupal/ai` at `<webroot>/modules/contrib/ai/modules/ai_search/` (`lifecycle: experimental`, depends on `ai:ai` + `search_api:search_api`). The VdbProvider plugin type lives in the **parent `ai` module**, not `ai_search` — but the only VdbProvider shipped in-tree is the test `EchoProvider`. To actually run RAG you must install + configure a concrete VDB provider module (`ai_vdb_provider_milvus`/`_pinecone`/`_qdrant`/`_postgres`, …); check what's present with `drush pml | grep ai_vdb`. The registry of known providers is `<webroot>/modules/contrib/ai/resources/ai.vdb_provider_registry.yml`.
 
 ## 1. What RAG is here, and when to use it
 

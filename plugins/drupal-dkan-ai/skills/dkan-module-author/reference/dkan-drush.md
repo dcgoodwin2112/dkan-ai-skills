@@ -2,9 +2,9 @@
 
 Canonical CLI for debugging datastore, harvest, and metastore. All commands enumerated from registered `drush.services.yml` command classes under `<webroot>/modules/contrib/dkan`.
 
-## Running drush in DDEV
+## Running drush
 
-This project uses DDEV. Prefix every command with `ddev`:
+On a DDEV site, prefix every command with `ddev` (as the examples below do); elsewhere, run `drush` (or `vendor/bin/drush`) directly:
 
 ```
 ddev drush dkan:datastore:list

@@ -38,8 +38,8 @@ plugin wrapper needs only a smoke test.
 
 ## Standalone stubs (no Drupal bootstrap)
 
-DKAN's `dkan_ai_query` tests run on the site-level PHPUnit with **standalone
-stubs** — minimal local implementations of DKAN/Drupal classes
+DKAN's `dkan_ai_query` tests (a worked example — the module may not exist on
+your site) run on the site-level PHPUnit with **standalone stubs** — minimal local implementations of DKAN/Drupal classes
 (`tests/stubs/*.php`) loaded via `tests/bootstrap.php`, so logic tests need no
 running site or DB. Mirror this when your tool delegates to heavy services: stub
 the service's contract, assert your adapter calls it correctly. Fast and
@@ -67,22 +67,12 @@ open. This is the security-critical seam — `checkAccess()` is inert without it
 
 ## Tool-permission contract test (regression guard)
 
-The access-subscriber test proves the gate works *today*; a contract test proves no
-*future* tool quietly slips it. Snapshot the tool surface and fail the build when it
-drifts toward more agency:
-
-- Enumerate `plugin.manager.mcp_server.tool` definitions; for each, record whether
-  it is write/destructive and whether it is gated (declares a non-default access
-  policy the `ToolAccessSubscriber` enforces).
-- Assert the invariant: **every write/destructive tool is gated.** A new `delete_*`
-  / `drop_*` / `unpublish` tool added without a gate fails the suite, not production
-  (OWASP LLM06 excessive agency).
-- Keep a committed snapshot of the read-only vs read-write split; a diff — a read
-  tool gaining a write path, or a required permission changing — is a review signal,
-  not a silent change (the rug-pull guard).
-
-Same "go red the moment the contract changes" goal as an upstream contract test,
-applied to *authorization*.
+The access-subscriber test proves the gate works *today*. One invariant test keeps
+future tools from slipping it: enumerate `plugin.manager.mcp_server.tool`
+definitions and assert **every write/destructive tool is gated**, against a
+committed snapshot of the read-only vs read-write split. A new ungated `delete_*`
+tool, or a read tool gaining a write path, then fails the suite instead of
+shipping silently.
 
 ## Commands
 

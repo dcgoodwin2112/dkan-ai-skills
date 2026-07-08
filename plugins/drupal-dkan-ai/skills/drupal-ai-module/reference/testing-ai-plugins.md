@@ -1,6 +1,6 @@
 # Testing Drupal AI Plugins
 
-How to test providers, FunctionCall tools, and agents. Two layers: deterministic PHPUnit unit tests for the glue you wrote, and non-deterministic eval runs for model behavior. Patterns below are grounded in `dkan_ai_query` (drupal.org project, 0.x — renamed 2026-06 from `dkan_drupal_ai_query`) and `dkan_query_tools`. Targets `drupal/ai ^1.3` + `ai_agents 1.2.x`.
+How to test providers, FunctionCall tools, and agents. Two layers: deterministic PHPUnit unit tests for the glue you wrote, and non-deterministic eval runs for model behavior. Patterns below are grounded in `dkan_ai_query` (drupal.org project, 0.x — renamed 2026-06 from `dkan_drupal_ai_query`) and `dkan_query_tools`; both are worked-example sources that may not be installed on your site (`drush pml | grep dkan_`) — the patterns stand alone. Targets `drupal/ai ^1.3` + `ai_agents 1.2.x`.
 
 ## 1. The testing pyramid
 

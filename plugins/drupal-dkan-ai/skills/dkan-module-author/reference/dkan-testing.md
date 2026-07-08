@@ -8,7 +8,7 @@ library, and DKAN's own test base classes.
 
 ## PHPUnit Configuration
 
-**Standalone** (e.g. `dkan_query_tools/phpunit.xml`) — custom bootstrap, unit tests only, no Drupal container. Run via the module's own composer-installed PHPUnit:
+**Standalone** (e.g. `dkan_query_tools/phpunit.xml` — a site-specific custom module used as the worked example throughout this doc; it may not exist on your site, but the pattern stands alone) — custom bootstrap, unit tests only, no Drupal container. Run via the module's own composer-installed PHPUnit:
 ```bash
 ddev exec "cd /var/www/html/<webroot>/modules/custom/dkan_query_tools && composer install"
 ddev exec "cd /var/www/html/<webroot>/modules/custom/dkan_query_tools && ./vendor/bin/phpunit -c phpunit.xml"
