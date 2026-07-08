@@ -112,7 +112,9 @@ assertions.
 Subagent and audit **findings are claims, not facts.** Before a finding drives a
 deletion or rewrite, spot-check it against the primary source — a "high-confidence
 duplication" finding that turns out to be correct progressive disclosure is one
-verification away from being damage.
+verification away from being damage. The codex MCP `verify_claim` tool is built
+for this spot-check: hand it the claim and it independently tries to *refute* it,
+returning `confirmed | refuted | uncertain` with evidence both ways.
 
 ## 4. Write a phased plan doc
 
@@ -254,9 +256,16 @@ shipped as its own branch + PR.
 
 ## 8. Review the diff independently
 
-Run the codex-reviewer `review_diff` before each PR — `general` profile always,
-`security` profile for anything touching auth, access, destructive ops, or a
-surface that exposes tools or data to an AI agent.
+Run the codex-reviewer MCP `review_diff` before each PR — `general` profile
+always, `security` profile for anything touching auth, access, destructive ops,
+or a surface that exposes tools or data to an AI agent.
+
+**This gate is the MCP tool, not the Codex plugin.** The official Codex plugin's
+`/codex:review` and `/codex:adversarial-review` are conversational/background
+companions with prose output; the gate keys off the MCP's structured verdict and
+per-finding confidence (`approve | approve_with_nits | request_changes`), which
+the plugin doesn't emit. Use the plugin for exploratory or background review,
+the MCP tool for the pass/fail decision.
 
 - **Fallback when codex is unavailable.** If the codex MCP is down, rate-limited,
   usage-exhausted, unconfigured, or erroring, **warn explicitly and do not skip the
@@ -286,6 +295,9 @@ An independent reviewer is one opinion. When a finding is **low-confidence**, th
 change is **high-risk**, or **the external reviewer is unavailable**, add a second,
 adversarial pass inside Claude:
 
+- **A single low-confidence finding** often needs only codex MCP `verify_claim`
+  (§3) — one refutation attempt at a fraction of a panel's cost. Escalate to the
+  lenses below when the verdict stays `uncertain` or the stakes are high.
 - **Independent skeptics** — subagents prompted to *refute* the change; a
   majority-refute kills it.
 - **Perspective-diverse lenses** — give each reviewer a distinct angle
@@ -309,7 +321,9 @@ adversarial pass inside Claude:
   Agent tool's model option) and include the cross-family codex reviewer — a
   same-family panel can *amplify* a shared bias instead of cancelling it (the
   agent-as-judge / CollabEval finding). The bundled `plan-diff-reviewer` (§8) is a
-  reusable fresh-context panelist.
+  reusable fresh-context panelist; the Codex plugin's `/codex:adversarial-review`
+  is the cross-family *design-challenge* lens — it questions the approach,
+  tradeoffs, and assumptions, not just the diff's defects.
 - **Escalate by risk:** a typo fix needs none; a destructive-write authorization
   path warrants 3–5 lenses.
 
