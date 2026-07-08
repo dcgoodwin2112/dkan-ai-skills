@@ -104,10 +104,12 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
 
 ### P3 — single-sourcing (fact-spray ratchet)
 
-- [ ] 12. **drupal/ai version fact → SKILL.md only.** Currently in 4 files
+- [x] 12. **drupal/ai version fact → SKILL.md only.** Currently in 4 files
       (SKILL.md:36, pitfalls.md:3, ai-search-rag.md:3, services.md:145); copy the
       mcp-overview.md:86 pattern ("version facts live in SKILL.md — deliberately
       not restated here").
+      — done 2026-07-08, PR #56. Three pointers, manifest annotated; spray check
+      confirms 1.4.3 lives only in SKILL.md.
 - [ ] 13. **MCP tool counts → dkan-integration.md only.** Soften
       drupal-mcp-server/SKILL.md:124's hard "38 tools (25 read / 13 write)" to
       "~38 — see dkan-integration.md; verify live"; the live gate owns the number.
