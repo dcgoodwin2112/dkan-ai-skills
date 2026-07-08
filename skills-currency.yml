@@ -13,7 +13,7 @@
 # When you add or materially change a skill, add/adjust its entries here.
 
 meta:
-  last_full_review: 2026-06-11
+  last_full_review: 2026-07-08
   # Bump when the whole manifest is re-reconciled against sources.
 
 # Where to verify each upstream. Claims reference these by key.
@@ -80,73 +80,73 @@ skills:
         source: drupal_core/releases
         cadence: monthly
         volatility: low
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: OOP hooks
         claim: "#[Hook] introduced in D11.1; OOP preprocess in D11.2 (backported to 11.1.8); ordering via order: or #[ReorderHook] in D11.2; #[LegacyHook] bridges D10."
         source: drupal_core/change_records
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: Plugin attribute/annotation timeline
         claim: "Attributes introduced D10.2; omitting the attribute class deprecated ~D11.2; required D12; @Annotation discovery removed D13."
         source: drupal_core/change_records
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: Entity query accessCheck
         claim: "->accessCheck() mandatory; deprecated 9.2, throws since Drupal 10 if omitted."
         source: drupal_core/change_records
         cadence: quarterly
         volatility: low
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: JS once
         claim: "jQuery.once removed in D10; use core/once."
         source: drupal_core/change_records
         cadence: quarterly
         volatility: low
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: Removed core modules
         claim: "D11 removed Book, Forum, Statistics, Tracker, Tour, Actions UI to contrib."
         source: drupal_core/releases
         cadence: quarterly
         volatility: low
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: Config schema validation
         claim: "Strict config schema checking since D10.2; FullyValidatable constraint added D10.3."
         source: drupal_core/change_records
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: drupal.org GitLab / glab workflow
         claim: "glab high-level commands (mr create, …) fail on the git.drupal.org vs git.drupalcode.org host mismatch — use the raw API form (GITLAB_HOST + --hostname + numeric project id, params as -f fields, never query strings in a POST path); MR-branch pushes don't reliably auto-spawn merged-result pipelines (trigger via POST merge_requests/<iid>/pipelines); allow_failure jobs (e.g. cspell) require per-job status checks; job traces 401 via API but public at /-/jobs/<id>/raw."
         source: drupalcode/glab_releases
         cadence: quarterly
         volatility: low
-        last_verified: 2026-06-12
+        last_verified: 2026-07-08
       - subject: drupal.org issues & contribution credit
         claim: "Credit is issue-based via the Contribution Records system (issue participants sync automatically; maintainer checks credit boxes on drupal.org; record generates the squash-commit message). DKAN custom modules use GitLab issues on drupalcode (POST projects/<id>/issues via raw glab api); classic d.o. queues are being retired via DA-managed opt-in migration. Undisclosed AI-generated contributions and backfilled/bulk low-effort issues count as credit farming."
         source: drupalorg_credit/gitlab_issues
         cadence: monthly
         volatility: high
-        last_verified: 2026-07-02
+        last_verified: 2026-07-08
       - subject: Requirements split
         claim: "hook_requirements split in D11.2 into hook_runtime_requirements / hook_update_requirements / InstallRequirementsInterface (src/Install/Requirements/)."
         source: drupal_core/change_records
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: Recipes & config actions
         claim: "Recipes experimental from D10.3, stabilizing across 11.x; setProperties action added D11.2. Exact action set is version-dependent."
         source: drupal_core/change_records
         cadence: monthly
         volatility: high
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: Deprecation testing
         claim: "D11.4 deprecates expectDeprecation()/@group legacy in favor of #[IgnoreDeprecations] + expectUserDeprecationMessage()."
         source: drupal_core/change_records
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
 
   dkan-module-author:
     targets: "DKAN 4.x on Drupal ^10.2 || ^11"
@@ -156,45 +156,45 @@ skills:
         source: dkan/repo
         cadence: quarterly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: Internal API stability
         claim: "Service signatures and event constants are not guaranteed stable across DKAN minor releases; verify class/method exists in the installed copy."
         source: dkan/releases
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
 
   dkan-core-contributor:
     targets: "DKAN 4.x (GitHub GetDKAN/dkan, 4.x branch)"
     claims:
       - subject: Branch / CI
-        claim: "Active development on 4.x; CircleCI matrix (~10.5/~10.6/~11.2/~11.3 across PHP 8.1-8.4) + Qlty/phpcs standards; in-repo PHPUnit harness with DKAN traits (@group dkan / functionalN)."
+        claim: "Active development on 4.x; CircleCI matrix (~10.5 on PHP 8.1-8.4; ~10.6/~11.2/~11.3 on PHP 8.3-8.4) with pcov coverage; phpcs via Qlty config (not a CI job); in-repo PHPUnit harness with DKAN traits (@group dkan / functionalN)."
         source: dkan/repo
         cadence: quarterly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
 
   drupal-ai-module:
     targets: "drupal/ai 1.4.x (current stable 1.4.3, a security release; docs verified against 1.3.5; refuses 2.0.x)"
     claims:
       - subject: Version line
-        claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (latest 1.4.3, 2026-06-24, a security release; 1.5.x-dev branch open; docs verified against 1.3.5); refuses 2.0.x (dev, breaking provider lifecycle changes; no 2.0.x branch on the releases page as of 2026-07-06 — re-confirm the rationale via the issue tracker)."
+        claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (latest 1.4.3, 2026-06-24, a security release; 1.5.x-dev branch open; docs verified against 1.3.5); refuses 2.0.x (2.0.x-dev branch exists — Drupal ^11.2 only, no tagged releases, hidden from the default releases listing; provider lifecycle rework in flight per issue #3577243, not yet a documented breaking-changes list)."
         source: drupal_ai/releases
         cadence: monthly
         volatility: high
-        last_verified: 2026-07-06
+        last_verified: 2026-07-08
       - subject: Core requirement
         claim: "drupal/ai 1.4.x requires Drupal ^10.5 || ^11.2 (unchanged from 1.3.x)."
         source: drupal_ai/project
         cadence: monthly
         volatility: medium
-        last_verified: 2026-07-06
+        last_verified: 2026-07-08
       - subject: DKAN grounding module
         claim: "testing-ai-plugins.md patterns are grounded in dkan_ai_query (drupal.org 0.x; renamed 2026-06 from dkan_drupal_ai_query), mock submodule dkan_ai_query_mock."
         source: dkan_ai_query/project
         cadence: quarterly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
 
   drupal-mcp-server:
     targets: "mcp_server v2.x-dev on the mcp/sdk 0.6 API (pre-release, volatile)"
@@ -204,31 +204,31 @@ skills:
         source: mcp_server/project
         cadence: monthly
         volatility: high
-        last_verified: 2026-07-06
+        last_verified: 2026-07-08
       - subject: SDK API surface
-        claim: "Extension points: #[Tool]/#[ResourceProvider]/prompt/notification plugins; ClientGateway in execute(); checkAccess() gating. mcp_server_tool_bridge (separate companion project since 2026-06-09, like mcp_server_oauth/_ui/_examples) bridges drupal/tool tools via McpToolConfig entities."
+        claim: "Extension points: #[Tool]/#[ResourceProvider]/prompt/notification plugins; ClientGateway in execute(); checkAccess() gating. mcp_server_tool_bridge (own project, created 2026-06-11; oauth/ui/examples extracted 2026-06-09) bridges drupal/tool tools via McpToolConfig entities."
         source: mcp_server/repo
         cadence: monthly
         volatility: high
-        last_verified: 2026-07-06
+        last_verified: 2026-07-08
       - subject: AI-surface threat checklist
         claim: "Security lens anchors to OWASP LLM Top 10 (LLM01 prompt injection, LLM05 improper output handling, LLM06 excessive agency, LLM03 supply chain — 2025 list) and the OWASP Top 10 for Agentic Applications; tool outputs are untrusted (indirect injection); enforce read/write separation + least privilege + human-gated destructive verbs."
         source: ai_security/owasp_llm
         cadence: quarterly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: MCP protocol security
         claim: "MCP-specific risks: tool poisoning, rug pulls (post-approval redefinition), confused deputy, excessive scopes. Mitigate by vetting/pinning consumed servers, least-privilege per-tool scopes, and enforcing checkAccess via a RequestEvent subscriber."
         source: ai_security/mcp_security
         cadence: quarterly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: DKAN MCP modules
         claim: "dkan_mcp_server is a drupal.org contrib project (1.0.x, alpha releases; latest 1.0.0-alpha3, adds the dkan-mcp-server:serve stdio wrapper, tagged DKAN ^4.1.0); the legacy hand-rolled dkan_mcp is retired (no drupal.org project; removed from dkan-site)."
         source: dkan_mcp_server/project
         cadence: monthly
         volatility: high
-        last_verified: 2026-07-06
+        last_verified: 2026-07-08
 
   open-data-dcat:
     targets: "Project Open Data / DCAT-US v1.1 as implemented by DKAN 4.x"
@@ -238,35 +238,36 @@ skills:
         source: dcat_us/pod_v11
         cadence: quarterly
         volatility: low
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: DCAT-US v3
         claim: "DCAT-US v3.0 (RDF/JSON-LD) is the published federal successor standard (v1.1 in transition) but is NOT implemented in DKAN 4.x's JSON schema."
         source: dcat_us/pod_v11
         cadence: quarterly
         volatility: low
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
 
   dkan-frontend:
     targets: "dkan_js_frontend (core_version_requirement ^10.2 || ^11) + React app + component library"
     claims:
       - subject: Two library lineages
-        claim: "Current: @civicactions/cmsds-open-data-components 4.x (latest 4.1.8; CMS Design System, Node 22). Legacy: @civicactions/data-catalog-components ~1.18 (DKAN 2.x, Node 18)."
+        claim: "Current: @civicactions/cmsds-open-data-components 4.x (latest 4.2.0, 2026-06-22; CMS Design System, Node 22). Legacy: @civicactions/data-catalog-components ~1.18 (DKAN 2.x, Node 18)."
         source: dkan_frontend/npm_current
         cadence: monthly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: Reference app
         claim: "data-catalog-app default branch still depends on the legacy data-catalog-components / DKAN 2.x."
         source: dkan_frontend/app
         cadence: quarterly
         volatility: medium
-        last_verified: 2026-06-11
+        last_verified: 2026-07-08
       - subject: Component detail authority
-        # 2026-06-11: agent-docs/ is not on the repo's main branch (still in
-        # draft upstream). Cross-references left as-is pending that landing;
-        # closest published artifacts today are COMPONENTS_INVENTORY.md + Storybook.
+        # 2026-06-11 (re-checked 2026-07-08): agent-docs/ is not on the repo's
+        # main branch (still in draft upstream). Cross-references left as-is
+        # pending that landing; closest published artifacts today are
+        # COMPONENTS_INVENTORY.md + Storybook.
         claim: "Component-level APIs live in the component library repo's own agent-docs/; this skill cross-references rather than duplicating them."
         source: dkan_frontend/components_current
         cadence: quarterly
         volatility: medium
-        last_verified: 2026-06-01
+        last_verified: 2026-07-08
