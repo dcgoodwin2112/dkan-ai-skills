@@ -60,15 +60,9 @@ distributions (stored as `{identifier, data}` wrappers) are in
 
 ### References
 
-Metastore decouples nested objects (publisher, distribution, keyword, theme) from datasets by storing them as separate `data` nodes referenced by UUID.
+Metastore decouples nested objects from datasets by storing them as separate `data` nodes referenced by UUID: the **Referencer** swaps values for UUIDs on write (hash-deduped; distribution downloadURLs are additionally registered with ResourceMapper and replaced with resource IDs), the **Dereferencer** expands them back on read (resolution metadata under `%Ref:{property}`), and the **OrphanChecker** queues unreferenced nodes for removal on delete. Referenceable properties are configured in metastore settings (default: publisher, distribution, keyword, theme).
 
-**On write** (Referencer): Property values are hashed and matched against existing reference nodes. If a match exists, the value is replaced with the existing UUID. If not, a new `data` node is created. Original values are preserved in `%Ref:{property}` fields. Distribution downloadURLs are registered with ResourceMapper and replaced with resource IDs.
-
-**On read** (Dereferencer): UUIDs are resolved back to full objects. `%Ref:{property}` fields contain metadata (`identifier` + `data`) for each reference.
-
-**On delete** (OrphanChecker): Unreferenced nodes are queued for removal.
-
-Referenceable properties configured in metastore settings (default: publisher, distribution, keyword, theme).
+The step-by-step algorithm for all three phases lives in [dkan-workflows.md](dkan-workflows.md#reference-resolution) — deliberately not restated here.
 
 ### Perspectives
 

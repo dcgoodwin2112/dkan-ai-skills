@@ -256,12 +256,16 @@ skills:
     targets: "dkan_js_frontend (core_version_requirement ^10.2 || ^11) + React app + component library"
     claims:
       - subject: Two library lineages
+        # Single-sourced in reference/architecture.md since 2026-07-08;
+        # SKILL.md (rule 7, cheat sheet, version notes) points there.
         claim: "Current: @civicactions/cmsds-open-data-components 4.x (latest 4.2.0, 2026-06-22; CMS Design System, Node 22). Legacy: @civicactions/data-catalog-components ~1.18 (DKAN 2.x, Node 18)."
         source: dkan_frontend/npm_current
         cadence: monthly
         volatility: medium
         last_verified: 2026-07-08
       - subject: Reference app
+        # Single-sourced in reference/architecture.md (same section as the
+        # lineages table) since 2026-07-08.
         claim: "data-catalog-app default branch still depends on the legacy data-catalog-components / DKAN 2.x."
         source: dkan_frontend/app
         cadence: quarterly
