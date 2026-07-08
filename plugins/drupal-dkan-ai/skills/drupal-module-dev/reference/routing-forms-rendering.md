@@ -28,6 +28,28 @@ my_module.report:
 | `_custom_access` | `'\Drupal\…\Controller::access'` | method returns `AccessResultInterface` |
 | `_entity_access` | `'entity.operation'` (`node.update`) | delegates to the entity's access handler |
 
+### Defining permissions (`my_module.permissions.yml`)
+
+Every `_permission` string must be defined, or the check denies everyone except
+user 1. Keys are the literal permission strings used in routing and
+`hasPermission()`:
+
+```yaml
+administer my_module:
+  title: 'Administer My Module'
+  description: 'Configure My Module settings.'
+  restrict access: true
+permission_callbacks:
+  - '\Drupal\my_module\MyModulePermissions::permissions'
+```
+
+`restrict access: true` adds the "security implications" warning in the UI.
+`permission_callbacks` (top-level, not per-permission) generates dynamic
+permissions — the callback returns an array in the same shape (e.g. one entry per
+bundle). New permissions appear after a cache rebuild; *granting* them is config
+(`user.role.*`), so existing sites need an update hook or config change to assign
+them.
+
 ### `AccessResult` + cacheability
 
 ```php

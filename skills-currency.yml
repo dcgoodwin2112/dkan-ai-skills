@@ -271,6 +271,13 @@ skills:
         cadence: quarterly
         volatility: medium
         last_verified: 2026-07-08
+      - subject: Dev-server proxy config
+        # Lives in reference/build-deploy-customize.md "Local app dev server".
+        claim: "data-catalog-app: npm start = Vite dev server on port 3000 (vite.config.ts); VITE_REACT_APP_ROOT_URL=/api/1 (.env.development); server.proxy forwards /api/1 to https://demo.getdkan.org with changeOrigin."
+        source: dkan_frontend/app
+        cadence: quarterly
+        volatility: medium
+        last_verified: 2026-07-08
       - subject: Component detail authority
         # 2026-06-11 (re-checked 2026-07-08): agent-docs/ is not on the repo's
         # main branch (still in draft upstream). Cross-references left as-is

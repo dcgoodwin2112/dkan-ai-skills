@@ -168,11 +168,20 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       services.md's FunctionCall section), 9–17 renumbered, no numeric refs
       existed. Contract-test section condensed 18→8 lines rather than cut —
       verification judged the invariant recipe actionable, not aspirational.
-- [ ] 21. **permissions.yml gap:** drupal-module-dev has no permissions.yml coverage
+- [x] 21. **permissions.yml gap:** drupal-module-dev has no permissions.yml coverage
       while routing docs lead with `_permission` and `/add-drupal-route` promises
       one. Small subsection in routing-forms-rendering.md or module-lifecycle.md.
-- [ ] 22. **dkan-frontend dev-server gap:** no local `npm start`-against-a-DKAN-
+      — done 2026-07-08, PR #62 (batch with 22). ~20-line subsection in
+      routing-forms-rendering.md right after the access-keys table: format,
+      restrict access, permission_callbacks, cache-rebuild + granting-is-config
+      notes. Command's inline template already scaffold-gated; unaffected.
+- [x] 22. **dkan-frontend dev-server gap:** no local `npm start`-against-a-DKAN-
       backend workflow (proxy/CORS) — a first-hour task for frontend customizers.
+      — done 2026-07-08, PR #62. New "Local app dev server" section in
+      build-deploy-customize.md, facts pulled from the upstream repo (no local
+      checkout existed): Vite port 3000, VITE_REACT_APP_ROOT_URL=/api/1,
+      server.proxy → demo.getdkan.org — proxy-based, so CORS never arises.
+      SKILL.md workflow pointer + quarterly currency claim added.
 - [x] 23. **dkan-core-contributor SKILL.md rules↔pitfalls restatement** (4 of 6
       pitfalls re-word rules from 20 lines earlier) — merge or differentiate.
       — done 2026-07-08, PR #61. Verification found it's 5 of 6; pitfalls

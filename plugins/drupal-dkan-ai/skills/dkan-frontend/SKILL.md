@@ -70,6 +70,7 @@ Symptom → cause → fix.
 **Workflow** (DKAN core DDEV commands; see [build-deploy-customize.md](reference/build-deploy-customize.md)):
 - `ddev dkan-frontend-install` — download the app into docroot `/frontend`, `npm install`, enable the module, set front/403/404 → `/home`. Honors `getdkan/dkan` composer `extra.dkan-frontend` `{url, ref}` to point at a custom app.
 - `ddev dkan-frontend-build` — `npm run build` in `/frontend`, then `drush cr`.
+- Local iteration without the Drupal serving path: `npm start` in `/frontend` — a dev server that proxies the API root to a DKAN backend, so CORS never arises ([build-deploy-customize.md](reference/build-deploy-customize.md#local-app-dev-server-npm-start)).
 
 **APIs the app consumes:** `/api/1/metastore/...` (metadata), `/datastore/query/...` (tabular data), search, `openapi.json` (API docs).
 
