@@ -65,9 +65,13 @@ answers (the failure mode the skills exist to prevent):
 | 6 MCP write tool | `#[Tool]` + `ClientGateway` + `checkAccess` | `ToolBase` + `CallToolResult` (wrong/older mcp/sdk API; no access gate) |
 | 7 frontend config key | `datastore_query_api` | `datastore_query_version`, `root_url`, "not sure" |
 
-The 2 **ties** are honest: they're facts the base model already knows (the requirements
-split, `R/P3M`). The skill's value concentrates exactly where parametric knowledge is
-stale or absent.
+The 2 **ties** (T1, T5) are honest and — as of 2026-07-08 — **formally accepted**
+(see their `tasks.json` notes): they're facts the base model already knows (the
+requirements split, `R/P3M`), re-verified to hold no hidden discriminator in the
+recorded runs. They are retained as **harm canaries**, not skill-value coverage: in
+the paired design, a future skill-doc error on these facts would surface as the
+with-skill arm dropping *below* baseline. The skill's value concentrates exactly
+where parametric knowledge is stale or absent.
 
 ## Honest caveats
 
