@@ -12,9 +12,9 @@
   "summary": {
     "commands": 10,
     "passed": 10,
-    "assertions": 84,
-    "assertions_passed": 84,
-    "pos_total": 71,
+    "assertions": 85,
+    "assertions_passed": 85,
+    "pos_total": 72,
     "neg_total": 13,
     "negatives_with_example": 13,
     "negatives_live": 13
@@ -25,7 +25,7 @@
       "skill": "drupal-mcp-server",
       "kind": "full-template",
       "passed": true,
-      "pos_total": 7,
+      "pos_total": 8,
       "pos_missing": [],
       "neg_total": 3,
       "neg_hit": [],

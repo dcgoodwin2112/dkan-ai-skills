@@ -20,7 +20,8 @@
         {"re": "defaultConfiguration\\(\\): array", "scope": "code", "note": "native tools start disabled; must opt in"},
         {"re": "'enabled' => TRUE", "scope": "code", "note": "enable the tool"},
         {"re": "checkAccess\\(AccountInterface \\$account\\): AccessResultInterface", "scope": "code", "note": "--write access gate"},
-        {"re": "composer show drupal/mcp_server mcp/sdk", "scope": "doc", "note": "version-gate step present"}
+        {"re": "composer show drupal/mcp_server mcp/sdk", "scope": "doc", "note": "version-gate step present"},
+        {"re": "mcp/sdk \\^0\\.6", "scope": "doc", "note": "DELIBERATELY BRITTLE version tripwire (ROADMAP item 9): the repo's most volatile pin. When the SDK floor bumps, updating the command doc fails this gate, forcing doc + assertion (+ skills-currency.yml) to move together — the WORKFLOW §4 pinned-by-test pattern. One-line update per SDK bump."}
       ],
       "assert_neg": [
         {"re": "RuntimeToolHandlerInterface", "scope": "code", "note": "fabricated interface name (repo corrected it to ToolHandlerInterface)", "neg_example": "implements RuntimeToolHandlerInterface {"},
