@@ -187,6 +187,10 @@ The backing datastore table is named `datastore_<md5>` (md5 of `{identifier}__{v
 }
 ```
 
+Component FQNs and the ETL-vs-production namespace split (`Load\Dataset` /
+`Transform\ResourceImporter` are *not* under `ETL\`) are documented in
+[dkan-harvest.md](dkan-harvest.md) — this example only shows the POST body shape.
+
 ## Search API
 
 | Method | Path | Description |
