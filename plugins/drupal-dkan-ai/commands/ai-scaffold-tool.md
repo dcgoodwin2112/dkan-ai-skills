@@ -118,7 +118,7 @@ Expected: prints the FQN of the tool class. Any exception (missing service, attr
 2. Refine the `description:` string in the `#[FunctionCall(...)]` attribute — the LLM reads this to decide when to call the tool. Be precise about inputs and outputs.
 3. Verify discovery: `ddev drush ev "var_dump(\Drupal::service('plugin.manager.ai.function_calls')->getDefinitions()['<plugin_id>'] ?? 'NOT FOUND');"`
 4. Use the tool from agent code via `\Drupal::service('plugin.manager.ai.function_calls')->createInstance('<plugin_id>')`, then `setContextValue()` for each arg, then `execute()`. Agents that drive YAML prompts (the `ai_agents` style) typically don't auto-discover function calls — call them explicitly from `solve()`.
-5. Run the unit test: `cd <module_path> && vendor/bin/phpunit tests/src/Unit/Plugin/AiFunctionCall/<ToolName>Test.php`.
+5. Validate: run `/validate-module <module_path>` — it picks the right phpunit harness (module-local `phpunit.xml` if the module has one, else the site's Drupal bootstrap) and runs phpcs.
 
 ## Pitfall checks before reporting done
 

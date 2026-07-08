@@ -97,7 +97,7 @@ cd /path/to/your-drupal-site        # the Composer root
 ~/src/dkan-ai-skills/bin/install --adapters
 ```
 
-This symlinks the skills+commands under `.ai/dkan-ai-skills/` and writes `AGENTS.md` + `.github/` into the current directory, with pointers rewritten to that vendored location. Run it from the Composer root so those files sit at the project root where agents look for them. Existing non-generated files are never overwritten.
+This symlinks the skills+commands under `.ai/dkan-ai-skills/` — **absolute symlinks into your local checkout**, so they're machine-local: don't commit them, and teammates run the installer against their own checkout. The generated `AGENTS.md` + `.github/` files are real files written into the current directory, with pointers rewritten to `.ai/dkan-ai-skills/`. Run it from the Composer root so those files sit at the project root where agents look for them. Existing non-generated files are never overwritten.
 
 **Regenerating:** after editing any `SKILL.md` or command, run `bin/build-adapters` and commit the result (`bin/test` enforces this).
 
