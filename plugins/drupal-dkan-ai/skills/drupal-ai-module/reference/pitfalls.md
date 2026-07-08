@@ -59,7 +59,7 @@ Failure modes when extending the Drupal AI module, with symptoms and fixes. Targ
 ## 10. 1.x vs 2.x branch confusion
 
 - **Symptom**: Code references methods/events that don't exist (e.g. `ProviderSetupEvent`, `ProviderDisabledEvent`).
-- **Cause**: Following a 2.0.x guide while installed on the stable 1.x line. 2.0.x has breaking provider lifecycle changes (per upstream issue tracker).
+- **Cause**: Following a 2.0.x guide while installed on the stable 1.x line. 2.0.x-dev has provider lifecycle rework in flight (drupal.org issue #3577243).
 - **Fix**: Pin to `^1.3` in module info. Use the 1.x docs at https://project.pages.drupalcode.org/ai/. Do not use `^2.0` until it stabilizes.
 
 ## 11. 1.2.x → 1.3.x API key revalidation
