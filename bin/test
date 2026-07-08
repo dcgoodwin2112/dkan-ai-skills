@@ -130,7 +130,11 @@ else
     'python3 -m pip install flask' '"npm" install evil' 'bash -c "npm install evil"' \
     'uv add ruff' 'uv pip install requests' 'uv tool install black' \
     'poetry add flask' 'pipx install black' 'deno add npm:left-pad' \
-    'composer global require x/y' 'yarn global add vue'; do
+    'composer global require x/y' 'yarn global add vue' \
+    'ddev exec -s web composer require drupal/foo' \
+    'docker compose exec app composer require x/y' \
+    'composer req drupal/foo' 'composer global req x/y' \
+    'docker exec -u root app npm add left-pad'; do
     assert "blocks: $c" "gate_verdict '$c' | grep -q 'WOULD GATE'"
   done
   # Lockfile-driven / non-install commands must pass.
@@ -139,7 +143,9 @@ else
     'pip install -r requirements.txt' 'go install ./...' 'git commit -m "npm install foo"' \
     'uv pip install -r requirements.txt' 'uv sync' 'poetry install' \
     'pipx run black' 'deno install' 'deno task build' \
-    'npx create-react-app myapp' 'pnpm dlx cowsay hi' 'uvx ruff check'; do
+    'npx create-react-app myapp' 'pnpm dlx cowsay hi' 'uvx ruff check' \
+    'ddev drush ev "composer require x/y"' 'grep "composer require" README.md' \
+    'ddev exec -s web composer install' 'docker compose logs app'; do
     assert "allows: $c" "gate_verdict '$c' | grep -q 'would allow'"
   done
   assert "block returns exit 2"  "[[ \"\$(gate_exit 'composer require x/y')\" == 2 ]]"

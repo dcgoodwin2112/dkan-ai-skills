@@ -11,7 +11,9 @@
 # Plugin hooks fire for every Bash call in every project, so this script is
 # SELF-SCOPING: it exits 0 (no-op) unless the commit is in a DDEV-backed git repo
 # and touches files under a module carrying phpcs.xml.dist and/or phpunit.xml.
-# Kernel/integration tests are left to CI (slow, DB-bound).
+# When the module's phpunit.xml defines a testsuite named "unit", only that suite
+# runs locally (kernel/integration suites in the same config are left to CI —
+# slow, DB-bound); a config with no unit suite runs in full.
 #
 # FAIL-OPEN ON TIMEOUT: hooks.json budgets 300s; if the suites run longer, the
 # harness cancels the hook and the commit proceeds UNGATED (a timeout never
@@ -157,7 +159,17 @@ while IFS= read -r g; do
     rel="${g#"$ddev_root"/}"; cdir="/var/www/html/$rel"
   fi
   [ -f "$g/phpcs.xml.dist" ] && run_gate "phpcs ($rel)"        "$cdir" "$bin/phpcs --standard=phpcs.xml.dist ."
-  [ -f "$g/phpunit.xml" ]    && run_gate "phpunit unit ($rel)" "$cdir" "$bin/phpunit -c phpunit.xml"
+  if [ -f "$g/phpunit.xml" ]; then
+    # Scope to the module's unit suite when its phpunit.xml defines one (kernel/
+    # functional suites in the same config stay CI-only); a config with no "unit"
+    # testsuite runs in full — whatever it defines is the module's local gate.
+    suite="$(sed -nE 's/.*<testsuite[[:space:]]+name="([Uu]nit)".*/\1/p' "$g/phpunit.xml" | head -n 1)"
+    if [ -n "$suite" ]; then
+      run_gate "phpunit --testsuite $suite ($rel)" "$cdir" "$bin/phpunit -c phpunit.xml --testsuite $suite"
+    else
+      run_gate "phpunit ($rel)" "$cdir" "$bin/phpunit -c phpunit.xml"
+    fi
+  fi
 done <<< "$gate_roots"
 
 if [ "$fail" = 1 ]; then
