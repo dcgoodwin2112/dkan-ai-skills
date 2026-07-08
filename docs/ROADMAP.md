@@ -88,9 +88,11 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       — done 2026-07-08, PR #53. Accepted (no hidden discriminator in the
       recorded runs); retained as harm canaries with explicit notes. Codex
       caught a JSON-breaking edit my masked gate chain missed — see PR.
-- [ ] 9. **Add an `mcp/sdk ^0.6` doc tripwire** to the `mcp-scaffold-tool` scaffold
+- [x] 9. **Add an `mcp/sdk ^0.6` doc tripwire** to the `mcp-scaffold-tool` scaffold
       entry — deliberately brittle so the gate goes red the day the SDK floor bumps.
       Nothing currently fails when docs say 0.6 after 0.7 lands.
+      — done 2026-07-08, PR #54. Doc-scoped positive with a
+      pinned-by-test note; gate now 85 assertions.
 - [ ] 10. **Warn-only currency-staleness CI step**: ~20 lines of date math flagging
       any `skills-currency.yml` `last_verified` older than its `cadence`. Warn,
       never fail (no network in CI).

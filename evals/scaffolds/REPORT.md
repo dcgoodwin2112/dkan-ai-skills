@@ -33,11 +33,11 @@ runs anywhere.
 
 ## Result
 
-**10/10 commands pass · 84/84 assertions (71 positive, 13 negative).**
+**10/10 commands pass · 85/85 assertions (72 positive, 13 negative).**
 
 | command | skill | kind | pos | neg |
 |---|---|---|---|---|
-| mcp-scaffold-tool | drupal-mcp-server | full-template | 7 | 3 |
+| mcp-scaffold-tool | drupal-mcp-server | full-template | 8 | 3 |
 | ai-scaffold-tool | drupal-ai-module | full-template | 7 | 2 |
 | ai-scaffold-action | drupal-ai-module | full-template | 10 | 2 |
 | ai-scaffold-agent | drupal-ai-module | full-template | 9 | 2 |
