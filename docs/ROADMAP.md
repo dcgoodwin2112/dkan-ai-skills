@@ -54,10 +54,13 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       (the only undocumented fail-open path).
       — done 2026-07-08, PR #49. Timeout 120→300s; fail-open documented in the
       script header and README's commit-gate list.
-- [ ] 5. **`dkan-harvest.md` namespace map incomplete.**
+- [x] 5. **`dkan-harvest.md` namespace map incomplete.**
       `Drupal\dkan_harvest\Transform\ResourceImporter` (source-verified) lives
       outside `ETL\` like `Load\Dataset`, but the map only flags the latter;
       `dkan-api.md:180–189`'s plan example should defer to dkan-harvest.md.
+      — done 2026-07-08, PR #50. Blanket ETL\* claim qualified; ResourceImporter
+      documented from its verified docblock; api.md example defers for FQNs.
+      **P1 complete: 4 fixed, 1 declined.**
 
 ### P2 — eval gaps
 

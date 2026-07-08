@@ -15,7 +15,12 @@ File: `<webroot>/modules/contrib/dkan/modules/dkan_harvest/src/ETL/Factory.php` 
 
 ## The three contracts
 
-All live under namespace `Drupal\dkan_harvest\ETL\*`.
+The base classes and bundled reference impls live under
+`Drupal\dkan_harvest\ETL\*` — but the two production classes do **not**:
+`Drupal\dkan_harvest\Load\Dataset` and
+`Drupal\dkan_harvest\Transform\ResourceImporter` sit directly under
+`Drupal\dkan_harvest\` (details at their sections below). Check the FQN
+against the source before writing a plan.
 
 ### Extract
 
@@ -53,6 +58,8 @@ File: `.../src/ETL/Transform/Transform.php`.
 File: `.../src/Harvester.php` (`executeTransformersSingle()` lines 186-204, `transform()` lines 217-228).
 
 The Harvester already passes a `clone` of the item into each transform, so cloning inside `run()` is optional. Reference impl `AddId` clones, mutates the clone, but returns the **original** `$item` — copy this pattern carefully; whatever you return is what propagates downstream. File: `.../src/ETL/Transform/AddId.php`.
+
+Production impl: `Drupal\dkan_harvest\Transform\ResourceImporter` — moves local files to `public://` and rewrites `downloadUrl`; extends the ETL `Transform` base but lives under `Drupal\dkan_harvest\Transform` (**not** `...\ETL\Transform`), like `Load\Dataset` below. File: `.../src/Transform/ResourceImporter.php`.
 
 ### Load
 
