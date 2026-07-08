@@ -16,7 +16,6 @@ Env (see docs/EVALS.md):
                            dkan-mcp-server:serve --user=mcp_reader|mcp_writer).
   EVAL_DKAN_SITE_URL       site base URL; default derived from .ddev/config.yaml.
   EVAL_DKAN_MCP_HTTP_PATH  MCP endpoint path (default /mcp; per-site base_path).
-  EVAL_DKAN_BASIC_PROBE    "user:pass" for the Basic-rejected probes; unset -> skip.
 
 Exit: 0 = pass or SKIP; 1 = gate failure (any check fail/error, incl. vacuous
 doc negatives and extraction failures — a check can never pass because its
@@ -46,7 +45,7 @@ OPS = {"equals", "count", "contains", "absent", "subset", "matches", "named"}
 PROBES = {
     "mcp_ro.tools_list", "mcp_ro.call.get_site_status", "mcp_ro.call.list_schemas",
     "mcp_ro.call.get_schema_dataset", "mcp_rw.tools_list",
-    "http.anon", "http.basic", "http.prm", "doc",
+    "http.anon", "http.prm", "doc",
 }
 INIT_BODY = json.dumps({
     "jsonrpc": "2.0", "id": 1, "method": "initialize",
@@ -63,11 +62,11 @@ class ExtractError(Exception):
 # ---------------------------------------------------------------- config
 
 class Config:
-    def __init__(self, site_dir, cmd_ro, cmd_rw, ro_default, rw_default, site_url, mcp_path, basic):
+    def __init__(self, site_dir, cmd_ro, cmd_rw, ro_default, rw_default, site_url, mcp_path):
         self.site_dir = site_dir
         self.cmd_ro, self.cmd_rw = cmd_ro, cmd_rw
         self.ro_default, self.rw_default = ro_default, rw_default
-        self.site_url, self.mcp_path, self.basic = site_url, mcp_path, basic
+        self.site_url, self.mcp_path = site_url, mcp_path
 
 
 def derive_url(site_dir: Path):
@@ -95,9 +94,8 @@ def resolve_config():
     cmd_rw = os.environ.get("EVAL_DKAN_MCP_CMD_RW", "").strip() or DEFAULT_CMD_RW
     site_url = (os.environ.get("EVAL_DKAN_SITE_URL", "").strip() or derive_url(p) or "").rstrip("/") or None
     mcp_path = os.environ.get("EVAL_DKAN_MCP_HTTP_PATH", "").strip() or "/mcp"
-    basic = os.environ.get("EVAL_DKAN_BASIC_PROBE", "").strip() or None
     return Config(p, cmd_ro, cmd_rw, cmd_ro == DEFAULT_CMD_RO, cmd_rw == DEFAULT_CMD_RW,
-                  site_url, mcp_path, basic)
+                  site_url, mcp_path)
 
 
 # ---------------------------------------------------------------- probes
@@ -137,8 +135,6 @@ class ProbeRunner:
         c = self.cfg
         if pid.startswith("http.") and not c.site_url:
             return {"skip": "no site URL (set EVAL_DKAN_SITE_URL)"}
-        if pid == "http.basic" and not c.basic:
-            return {"skip": "EVAL_DKAN_BASIC_PROBE not set"}
         try:
             if pid == "mcp_ro.tools_list":
                 return {"data": self.session("ro").tools_list()}
@@ -158,8 +154,6 @@ class ProbeRunner:
                     "-d", INIT_BODY]
             if pid == "http.anon":
                 return {"data": self._curl(post)}
-            if pid == "http.basic":
-                return {"data": self._curl(["-u", c.basic] + post)}
             if pid == "http.prm":
                 return {"data": self._curl([c.site_url + PRM_PATH])}
         except (McpError, RuntimeError, subprocess.TimeoutExpired, OSError) as e:

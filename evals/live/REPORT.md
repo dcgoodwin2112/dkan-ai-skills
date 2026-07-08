@@ -7,19 +7,19 @@ tokens, no `claude -p` — it runs fine inside a Claude Code session and finishe
 
 ## Method
 
-- **27 checks** (`checks.json`) in 4 groups, evaluated by `../lib/check_live.py` over probes
+- **25 checks** (`checks.json`) in 4 groups, evaluated by `../lib/check_live.py` over probes
   that each run at most once per gate run:
 
 | group | probes | checks |
 |---|---|---|
 | mcp_surface | `tools/list` as reader and writer (stdio) | tool counts, exact rosters, read-only annotations, ro/rw split, wire-safe names |
 | metastore_schema | `list_schemas`, `get_schema(dataset)` | required fields, accessLevel enum, omitted POD fields, ISO-8601 accrualPeriodicity |
-| site_posture | `get_site_status` + 3 curl probes | DKAN 4.x / Drupal 11, modules enabled, anon 401, RFC 9728 PRM + scopes, Basic rejected (403 / JSON-RPC -32002) |
+| site_posture | `get_site_status` + 2 curl probes | DKAN 4.x / Drupal 11, modules enabled, anon 401, RFC 9728 PRM + scopes |
 | doc_tripwire | repo files (no site connection) | regexes guarding the claim text itself |
 
 - **Strictly read-only.** The stdio transport is `ddev drush dkan-mcp-server:serve --user=…`;
   the writer session exists for `tools/list` only — the runner has no rw `tools/call` code path
-  (grep-verifiable). HTTP probes: one anonymous POST, one optional Basic POST, one GET.
+  (grep-verifiable). HTTP probes: one anonymous POST, one GET.
 - **Ops vocabulary:** equals / count / contains / absent / subset / matches, plus three named
   checks in Python for cross-probe comparisons. An extraction path that stops resolving is an
   **error that fails the gate** — a check can never pass vacuously; `absent`/`subset`/`matches`
@@ -31,8 +31,15 @@ tokens, no `claude -p` — it runs fine inside a Claude Code session and finishe
 
 ## Result
 
-**Current: 27/27 pass** (committed `results.json`) after the follow-up docs PR fixed the drift
-the gate caught on day one.
+**Latest run: 2026-07-08 — 25/25 pass** (post-retirement of the two Basic-rejected checks,
+see Changes below). `results.json` is **untracked** since 2026-07-08 — it's a volatile local
+snapshot (site state + env dependent), so this dated line is the committed record; update it
+when a run changes the outcome.
+
+**Changes (2026-07-08):** retired `mcp_basic_not_accepted` / `mcp_basic_jsonrpc_forbidden`
+and the `EVAL_DKAN_BASIC_PROBE` knob (27 → 25 checks). The site has been OAuth-only since
+2026-06-10 with no plan to reinstate Basic; the pair only ran when handed credentials, so in
+practice it skipped and made the run outcome env-dependent.
 
 **Day one (2026-06-11): 22/27 — the 5 failures were the demonstration.** Every live check
 against the running site passed; every failure was a doc tripwire catching real drift created
@@ -66,17 +73,15 @@ scaffold gate documents catching a deliberate break — except this break was re
   not upstream truth. Counts like 25/38 will legitimately drift as the module evolves — that
   drift is the signal, but expect maintenance.
 - **Auth checks are scoped to the MCP endpoint only** — deliberately silent on `/api/1/*`
-  (whose basic_auth story is separate and still doc-accurate). Three shallow HTTP probes, not
+  (whose basic_auth story is separate and still doc-accurate). Two shallow HTTP probes, not
   a security audit.
 - **Deterministic ≠ frozen:** no LLM and stable given fixed site state, but the site is
   mutable, so results are dated snapshots, not byte-reproducible forever.
-- The Basic-rejected pair needs `EVAL_DKAN_BASIC_PROBE` credentials and skips without them.
 
 ## Reproduce
 
 ```bash
 export EVAL_DKAN_SITE_DIR=~/Sites/dkan-site          # DDEV checkout, ddev running
-export EVAL_DKAN_BASIC_PROBE='user:pass'             # optional: Basic-rejected probes
 bin/eval live                                        # or: python3 evals/lib/check_live.py
 ```
 
@@ -86,6 +91,7 @@ renamed setups: `EVAL_DKAN_MCP_CMD_RO/_RW`, `EVAL_DKAN_SITE_URL`, `EVAL_DKAN_MCP
 ## Files
 
 - `checks.json` — probe/op/expected check inventory (source of truth)
-- `results.json` — committed latest run (green; the day-one red is documented above)
+- `results.json` — untracked local snapshot of the latest run (the dated summary above is
+  the committed record; the day-one red is documented above)
 - `../lib/check_live.py` — gate runner · `../lib/mcp_stdio.py` — stdio JSON-RPC client
 - `../../bin/eval` — `live` subcommand

@@ -35,7 +35,6 @@
 #                             dkan-mcp-server:serve --user=mcp_reader|mcp_writer).
 #   EVAL_DKAN_SITE_URL        site base URL (default: derived from .ddev/config.yaml).
 #   EVAL_DKAN_MCP_HTTP_PATH   MCP endpoint path (default /mcp).
-#   EVAL_DKAN_BASIC_PROBE     "user:pass" for the Basic-rejected probes; unset -> skip.
 
 set -uo pipefail
 
