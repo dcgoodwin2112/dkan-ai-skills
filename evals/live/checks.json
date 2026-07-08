@@ -12,7 +12,6 @@
     "mcp_ro.call.get_schema_dataset": "tools/call get_schema {schemaId: dataset}",
     "mcp_rw.tools_list": "tools/list over stdio as the writer account — the ONLY rw operation; the runner has no rw tools/call path",
     "http.anon": "POST {site}{mcp_path} initialize body, no credentials",
-    "http.basic": "same with -u $EVAL_DKAN_BASIC_PROBE (checks skip when unset)",
     "http.prm": "GET {site}/.well-known/oauth-protected-resource (RFC 9728)",
     "doc": "a repo file read from disk — no site connection"
   },
@@ -233,28 +232,6 @@
       "op": "contains",
       "expected": ["dkan_mcp:read", "dkan_mcp:write"],
       "note": "the read/write OAuth scopes are advertised for discovery",
-      "skill": "drupal-mcp-server",
-      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
-    },
-    {
-      "id": "mcp_basic_not_accepted",
-      "group": "site_posture",
-      "probe": "http.basic",
-      "extract": "status",
-      "op": "equals",
-      "expected": 403,
-      "note": "HTTP Basic credentials no longer grant MCP access (OAuth-only since 2026-06-10); skips without EVAL_DKAN_BASIC_PROBE",
-      "skill": "drupal-mcp-server",
-      "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
-    },
-    {
-      "id": "mcp_basic_jsonrpc_forbidden",
-      "group": "site_posture",
-      "probe": "http.basic",
-      "extract": "json.error.code",
-      "op": "equals",
-      "expected": -32002,
-      "note": "the rejection is a proper JSON-RPC -32002 Forbidden, not an HTML error page; skips without EVAL_DKAN_BASIC_PROBE",
       "skill": "drupal-mcp-server",
       "doc_ref": "plugins/drupal-dkan-ai/skills/drupal-mcp-server/reference/auth-and-access.md"
     },

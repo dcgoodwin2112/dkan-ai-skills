@@ -23,8 +23,11 @@ Each eval has a detailed report next to its data — read those for method and r
 synthetic per-skill command files spawned through `claude -p`, never produced a valid
 committed number, and by design required disabling the installed plugin to run. If
 routing measurement is ever wanted again, rebuild it on `claude -p --bare --plugin-dir`
-(hermetic, no plugin disabling — see the shelved redesign plan in git history); the
-100-query routing corpus (`evals/triggering/routing.json`) is also in git history.
+(hermetic, no plugin disabling); the 100-query routing corpus
+(`evals/triggering/routing.json`) is in git history. **Preferred path if ever rebuilt:**
+don't — promptfoo's Claude Agent SDK provider ships a first-class `skill-used` assertion
+for exactly this (deterministic trigger verification, actively maintained); adopting it
+beats maintaining a bespoke harness for the fastest-rotting eval layer.
 
 ## Run
 
@@ -45,12 +48,13 @@ either, the phpcs layer skips cleanly and the structural gate still runs.
 ### `bin/eval live`
 Verifies skill-doc claims (tool surface, metastore schemas, auth posture) against a **running**
 DKAN dev site over MCP stdio (`ddev drush dkan-mcp-server:serve`, read-only `tools/call`; the
-writer connection is `tools/list` only) plus three curl probes, and greps the docs for stale
+writer connection is `tools/list` only) plus two curl probes, and greps the docs for stale
 claim text. **No LLM, no tokens, no nested `claude -p`** — unlike the trigger eval it runs fine
 inside a Claude Code session. Set `EVAL_DKAN_SITE_DIR` (DDEV checkout; unset → clean SKIP,
-exit 0) and optionally `EVAL_DKAN_BASIC_PROBE="user:pass"` for the Basic-rejected probes;
-overrides for non-DDEV setups: `EVAL_DKAN_MCP_CMD_RO/_RW`, `EVAL_DKAN_SITE_URL`,
+exit 0); overrides for non-DDEV setups: `EVAL_DKAN_MCP_CMD_RO/_RW`, `EVAL_DKAN_SITE_URL`,
 `EVAL_DKAN_MCP_HTTP_PATH`. Exit: 0 pass/SKIP, 1 gate failure, 2 configured-but-unreachable.
+`results.json` is **untracked** (volatile local snapshot); the dated summary in
+`evals/live/REPORT.md` is the committed record — update it when a run changes the outcome.
 
 ## What the numbers do / don't claim
 
@@ -65,8 +69,11 @@ overrides for non-DDEV setups: `EVAL_DKAN_MCP_CMD_RO/_RW`, `EVAL_DKAN_SITE_URL`,
 
 ## Add an eval
 
-- **task** — add a task to `evals/tasks/tasks.json` with ≥1 DKAN-specific `assert_pos` and, where
-  apt, an `assert_neg` for a known hallucination; calibrate (below); collect runs; `bin/eval task`.
+- **task** — **failure-driven only:** add a task when a real session produces a wrong answer a
+  skill should have prevented — that failure becomes the task, the correct answer its
+  `assert_pos`, the observed wrong answer its `assert_neg`. No speculative tasks. Add to
+  `evals/tasks/tasks.json` with ≥1 DKAN-specific `assert_pos`; calibrate (below); collect runs;
+  `bin/eval task`.
 - **scaffold** — add a command's assertions to `evals/scaffolds/checks.json`: `assert_pos`
   required forms, `assert_neg` fabricated forms (always `code`-scoped) each with a `neg_example`.
 - **live** — add a check to `evals/live/checks.json`: pick a probe + extract path + op, pin
@@ -91,6 +98,11 @@ the discipline is making assertions *discriminate*:
 Fresh `task` runs spend tokens + time (in-session subagents) — keep the corpus small
 (≤12 tasks × 3 runs) and report spend. The `task` regrade and the `scaffolds` and `live`
 gates are **free** (no model).
+
+**Refresh policy:** regenerate fresh task runs only when the session model materially
+changes (new family) or a skill under test is substantially rewritten — otherwise the
+committed benchmark stands as dated evidence (provenance records CLI version + model).
+Not calendar-driven.
 
 ## Provenance
 
