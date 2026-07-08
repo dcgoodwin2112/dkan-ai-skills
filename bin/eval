@@ -18,7 +18,7 @@
 #   live              Live-currency gate (env-gated; no auth, no LLM, no tokens
 #                     — runs fine inside a Claude Code session). Verifies the
 #                     skill docs' factual claims about the DKAN/MCP surface
-#                     against a RUNNING DKAN dev site over MCP stdio plus three
+#                     against a RUNNING DKAN dev site over MCP stdio plus HTTP
 #                     curl probes; strictly read-only (the writer connection is
 #                     used for tools/list only). SKIPs cleanly when no site is
 #                     configured; exits 2 if configured but unreachable.
