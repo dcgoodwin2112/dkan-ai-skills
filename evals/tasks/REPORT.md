@@ -20,48 +20,54 @@ DKAN/Drupal tasks than no skill? The skill must actually *change the output*.
 
 | | passed | rate |
 |---|---|---|
-| **with skill** | 21/21 | **100%** |
-| **baseline (no skill)** | 10/21 | **48%** |
-| **delta** | | **+52 pts** |
+| **with skill** | 20/21 | **95%** |
+| **baseline (no skill)** | 7/21 | **33%** |
+| **delta** | | **+62 pts** |
+
+*(Regraded 2026-07-08 after recalibrating T3, whose original alternation never
+discriminated — see the T3 note in `tasks.json` and "Grader calibration" below.)*
 
 **Consistency & variance (3 runs/arm).** A pooled rate hides whether the skill helps on *every*
 run or just *some*:
 
 | metric | with skill | baseline |
 |---|---|---|
-| pass^3 — tasks passing on **all 3** runs | **7/7** | 3/7 |
-| pass@3 — tasks passing on **any** run | 7/7 | 4/7 |
-| per-run pass rate (mean ± stddev) | 100% ± 0% | 48% ± 8% |
+| pass^3 — tasks passing on **all 3** runs | **6/7** | 2/7 |
+| pass@3 — tasks passing on **any** run | 7/7 | 3/7 |
+| per-run pass rate (mean ± stddev) | 95% ± 8% | 33% ± 8% |
 
-With-skill is perfectly consistent; baseline's pass@3 (4/7) exceeds its pass^3 (3/7) because task 4
-passes only 1 of 3 runs. **Normalized gain g = 1.00** (Hake's g = (r_skill − r_base) / (1 − r_base) —
-the skill closes 100% of the achievable gap, not just +52 raw points).
+Baseline's pass@3 (3/7) exceeds its pass^3 (2/7) because task 4 passes only 1 of 3
+runs; with-skill's single miss is T3 run 1 (a hedged answer giving both the correct
+and the pre-4.x class namespace — graded a fail, honestly). **Normalized gain
+g = 0.93** (Hake's g = (r_skill − r_base) / (1 − r_base) — the skill closes 93% of
+the achievable gap, not just +62 raw points).
 
 | # | skill | with | base | result |
 |---|---|---|---|---|
 | 1 | drupal-module-dev | 3/3 | 3/3 | — tie |
 | 2 | drupal-ai-module | 3/3 | 0/3 | ✅ skill wins |
-| 3 | dkan-module-author | 3/3 | 3/3 | — tie |
+| 3 | dkan-module-author | 2/3 | 0/3 | ✅ skill wins |
 | 4 | dkan-core-contributor | 3/3 | 1/3 | ✅ skill wins |
 | 5 | open-data-dcat | 3/3 | 3/3 | — tie |
 | 6 | drupal-mcp-server | 3/3 | 0/3 | ✅ skill wins |
 | 7 | dkan-frontend | 3/3 | 0/3 | ✅ skill wins |
 
-**4 of 7 tasks discriminate** — on that drift-prone subset the contrast is **12/12 vs 1/12
-(+92pp)**; the 3 ties dilute the pooled headline. On the discriminating tasks baseline didn't just
-score lower — it produced confident, **plausible-but-wrong** answers (the failure mode the skills
-exist to prevent):
+**5 of 7 tasks discriminate** — on that drift-prone subset the contrast is **14/15 vs
+1/15 (+87pp)**; the 2 ties dilute the pooled headline. On the discriminating tasks
+baseline didn't just score lower — it produced confident, **plausible-but-wrong**
+answers (the failure mode the skills exist to prevent):
 
 | task | correct (with skill) | baseline hallucinated |
 |---|---|---|
 | 2 drupal/ai core floor | `^10.5 \|\| ^11.2` | `^10.3 \|\| ^11` (all 3 runs) |
+| 3 metastore class | `Drupal\dkan_metastore\MetastoreService` | `Drupal\metastore\MetastoreService` — the pre-4.x namespace (all 3 runs) |
 | 4 DKAN CI groups | `functional1/2/3` | `@group functional`, `btb` (2/3 runs) |
 | 6 MCP write tool | `#[Tool]` + `ClientGateway` + `checkAccess` | `ToolBase` + `CallToolResult` (wrong/older mcp/sdk API; no access gate) |
 | 7 frontend config key | `datastore_query_api` | `datastore_query_version`, `root_url`, "not sure" |
 
-The 3 **ties** are honest: they're facts the base model already knows (the requirements split,
-the `dkan.metastore.service` id, `R/P3M`). The skill's value concentrates exactly where
-parametric knowledge is stale or absent.
+The 2 **ties** are honest: they're facts the base model already knows (the requirements
+split, `R/P3M`). The skill's value concentrates exactly where parametric knowledge is
+stale or absent.
 
 ## Honest caveats
 
@@ -74,7 +80,10 @@ parametric knowledge is stale or absent.
   gate. (The cheap, stable gates are the scaffold and live-currency checks.)
 - **Grader calibration done by design:** deterministic regex grading (no judge); during a
   verification pass I dropped a brittle `functional0` negative (correct answers mention it to
-  dismiss it) and tightened the `#[Tool]` pattern. See `tasks.json` notes.
+  dismiss it) and tightened the `#[Tool]` pattern. On 2026-07-08 T3 was recalibrated: its
+  alternation passed on either of two tokens and never discriminated; it now requires the 4.x
+  `dkan_metastore` namespace and rejects the pre-4.x FQN observed in the recorded runs — which
+  also (correctly) fails one hedged with-skill run. See `tasks.json` notes.
 
 ## Reproduce
 

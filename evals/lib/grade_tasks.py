@@ -140,7 +140,9 @@ def main():
             "runs_per_arm": 3, "tasks": len(tasks),
             "caveats": [
                 "with_skill = the packaged skill end-to-end (docs available to read) vs baseline = no skill. The delta measures the packaged skill's value, not SKILL.md prose alone.",
-                "3 binary runs/arm is a coarse sample (reported artifact, not a gate). Ties on T1/T3/T5 are facts the base model already knows; the skill's value concentrates on version- and DKAN-specific specifics that drift.",
+                "3 binary runs/arm is a coarse sample (reported artifact, not a gate). Ties on "
+                + (", ".join(f"T{r['id']}" for r in per_task if not r["discriminating"]) or "none")
+                + " are facts the base model already knows; the skill's value concentrates on version- and DKAN-specific specifics that drift.",
             ],
         },
         "summary": summary,
