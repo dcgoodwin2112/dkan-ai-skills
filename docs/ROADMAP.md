@@ -35,9 +35,12 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       — done 2026-07-08, PR #46. Verification widened it: five more methods had
       invented types in both copies; dkan-harvest.md now owns the list, matching
       4.x exactly, with a "don't re-type these" note.
-- [ ] 2. **Stale "three curl probes" after the Basic-probe retirement.**
+- [x] 2. **Stale "three curl probes" after the Basic-probe retirement.**
       `bin/eval:23–24`, `evals/lib/check_live.py:7` and `:387` (writes wrong
       provenance). Actual count: two (`http.anon`, `http.prm`).
+      — done 2026-07-08, PR #47. Verification found a fourth site
+      (checks.json `_about`); all four reworded count-free so a future probe
+      change can't restale them.
 - [ ] 3. **`commands/validate-module.md:24`**: `ddev exec phpunit` →
       `ddev exec vendor/bin/phpunit` (`phpunit` is not on the container PATH;
       step 2 already uses `vendor/bin/phpcs`).

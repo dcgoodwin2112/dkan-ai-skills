@@ -1,5 +1,5 @@
 {
-  "_about": "Live-currency gate: factual claims from the skill docs about the DKAN/MCP surface, pinned as deterministic checks against a RUNNING DKAN dev site (MCP stdio + 3 HTTP probes). Enforced by evals/lib/check_live.py — no LLM, no writes. Complements /check-skill-currency (claims vs upstream docs) by checking claims vs the running system.",
+  "_about": "Live-currency gate: factual claims from the skill docs about the DKAN/MCP surface, pinned as deterministic checks against a RUNNING DKAN dev site (MCP stdio + HTTP probes). Enforced by evals/lib/check_live.py — no LLM, no writes. Complements /check-skill-currency (claims vs upstream docs) by checking claims vs the running system.",
   "_schema": {
     "live check": "{id, group, probe, extract, op, expected, note, skill, doc_ref}. extract = dotted path into the probe result; 'foo[]' maps over a list. A path that stops resolving is an ERROR (gate fails) — a check can never pass vacuously.",
     "ops": "equals (opt \"unordered\": true for set-compare) | count | contains (every expected item present) | absent (no expected item present; extraction must be non-empty) | subset (every observed value is in expected; non-empty) | matches (re.search; on a list every item must match; non-empty) | named (dispatched by id to NAMED_CHECKS in check_live.py; expected stays here)",

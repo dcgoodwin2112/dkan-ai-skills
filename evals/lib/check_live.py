@@ -4,7 +4,7 @@
 evals/live/checks.json pins factual claims from the skill docs (tool surface,
 metastore schemas, site/auth posture) as deterministic checks against a live
 DKAN dev site, reached over MCP stdio (tools/list + read-only tools/call) plus
-three curl probes. Doc-tripwire regexes guard the claim text itself. No LLM,
+HTTP curl probes. Doc-tripwire regexes guard the claim text itself. No LLM,
 no tokens, no writes — the writer session is used for tools/list ONLY (there
 is no rw tools/call code path). Complements /check-skill-currency, which
 checks pinned claims against upstream DOCS; this gate checks the running
@@ -384,7 +384,7 @@ def main() -> int:
     results = {
         "eval": "live_currency",
         "method": "Deterministic probes of a running DKAN dev site over MCP stdio (tools/list + "
-                  "read-only tools/call) plus 3 HTTP probes via curl, compared against expected "
+                  "read-only tools/call) plus HTTP probes via curl, compared against expected "
                   "values pinned from the skill docs' claims. Doc-tripwire regexes guard the claim "
                   "text itself. No LLM, no writes; the writer session is used for tools/list only.",
         "provenance": {
