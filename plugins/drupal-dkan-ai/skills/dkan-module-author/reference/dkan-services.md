@@ -165,21 +165,9 @@ localizeTask(string $identifier, ?string $version = null, bool $deferred = false
 
 ### HarvestService
 
-```php
-getAllHarvestIds(bool $has_run_record = false): array
-getHarvestPlan(string $plan_id): ?string  // JSON string
-getHarvestPlanObject(string $plan_id): ?object
-registerHarvest(object $plan): string  // Returns identifier
-deregisterHarvest(string $plan_id): bool
-runHarvest(string $plan_id): array  // Result with statuses
-revertHarvest(string $id): mixed
-getHarvestRunInfo(string $plan_id, string $timestamp): bool|string
-getHarvestRunResult(string $plan_id, ?string $timestamp = null): array
-getRunIdsForHarvest(string $plan_id): array
-publish(string $harvestId): array  // Returns dataset UUIDs
-archive(string $harvestId): array
-validateHarvestPlan(object $plan): bool
-```
+Full API list lives in [dkan-harvest.md](dkan-harvest.md#harvestservice-api) —
+single-sourced there; several signatures are untyped upstream, so don't trust
+typed versions found elsewhere.
 
 ## Decorator: Datastore MySQL Import
 
