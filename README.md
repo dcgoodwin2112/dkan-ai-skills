@@ -148,6 +148,7 @@ The plugin ships `PreToolUse` hooks (`plugins/drupal-dkan-ai/hooks/`) that make 
 Before any `git commit`, runs the committing module's phpcs + unit suite via DDEV and **blocks the commit if they fail**. Because plugin hooks fire in every project, the script is **self-scoping**: it no-ops unless the commit targets a DDEV-backed module carrying `phpcs.xml.dist` and/or `phpunit.xml`. Kernel/integration tests are left to CI.
 
 - **DDEV not running →** warns and allows the commit (infra never hard-blocks).
+- **Timeout (300s) →** the harness cancels the hook and the commit proceeds ungated — a timeout never blocks. Multi-module commits that keep hitting it: split the commit, or raise `timeout` in `hooks/hooks.json`.
 - **Bypass** an intentional WIP commit with `CLAUDE_SKIP_COMMIT_GATE=1`.
 
 ### dependency-gate

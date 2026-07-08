@@ -13,6 +13,11 @@
 # and touches files under a module carrying phpcs.xml.dist and/or phpunit.xml.
 # Kernel/integration tests are left to CI (slow, DB-bound).
 #
+# FAIL-OPEN ON TIMEOUT: hooks.json budgets 300s; if the suites run longer, the
+# harness cancels the hook and the commit proceeds UNGATED (a timeout never
+# blocks). If a legitimate multi-module commit keeps hitting it, split the
+# commit or raise the timeout — CI remains the authoritative gate either way.
+#
 # Scope is derived from the files being committed (git diff --cached, plus the
 # tracked working set when -a/--all is used), each mapped to its enclosing module
 # — so it works whether the module is the repo root or a subdirectory of a larger
