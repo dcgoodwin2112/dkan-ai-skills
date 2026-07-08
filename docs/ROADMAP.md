@@ -122,9 +122,11 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       migration landed on 4.x (PRs #4706/#4730) — facts corrected + single-homed
       in core-internals.md; a fifth spray site found in dcat-us-overview.md;
       new quarterly manifest claim added.
-- [ ] 15. **De-triplicate the `create()` override snippet** in
+- [x] 15. **De-triplicate the `create()` override snippet** in
       drupal-ai-module/reference/services.md (:41–56, :64–80, :88–104) — state
       once, reference twice (~35 lines).
+      — done 2026-07-08, PR #59. Provider owns the block; two anchored
+      pointers; −33 lines, section-specific constructor facts kept.
 - [ ] 16. **Drop dkan-frontend/SKILL.md:78–82's lineages table** (architecture.md's
       copy is fuller); collapse `datastore_query_api` explanations (4 files) to
       SKILL.md rule + build-deploy-customize.md detail.
