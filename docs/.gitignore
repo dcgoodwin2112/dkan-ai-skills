@@ -1,0 +1,7 @@
+# Allowlist (WORKFLOW.md §2): only the tracked doc spine lives in docs/.
+# Everything else — docs/plans/ scratch plans especially — is untracked local
+# history by design.
+*
+!.gitignore
+!EVALS.md
+!ROADMAP.md
