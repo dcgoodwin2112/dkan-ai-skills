@@ -37,6 +37,24 @@ exactly what the module's default `css_folder`/`js_folder` glob. If you change t
 build output location, change the config to match (or you get a blank page). Re-run
 `drush cr` after a build so Drupal picks up new asset filenames.
 
+## Local app dev server: `npm start`
+
+You don't need the Drupal serving path to iterate on the app. The reference
+`data-catalog-app` runs a Vite dev server — `npm start` in `/frontend`, port 3000
+(set in `vite.config.ts`) — with hot reload.
+
+Backend connectivity is **proxy-based, so CORS never arises**: the app fetches a
+relative API root, `VITE_REACT_APP_ROOT_URL` (`/api/1` in `.env.development`), and
+the `server.proxy` entry in `vite.config.ts` forwards `/api/1` to a real DKAN
+backend (upstream default `https://demo.getdkan.org`) with `changeOrigin: true`.
+The browser only ever talks to `localhost:3000`. To develop against your own site,
+change the proxy `target` (e.g. `https://<project>.ddev.site`); requests outside
+the proxied path 404 in dev unless you add another proxy entry.
+
+Verified against the reference `data-catalog-app` (Vite). A cmsds-based shell
+keeps the same shape — dev server plus proxied API root — but its config file and
+env-var names may differ; check that app's own bundler config.
+
 ## The `datastore_query_api` switch
 
 The single runtime coupling between Drupal config and the React library. The component
