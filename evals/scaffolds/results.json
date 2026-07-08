@@ -3,21 +3,21 @@
   "method": "Deterministic string/regex assertions over each scaffold command's embedded templates (assert_pos must match, assert_neg must not). Case-sensitive. No LLM, no PHP, no network. Checks the shipped command artifact, not model output.",
   "provenance": {
     "date": "2026-06-08",
-    "commands": 9,
+    "commands": 10,
     "caveats": [
       "Golden/regression gate: it encodes each command's documented contract (template + Pitfall checks) as executable assertions. It catches edits that break a template (drop a required method, change a signature, reintroduce a fabricated name) \u2014 the exact class of bug this repo has fixed by hand. It does not independently prove the template is correct in the world; that is what phpcs lint and the commands' own runtime-discovery steps provide.",
       "phpcs Drupal,DrupalPractice is NOT run here (this is a plugin repo with no PHP/DDEV). It is a skip-guarded layer in bin/eval scaffolds that lints real generated output where a DDEV/phpcs environment exists."
     ]
   },
   "summary": {
-    "commands": 9,
-    "passed": 9,
-    "assertions": 75,
-    "assertions_passed": 75,
-    "pos_total": 64,
-    "neg_total": 11,
-    "negatives_with_example": 11,
-    "negatives_live": 11
+    "commands": 10,
+    "passed": 10,
+    "assertions": 84,
+    "assertions_passed": 84,
+    "pos_total": 71,
+    "neg_total": 13,
+    "negatives_with_example": 13,
+    "negatives_live": 13
   },
   "per_command": [
     {
@@ -116,6 +116,17 @@
       "pos_total": 5,
       "pos_missing": [],
       "neg_total": 0,
+      "neg_hit": [],
+      "neg_dead": []
+    },
+    {
+      "command": "dkan-core-test.md",
+      "skill": "dkan-core-contributor",
+      "kind": "full-template",
+      "passed": true,
+      "pos_total": 7,
+      "pos_missing": [],
+      "neg_total": 2,
       "neg_hit": [],
       "neg_dead": []
     }
