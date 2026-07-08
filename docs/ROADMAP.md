@@ -71,9 +71,15 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       — done 2026-07-08, PR #51. 7 pos + 2 failure-driven negs (both
       hallucinations found in T4's recorded baseline runs). Gate now 10/10
       commands / 84 assertions.
-- [ ] 7. **Split task T3's alternation.** `MetastoreService|dkan\.metastore\.service`
+- [x] 7. **Split task T3's alternation.** `MetastoreService|dkan\.metastore\.service`
       passes on either token though the prompt demands both; baseline passes 3/3
       (non-discriminating). Split into two `assert_pos`, regrade, commit benchmark.
+      — done 2026-07-08, PR #52. Verification showed the proposed split alone
+      wouldn't discriminate (baseline had both tokens); the real discriminator is
+      the pre-4.x `Drupal\metastore\` namespace baseline hallucinates in all runs
+      — now the assert_neg, with the 4.x FQN as a positive. Headline now
+      95%/33%/+62pp, 5 of 7 tasks discriminating. Grader's hardcoded ties caveat
+      made dynamic.
 - [ ] 8. **Fix or accept non-discriminating T1 and T5** (baseline 3/3 ties).
       Either sharpen the prompts/assertions to something baselines miss, or mark
       them accepted ties in tasks.json `_about` + REPORT so they stop reading as

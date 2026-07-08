@@ -8,65 +8,66 @@
     "tasks": 7,
     "caveats": [
       "with_skill = the packaged skill end-to-end (docs available to read) vs baseline = no skill. The delta measures the packaged skill's value, not SKILL.md prose alone.",
-      "3 binary runs/arm is a coarse sample (reported artifact, not a gate). Ties on T1/T3/T5 are facts the base model already knows; the skill's value concentrates on version- and DKAN-specific specifics that drift."
+      "3 binary runs/arm is a coarse sample (reported artifact, not a gate). Ties on T1, T5 are facts the base model already knows; the skill's value concentrates on version- and DKAN-specific specifics that drift."
     ]
   },
   "summary": {
     "with_skill": {
-      "pass": 21,
+      "pass": 20,
       "total": 21,
-      "rate": 1.0
+      "rate": 0.9524
     },
     "baseline": {
-      "pass": 10,
+      "pass": 7,
       "total": 21,
-      "rate": 0.4762
+      "rate": 0.3333
     },
-    "delta_pp": 52.4,
-    "discriminating_tasks": 4,
+    "delta_pp": 61.9,
+    "discriminating_tasks": 5,
     "n_tasks": 7,
     "runs_per_arm": 3,
     "consistency": {
       "with_skill": {
-        "pass_caret_k": 7,
+        "pass_caret_k": 6,
         "pass_at_k": 7,
         "tasks": 7
       },
       "baseline": {
-        "pass_caret_k": 3,
-        "pass_at_k": 4,
+        "pass_caret_k": 2,
+        "pass_at_k": 3,
         "tasks": 7
       }
     },
     "per_run_rate": {
       "with_skill": {
-        "mean": 1.0,
-        "stddev": 0.0
+        "mean": 0.9524,
+        "stddev": 0.0825
       },
       "baseline": {
-        "mean": 0.4762,
+        "mean": 0.3333,
         "stddev": 0.0825
       }
     },
-    "normalized_gain": 1.0,
+    "normalized_gain": 0.9286,
     "discriminating_subset": {
       "tasks": [
         2,
+        3,
         4,
         6,
         7
       ],
       "with_skill": {
-        "pass": 12,
-        "total": 12,
-        "rate": 1.0
+        "pass": 14,
+        "total": 15,
+        "rate": 0.9333
       },
       "baseline": {
         "pass": 1,
-        "total": 12,
-        "rate": 0.0833
+        "total": 15,
+        "rate": 0.0667
       },
-      "delta_pp": 91.7
+      "delta_pp": 86.7
     }
   },
   "per_task": [
@@ -103,14 +104,14 @@
       "skill": "dkan-module-author",
       "prompt": "In DKAN 4.x's metastore, which service do you inject to load a dataset item by UUID from a custom module? Give the service class and its exact service ID.",
       "with_skill": {
-        "pass": 3,
+        "pass": 2,
         "total": 3
       },
       "baseline": {
-        "pass": 3,
+        "pass": 0,
         "total": 3
       },
-      "discriminating": false
+      "discriminating": true
     },
     {
       "id": 4,
@@ -189,9 +190,13 @@
         {
           "task_id": 3,
           "answer": "Inject MetastoreService (class Drupal\\metastore\\MetastoreService), service ID dkan.metastore.service. Load with $service->get('dataset', $uuid), which returns a RootedJsonData object. Add dkan:dkan_metastore to your module's *.info.yml dependencies.",
-          "passed": true,
-          "pos_missing": [],
-          "neg_hit": []
+          "passed": false,
+          "pos_missing": [
+            "Drupal\\\\dkan_metastore\\\\MetastoreService"
+          ],
+          "neg_hit": [
+            "Drupal\\\\metastore\\\\MetastoreService"
+          ]
         },
         {
           "task_id": 4,
@@ -347,9 +352,13 @@
         {
           "task_id": 3,
           "answer": "Inject Drupal\\metastore\\MetastoreService, service ID dkan.metastore.service. Load a dataset item by UUID with $metastore->get('dataset', $uuid). (The underlying storage is dkan.metastore.storage.)",
-          "passed": true,
-          "pos_missing": [],
-          "neg_hit": []
+          "passed": false,
+          "pos_missing": [
+            "Drupal\\\\dkan_metastore\\\\MetastoreService"
+          ],
+          "neg_hit": [
+            "Drupal\\\\metastore\\\\MetastoreService"
+          ]
         },
         {
           "task_id": 4,
@@ -408,9 +417,13 @@
         {
           "task_id": 3,
           "answer": "Inject the metastore service class Drupal\\metastore\\MetastoreService, service ID dkan.metastore.service. Load a dataset by UUID with $metastore->get('dataset', $uuid) (or getMetastoreItem('dataset', $uuid)).",
-          "passed": true,
-          "pos_missing": [],
-          "neg_hit": []
+          "passed": false,
+          "pos_missing": [
+            "Drupal\\\\dkan_metastore\\\\MetastoreService"
+          ],
+          "neg_hit": [
+            "Drupal\\\\metastore\\\\MetastoreService"
+          ]
         },
         {
           "task_id": 4,
@@ -469,9 +482,13 @@
         {
           "task_id": 3,
           "answer": "Inject the metastore service \\Drupal\\metastore\\MetastoreService, whose service ID is dkan.metastore.service. Load a dataset item by UUID with $metastore->get('dataset', $uuid), which returns the RootedJsonData metadata object.",
-          "passed": true,
-          "pos_missing": [],
-          "neg_hit": []
+          "passed": false,
+          "pos_missing": [
+            "Drupal\\\\dkan_metastore\\\\MetastoreService"
+          ],
+          "neg_hit": [
+            "Drupal\\\\metastore\\\\MetastoreService"
+          ]
         },
         {
           "task_id": 4,

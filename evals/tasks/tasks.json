@@ -19,8 +19,9 @@
       "id": 3,
       "skill": "dkan-module-author",
       "prompt": "In DKAN 4.x's metastore, which service do you inject to load a dataset item by UUID from a custom module? Give the service class and its exact service ID.",
-      "assert_pos": ["MetastoreService|dkan\\.metastore\\.service"],
-      "assert_neg": []
+      "assert_pos": ["dkan\\.metastore\\.service", "Drupal\\\\dkan_metastore\\\\MetastoreService"],
+      "assert_neg": ["Drupal\\\\metastore\\\\MetastoreService"],
+      "_calibration_note": "Recalibrated 2026-07-08 (tightened after codex review): the original alternation (MetastoreService|service id) passed on either token and never discriminated (baseline 3/3). Now the prompt's two demands are asserted separately — the service id and the exact 4.x class FQN — and the neg is the pre-4.x FQN Drupal\\metastore\\MetastoreService observed verbatim in all 3 baseline runs AND with-skill run 1 (a hedged answer giving both namespaces). Final grade: with-skill 2/3, baseline 0/3 — failing the hedged run is the honest reading. Note the neg cannot match the correct FQN (the char before 'metastore' differs: backslash vs underscore)."
     },
     {
       "id": 4,
