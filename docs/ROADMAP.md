@@ -28,10 +28,13 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
 
 ### P1 — verified errors
 
-- [ ] 1. **Fix `revertHarvest()` contradiction + de-duplicate HarvestService API.**
+- [x] 1. **Fix `revertHarvest()` contradiction + de-duplicate HarvestService API.**
       `dkan-module-author/reference/dkan-services.md:167–182` says `: mixed`,
       `dkan-harvest.md:114` says `: int`; source (`HarvestService.php:193`) is
       untyped with no return type. Keep one API list, match the source.
+      — done 2026-07-08, PR #46. Verification widened it: five more methods had
+      invented types in both copies; dkan-harvest.md now owns the list, matching
+      4.x exactly, with a "don't re-type these" note.
 - [ ] 2. **Stale "three curl probes" after the Basic-probe retirement.**
       `bin/eval:23–24`, `evals/lib/check_live.py:7` and `:387` (writes wrong
       provenance). Actual count: two (`http.anon`, `http.prm`).
