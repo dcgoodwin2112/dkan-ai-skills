@@ -59,49 +59,16 @@ public static function create(ContainerInterface $container, array $configuratio
 
 `FunctionCallBase`'s constructor takes 5 args: `(array $configuration, $plugin_id, $plugin_definition, ContextDefinitionNormalizer $context_definition_normalizer, ?AiDataTypeConverterPluginManager $data_type_converter_manager = NULL)`. Don't override the constructor for typical tools — the base's `create()` already wires both services. Most built-in tools (e.g. `HtmlToMarkdown` in `<webroot>/modules/contrib/ai/src/Plugin/AiFunctionCall/`) define neither.
 
-To inject extra services, declare a property with `@var` (Drupal phpcs requires it; PHP 8.2+ deprecates dynamic properties), override `create()` only, and assign on the parent instance:
-
-```php
-/**
- * The custom service.
- *
- * @var \Drupal\my_module\MyServiceInterface
- */
-protected $myService;
-
-/**
- * {@inheritdoc}
- */
-public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
-  $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-  $instance->myService = $container->get('my_module.my_service');
-  return $instance;
-}
-```
+To inject extra services, use the **same `create()`-override pattern as the
+[Provider plugin](#provider-plugin) section above** — `@var` property, override
+`create()` only, assign on the parent instance. (Adding a `: static` return type
+to the override is fine.)
 
 `FunctionCallBase` uses `ContextAwarePluginTrait` — read inputs via `$this->getContextValue('arg_name')`, declared in the `#[FunctionCall(context_definitions: [...])]` attribute. Write output via `$this->setOutput($string)`. The base class also already implements `OverridableFunctionCallInterface` — don't redeclare it on subclasses. All FunctionCalling interfaces live in `Drupal\ai\Service\FunctionCalling\` (`FunctionCallInterface`, `ExecutableFunctionCallInterface`, `OverridableFunctionCallInterface`).
 
 ### Agent plugin
 
-`AiAgentBase`'s constructor already takes 8 services (`AgentHelper`, `FileSystemInterface`, `ConfigFactoryInterface`, `AccountProxyInterface`, `ExtensionPathResolver`, `PromptJsonDecoderInterface`, `AiProviderPluginManager`, `EntityTypeManagerInterface`). **Do not redefine the constructor** unless you add new services — and if you do, you must accept all 8 base services and pass them to `parent::__construct()`. Easier pattern: extend `create()` only, and attach additional services to the parent instance.
-
-```php
-/**
- * The extra service.
- *
- * @var \Drupal\my_module\MyServiceInterface
- */
-protected $myExtraService;
-
-/**
- * {@inheritdoc}
- */
-public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-  $parent_instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-  $parent_instance->myExtraService = $container->get('my_module.my_service');
-  return $parent_instance;
-}
-```
+`AiAgentBase`'s constructor already takes 8 services (`AgentHelper`, `FileSystemInterface`, `ConfigFactoryInterface`, `AccountProxyInterface`, `ExtensionPathResolver`, `PromptJsonDecoderInterface`, `AiProviderPluginManager`, `EntityTypeManagerInterface`). **Do not redefine the constructor** unless you add new services — and if you do, you must accept all 8 base services and pass them to `parent::__construct()`. Easier pattern: the **same `create()`-override as the [Provider plugin](#provider-plugin) section above**, attaching the extra service to the parent instance.
 
 The base class exposes these helpers for the `solve()` and `determineSolvability()` implementations:
 
