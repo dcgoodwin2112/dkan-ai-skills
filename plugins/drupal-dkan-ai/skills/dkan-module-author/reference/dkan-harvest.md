@@ -104,23 +104,27 @@ Real example to copy from: `.../tests/files/plan.json`.
 Service ID: `dkan.harvest.service` → `Drupal\dkan_harvest\HarvestService`.
 File: `.../src/HarvestService.php`; service def `.../dkan_harvest.services.yml`.
 
+Signatures match the 4.x source exactly (verified 2026-07-08) — several are
+**untyped upstream**; comments describe effective behavior, not declared types.
+Don't "correct" them to typed forms.
+
 ```php
 getAllHarvestIds(bool $has_run_record = FALSE): array       // plan IDs
-getHarvestPlan(string $plan_id): ?string                    // plan as JSON string
-getHarvestPlanObject(string $plan_id): ?object
-registerHarvest(object $plan): string                       // validates + stores; returns identifier
-deregisterHarvest(string $plan_id): bool                    // drops plan + its support tables
-runHarvest(string $plan_id): array                          // runs ETL, stores run, returns result
-revertHarvest(string $id): int                              // removes loaded items (needs Load::removeItem)
+getHarvestPlan($plan_id)                                    // plan as JSON string, or NULL
+getHarvestPlanObject($plan_id): ?object
+registerHarvest($plan)                                      // validates + stores; returns identifier string
+deregisterHarvest(string $plan_id)                          // drops plan + its support tables; returns bool
+runHarvest($plan_id)                                        // runs ETL, stores run, returns result array
+revertHarvest($id)                                          // destructs the plan's run records, then Harvester::revert() (needs Load::removeItem)
 getHarvestRunInfo(string $plan_id, string $timestamp): bool|string
 getHarvestRunResult(string $plan_id, ?string $timestamp = NULL): array
 getRunIdsForHarvest(string $plan_id): array
 publish(string $harvestId): array                           // publish last run's datasets; returns UUIDs
 archive(string $harvestId): array                           // archive last run's datasets; returns UUIDs
-validateHarvestPlan(object $plan): bool                     // proxies Factory::validateHarvestPlan
+validateHarvestPlan($plan): bool                            // proxies Factory::validateHarvestPlan
 ```
 
-`registerHarvest()` takes a **plan object** (decoded JSON) with an `identifier` property; it validates against the schema and stores. `runHarvest()` throws if extraction yields zero items.
+`registerHarvest()` takes a **plan object** (decoded JSON) with an `identifier` property; it validates against the schema and stores. `runHarvest()` throws if extraction yields zero items. This is the single source for this API — dkan-services.md links here.
 
 Run from CLI with `drush dkan:harvest:*` commands (see the drush reference for specifics) — they wrap this service.
 
