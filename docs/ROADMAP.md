@@ -205,9 +205,15 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       — done 2026-07-08, PR #63. Pointer added in the other commands' line-8
       style. Snippet negatives: no fabrication observed; stays wait-for-failure
       per the item's own framing.
-- [ ] 26. **dependency-gate wrapper gaps:** `ddev exec -s web composer require …`,
+- [x] 26. **dependency-gate wrapper gaps:** `ddev exec -s web composer require …`,
       `docker compose exec app …`, and `composer req` bypass the gate; close +
       add bin/test cases. (In-scope per its own "speed bump" framing.)
+      — done 2026-07-08, PR #64 (batch with 28). All three verified as real
+      bypasses, closed via a wrapper-zone scanner: after a known wrapper token,
+      skip wrapper flags (+values) and at most one bare positional (service
+      name) before the manager. The one-positional bound keeps
+      `ddev drush ev "composer require x"` / `grep "composer require" f` allowed
+      — 5 new block + 4 new false-positive-guard bin/test cases (41 total).
 - [x] 27. **`bin/install --adapters` overclaims vendoring** (README:100): absolute
       symlinks into the local checkout don't "travel with the project" — copy
       instead, or reword.
@@ -216,8 +222,13 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       the installer themselves; the AGENTS.md/.github outputs are real files.
       Copying was rejected — it would create a second drift-prone copy of every
       skill, the exact rot the single-sourcing ratchet removes.
-- [ ] 28. **Scope the commit-gate phpunit run** (`--testsuite unit` when defined) or
+- [x] 28. **Scope the commit-gate phpunit run** (`--testsuite unit` when defined) or
       soften the "kernel left to CI" claim (commit-gate.sh:14, README:148).
+      — done 2026-07-08, PR #64. Both: host-side sed detects a `unit`/`Unit`
+      testsuite in the module's phpunit.xml and scopes `--testsuite` to it;
+      header + README now say kernel suites are skipped locally only when that
+      split exists (no unit suite → full config runs). Extraction verified on
+      single-line, multiline, and kernel-only configs.
 - [x] 29. **`demo/before-after.sh` earn-its-keep call:** presentation aid with a
       documented nested-`claude -p` 401 workaround; keep (and note the workaround
       is upstream-bound) or delete.

@@ -110,12 +110,35 @@ scan_segment() {
   local -a toks
   read -ra toks <<< "$seg"
   local n=${#toks[@]} i=0
-  # Skip leading wrappers (sudo, ddev/lando/exec) and VAR=val assignments to reach
-  # the manager token — so `ddev composer require`, `ddev exec npm add` are seen.
+  # Skip leading wrappers (sudo, env, ddev/lando/docker/podman/compose/exec) and
+  # VAR=val assignments to reach the manager token — so `ddev composer require`,
+  # `ddev exec npm add` are seen. Once a wrapper has been seen, also skip wrapper
+  # flags (consuming the value of value-taking ones, so `ddev exec -s web composer
+  # require` is seen) and AT MOST ONE bare positional (a compose/exec service name:
+  # `docker compose exec app composer require`). The one-positional bound keeps
+  # text arguments from being scanned as installs — `ddev drush ev "composer
+  # require x"` and `grep "composer require" doc.md` stay allowed.
+  local wrapped=0 positionals=0
   while [ "$i" -lt "$n" ]; do
-    case "${toks[$i]}" in
-      sudo|ddev|lando|exec|*=*) i=$((i + 1)) ;;
-      *) break ;;
+    local tk="${toks[$i]}"
+    is_manager "$tk" && break
+    case "$tk" in
+      sudo|env|ddev|lando|exec|docker|podman|compose|docker-compose) wrapped=1; i=$((i + 1)) ;;
+      *=*) i=$((i + 1)) ;;
+      -s|--service|-u|--user|-w|--workdir|-e|--env|--index|--project-directory|--profile|-C|--directory|--context)
+        # Value-taking wrapper flag: skip it and its value (only inside a wrapper
+        # chain; a leading flag on a bare command is not ours to parse).
+        [ "$wrapped" = 1 ] || break
+        i=$((i + 2)) ;;
+      -*)
+        [ "$wrapped" = 1 ] || break
+        i=$((i + 1)) ;;
+      *)
+        if [ "$wrapped" = 1 ] && [ "$positionals" -lt 1 ]; then
+          positionals=$((positionals + 1)); i=$((i + 1))
+        else
+          break
+        fi ;;
     esac
   done
   [ "$i" -lt "$n" ] || return 1
@@ -144,7 +167,10 @@ scan_segment() {
 
   case "$mgr" in
     composer)
-      [ "$sub" = "require" ] && { MATCH="composer $(first_positional ${args[@]+"${args[@]}"})"; return 0; }
+      # `req` is Composer's unambiguous console abbreviation for `require`.
+      case "$sub" in
+        require|req) MATCH="composer $(first_positional ${args[@]+"${args[@]}"})"; return 0 ;;
+      esac
       ;;
     npm|pnpm|bun)
       case "$sub" in
