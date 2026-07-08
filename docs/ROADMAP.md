@@ -41,9 +41,13 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       — done 2026-07-08, PR #47. Verification found a fourth site
       (checks.json `_about`); all four reworded count-free so a future probe
       change can't restale them.
-- [ ] 3. **`commands/validate-module.md:24`**: `ddev exec phpunit` →
-      `ddev exec vendor/bin/phpunit` (`phpunit` is not on the container PATH;
-      step 2 already uses `vendor/bin/phpcs`).
+- [x] 3. ~~**`commands/validate-module.md:24`**: `ddev exec phpunit` →
+      `ddev exec vendor/bin/phpunit`~~ — **declined 2026-07-08** (finding
+      refuted): DDEV puts `vendor/bin` on the web-container PATH by default;
+      verified on the live container (`which phpunit` →
+      `/var/www/html/vendor/bin/phpunit`), so `ddev exec phpunit` works. The
+      cited fragility doesn't exist; the explicit-path form on line 18 is a
+      style preference, not a fix.
 - [ ] 4. **Commit-gate timeout fails open silently.** `hooks/hooks.json` sets 120s;
       multi-module phpcs+phpunit via DDEV can exceed it and the commit proceeds
       ungated. Raise it and/or document the fail-open in the script header + README
