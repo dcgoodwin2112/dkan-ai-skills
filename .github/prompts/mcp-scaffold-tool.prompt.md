@@ -166,7 +166,7 @@ didn't set `enabled => TRUE`, or the attribute failed to parse.
 3. Set the annotation flags honestly (`readOnly`/`destructive`/`idempotent`/`openWorld`) — they're client hints, not enforcement.
 4. For write tools: enforce access via a `RequestEvent` subscriber; declare the permission.
 5. Exercise it end-to-end over a transport (`drush mcp:server`, or `POST` the HTTP route — verify its path).
-6. Run the unit test: `cd <module_path> && vendor/bin/phpunit tests/src/Unit/Plugin/Tool/<ToolName>Test.php`.
+6. Validate: run `/validate-module <module_path>` — it picks the right phpunit harness (module-local `phpunit.xml` if the module has one, else the site's Drupal bootstrap) and runs phpcs.
 
 ## Pitfall checks before reporting done
 

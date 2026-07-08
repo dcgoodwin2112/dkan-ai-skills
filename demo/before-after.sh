@@ -18,7 +18,8 @@
 #
 # Requires an AUTHENTICATED claude (claude login, or ANTHROPIC_API_KEY). It
 # spawns `claude -p`, so it will NOT work inside a sandboxed Claude Code agent
-# session (nested claude -p returns HTTP 401). Run it from a normal terminal.
+# session (nested claude -p returns HTTP 401 — an upstream Claude Code
+# limitation, not something this script can fix). Run it from a normal terminal.
 #
 # Env:
 #   DEMO_MODEL    pin both arms to one model id (default: your configured model)

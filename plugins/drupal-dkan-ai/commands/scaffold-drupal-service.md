@@ -5,6 +5,8 @@ argument-hint: <module_path> <ServiceName> [dependency_service_ids...]
 
 Create a new Drupal service class with constructor injection, register it in services.yml, and generate a unit test.
 
+See [services-and-di.md](../skills/drupal-module-dev/reference/services-and-di.md) for service/DI conventions (constructor promotion, interface type-hints, tags, factories).
+
 ## Input
 
 $ARGUMENTS should be: `<module_path> <ServiceName> [dependency_service_ids...]`

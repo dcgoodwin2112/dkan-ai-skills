@@ -191,28 +191,46 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
 
 ### P5 — commands & infra polish
 
-- [ ] 24. **Broken next-steps in two scaffold commands:** ai-scaffold-tool.md:121 and
+- [x] 24. **Broken next-steps in two scaffold commands:** ai-scaffold-tool.md:121 and
       mcp-scaffold-tool.md:165 tell the user to run a module-local phpunit harness
       that only `/scaffold-dkan-module --with-tests` creates — point at
       `/validate-module` instead (it already branches on `phpunit.xml`).
-- [ ] 25. **`scaffold-drupal-service.md`**: only codegen command with no skill-doc
+      — done 2026-07-08, PR #63 (batch with 25/27/29/30). Both steps now point
+      at `/validate-module`; verified no scaffold-gate assertion matched the
+      replaced lines.
+- [x] 25. **`scaffold-drupal-service.md`**: only codegen command with no skill-doc
       pointer (→ services-and-di.md). Consider snippet negatives for the three
       snippet commands only when a real fabrication is observed (speculative
       negatives are the rot vector).
+      — done 2026-07-08, PR #63. Pointer added in the other commands' line-8
+      style. Snippet negatives: no fabrication observed; stays wait-for-failure
+      per the item's own framing.
 - [ ] 26. **dependency-gate wrapper gaps:** `ddev exec -s web composer require …`,
       `docker compose exec app …`, and `composer req` bypass the gate; close +
       add bin/test cases. (In-scope per its own "speed bump" framing.)
-- [ ] 27. **`bin/install --adapters` overclaims vendoring** (README:100): absolute
+- [x] 27. **`bin/install --adapters` overclaims vendoring** (README:100): absolute
       symlinks into the local checkout don't "travel with the project" — copy
       instead, or reword.
+      — done 2026-07-08, PR #63. Reworded (not copy): README now states the
+      symlinks are absolute + machine-local, don't commit them, teammates run
+      the installer themselves; the AGENTS.md/.github outputs are real files.
+      Copying was rejected — it would create a second drift-prone copy of every
+      skill, the exact rot the single-sourcing ratchet removes.
 - [ ] 28. **Scope the commit-gate phpunit run** (`--testsuite unit` when defined) or
       soften the "kernel left to CI" claim (commit-gate.sh:14, README:148).
-- [ ] 29. **`demo/before-after.sh` earn-its-keep call:** presentation aid with a
+- [x] 29. **`demo/before-after.sh` earn-its-keep call:** presentation aid with a
       documented nested-`claude -p` 401 workaround; keep (and note the workaround
       is upstream-bound) or delete.
-- [ ] 30. **Dispose completed plan docs** once this ROADMAP absorbs their deferrals:
+      — done 2026-07-08, PR #63. Kept: it's the only live demo path, header
+      already scopes it as a presentation aid; the 401 note now says
+      upstream limitation explicitly.
+- [x] 30. **Dispose completed plan docs** once this ROADMAP absorbs their deferrals:
       `docs/plans/2026-06-12-eval-demolition.md` (fully executed),
       `docs/plans/2026-07-08-codex-integration-next-steps.md` (phases 1–2 done).
+      — done 2026-07-08, PR #63. Verified absorbed (eval-demolition fully
+      executed; codex phase 3 lives in Deferred below), then deleted locally.
+      No repo diff: docs/plans/ was untracked by design (docs/.gitignore
+      allowlist), so disposal is local-only.
 
 ## Deferred / not scheduled
 
