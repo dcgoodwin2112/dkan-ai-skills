@@ -48,10 +48,12 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       `/var/www/html/vendor/bin/phpunit`), so `ddev exec phpunit` works. The
       cited fragility doesn't exist; the explicit-path form on line 18 is a
       style preference, not a fix.
-- [ ] 4. **Commit-gate timeout fails open silently.** `hooks/hooks.json` sets 120s;
+- [x] 4. **Commit-gate timeout fails open silently.** `hooks/hooks.json` sets 120s;
       multi-module phpcs+phpunit via DDEV can exceed it and the commit proceeds
       ungated. Raise it and/or document the fail-open in the script header + README
       (the only undocumented fail-open path).
+      — done 2026-07-08, PR #49. Timeout 120→300s; fail-open documented in the
+      script header and README's commit-gate list.
 - [ ] 5. **`dkan-harvest.md` namespace map incomplete.**
       `Drupal\dkan_harvest\Transform\ResourceImporter` (source-verified) lives
       outside `ETL\` like `Load\Dataset`, but the map only flags the latter;
