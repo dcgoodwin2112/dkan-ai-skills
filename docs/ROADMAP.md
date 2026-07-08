@@ -14,8 +14,9 @@ coverage, commands/infra). Evidence pointers are file:line at seeding time.
 The measurable definition of "the skills and evals are getting better." Check off
 when reached; an `/improve-pass` that can't pick a backlog item checks these.
 
-- [ ] Every task-eval assertion fails the baseline on ≥1 run (T1, T3, T5 currently
-      don't — see items 7–8)
+- [x] Every task-eval assertion fails the baseline on ≥1 run or is an explicitly
+      accepted tie — met 2026-07-08 (PR #52 made T3 discriminate; PR #53 accepted
+      T1/T5 as documented harm canaries)
 - [ ] Every high-volatility `skills-currency.yml` claim has a mechanical tripwire
       (live check, scaffold/doc assertion, or staleness warning) or an explicit
       accepted-gap note in the manifest
@@ -80,10 +81,13 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       — now the assert_neg, with the 4.x FQN as a positive. Headline now
       95%/33%/+62pp, 5 of 7 tasks discriminating. Grader's hardcoded ties caveat
       made dynamic.
-- [ ] 8. **Fix or accept non-discriminating T1 and T5** (baseline 3/3 ties).
+- [x] 8. **Fix or accept non-discriminating T1 and T5** (baseline 3/3 ties).
       Either sharpen the prompts/assertions to something baselines miss, or mark
       them accepted ties in tasks.json `_about` + REPORT so they stop reading as
       coverage.
+      — done 2026-07-08, PR #53. Accepted (no hidden discriminator in the
+      recorded runs); retained as harm canaries with explicit notes. Codex
+      caught a JSON-breaking edit my masked gate chain missed — see PR.
 - [ ] 9. **Add an `mcp/sdk ^0.6` doc tripwire** to the `mcp-scaffold-tool` scaffold
       entry — deliberately brittle so the gate goes red the day the SDK floor bumps.
       Nothing currently fails when docs say 0.6 after 0.7 lands.

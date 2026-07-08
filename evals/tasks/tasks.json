@@ -1,12 +1,13 @@
 {
-  "_about": "Phase 2 task-outcome eval. Each task is self-contained (subagents cannot see external DKAN/Drupal source). Grading is DETERMINISTIC string/regex matching (re.search, case-insensitive) to sidestep LLM-judge bias: pass = all assert_pos match AND no assert_neg matches. Tokens were verified present in the skill docs (the with-skill arm reads those docs), so a doc-informed answer passes; baseline relies on parametric knowledge. assert_neg tokens are known stale/hallucinated forms the skills corrected.",
+  "_about": "Phase 2 task-outcome eval. Each task is self-contained (subagents cannot see external DKAN/Drupal source). Grading is DETERMINISTIC string/regex matching (re.search, case-insensitive) to sidestep LLM-judge bias: pass = all assert_pos match AND no assert_neg matches. Tokens were verified present in the skill docs (the with-skill arm reads those docs), so a doc-informed answer passes; baseline relies on parametric knowledge. assert_neg tokens are known stale/hallucinated forms the skills corrected. T1 and T5 are ACCEPTED TIES (baseline answers correctly on all recorded runs) retained as harm canaries — see their _calibration_note.",
   "tasks": [
     {
       "id": 1,
       "skill": "drupal-module-dev",
       "prompt": "In Drupal 11.2 the combined hook_requirements() was split. Name the THREE replacements: the hook for runtime checks, the hook for update-time checks, and the class-based mechanism for install-time checks. Be exact.",
       "assert_pos": ["hook_runtime_requirements", "hook_update_requirements", "InstallRequirementsInterface"],
-      "assert_neg": []
+      "assert_neg": [],
+      "_calibration_note": "Accepted tie (2026-07-08, ROADMAP item 8): every recorded baseline run answers correctly and in detail — parametric knowledge covers the requirements split. All six recorded answers were re-read for a hidden discriminator (the T3 pattern); none exists. Retained as a harm canary: the paired design means a future skill-doc error here would show as with-skill dropping BELOW baseline. Do not count it as skill-value coverage."
     },
     {
       "id": 2,
@@ -36,7 +37,8 @@
       "skill": "open-data-dcat",
       "prompt": "A dataset record sets accrualPeriodicity to \"quarterly\". Is that a valid value in DKAN's Project Open Data / DCAT-US v1.1 schema? If not, what is the correct value representing quarterly?",
       "assert_pos": ["R/P3M"],
-      "assert_neg": []
+      "assert_neg": [],
+      "_calibration_note": "Accepted tie (2026-07-08, ROADMAP item 8): every recorded baseline run gives R/P3M — parametric knowledge covers the common accrualPeriodicity values. Re-read for a hidden discriminator; none exists (with-skill adds the closed-enum/'irregular' framing but baseline is not wrong). Retained as a harm canary. Do not count it as skill-value coverage."
     },
     {
       "id": 6,
