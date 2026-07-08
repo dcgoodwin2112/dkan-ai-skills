@@ -27,3 +27,6 @@ jobs:
 
       - name: Live gate skips cleanly when unconfigured
         run: bin/eval live
+
+      - name: Currency staleness (warn-only, no network)
+        run: bin/currency-staleness

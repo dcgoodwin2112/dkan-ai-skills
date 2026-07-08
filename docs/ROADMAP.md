@@ -93,9 +93,11 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       Nothing currently fails when docs say 0.6 after 0.7 lands.
       — done 2026-07-08, PR #54. Doc-scoped positive with a
       pinned-by-test note; gate now 85 assertions.
-- [ ] 10. **Warn-only currency-staleness CI step**: ~20 lines of date math flagging
+- [x] 10. **Warn-only currency-staleness CI step**: ~20 lines of date math flagging
       any `skills-currency.yml` `last_verified` older than its `cadence`. Warn,
       never fail (no network in CI).
+      — done 2026-07-08, PR #55. `bin/currency-staleness` (+ `TODAY` override
+      for testing), CI step, EVALS.md note. Monthly 45d / quarterly 105d.
 - [ ] 11. **dkan-frontend eval surface is one regex (T7).** Policy is
       failure-driven-only: add a lineage-fork task only when a real session gets
       it wrong. Recorded here so the gap is a decision, not an oversight.

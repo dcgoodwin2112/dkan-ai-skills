@@ -112,7 +112,10 @@ Each eval records date, `claude` CLI version, model, and runs in its results JSO
 
 `.github/workflows/ci.yml` runs the free deterministic gates on every push/PR: `bin/test`,
 the scaffold gate, a task-regrade determinism check (`bin/eval task` must reproduce the
-committed `evals/tasks/` artifacts byte-for-byte), and the live gate's unconfigured-SKIP path.
+committed `evals/tasks/` artifacts byte-for-byte), the live gate's unconfigured-SKIP path,
+and `bin/currency-staleness` — **warn-only** date math flagging any `skills-currency.yml`
+claim past its cadence (monthly > 45d, quarterly > 105d); it nudges toward a
+`/check-skill-currency` run and never fails the build (no network in CI).
 
 Not in CI:
 
