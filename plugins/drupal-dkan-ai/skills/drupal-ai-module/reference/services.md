@@ -142,5 +142,5 @@ my_module.ai_audit:
 
 - AI Assistant API plugin manager service ID is `ai_assistant_api.action_plugin.manager` (the module is `ai_assistant_api`, singular).
 - For logging, use `logger.factory` and call `->get('<channel>')`. The `logger.channel.ai` service is not registered.
-- 2.0.x-dev (no tagged releases; Drupal ^11.2 only): provider lifecycle rework in flight (drupal.org issue #3577243). Do not target until stable.
+- Current-version facts and the 2.0.x stance live in [SKILL.md](../SKILL.md) rule 3 — deliberately not restated here.
 - `PreGenerateResponseEvent` and `PostGenerateResponseEvent` (in `Drupal\ai\Event\`) are stable in 1.x — verified at `<webroot>/modules/contrib/ai/src/Event/`.

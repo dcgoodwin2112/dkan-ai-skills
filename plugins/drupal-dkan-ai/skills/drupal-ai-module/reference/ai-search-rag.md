@@ -1,6 +1,6 @@
 # AI Search — RAG / Embeddings / Vector Search — Reference
 
-RAG, embeddings, and vector search with the Drupal AI module. Targets `drupal/ai ^1.3` (current stable 1.4.3, a security release; verified against `1.3.5`). Sourced from installed code under `<webroot>/modules/contrib/ai/`. Verify against the installed version before code-gen.
+RAG, embeddings, and vector search with the Drupal AI module. Targets the `drupal/ai` 1.x line — current-version facts live in [SKILL.md](../SKILL.md) rule 3 and are deliberately not restated here (doc verified against `1.3.5`). Sourced from installed code under `<webroot>/modules/contrib/ai/`. Verify against the installed version before code-gen.
 
 **Install status (this checkout):** `ai_search` submodule **is present** at `<webroot>/modules/contrib/ai/modules/ai_search/` (v1.3.5, `lifecycle: experimental`, depends on `ai:ai` + `search_api:search_api`). The VdbProvider plugin type lives in the **parent `ai` module**, not `ai_search`. **No concrete VDB backend module is installed** (no `ai_vdb_provider_milvus`/`_pinecone`/`_qdrant`/`_postgres` under `contrib/`); the only VdbProvider in-tree is the test `EchoProvider`. To actually run RAG you must install + configure one VDB provider module. The registry of known providers is `<webroot>/modules/contrib/ai/resources/ai.vdb_provider_registry.yml`.
 

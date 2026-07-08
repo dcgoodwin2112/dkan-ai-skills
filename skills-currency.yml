@@ -178,7 +178,7 @@ skills:
     targets: "drupal/ai 1.4.x (current stable 1.4.3, a security release; docs verified against 1.3.5; refuses 2.0.x)"
     claims:
       - subject: Version line
-        claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (latest 1.4.3, 2026-06-24, a security release; 1.5.x-dev branch open; docs verified against 1.3.5); refuses 2.0.x (2.0.x-dev branch exists — Drupal ^11.2 only, no tagged releases, hidden from the default releases listing; provider lifecycle rework in flight per issue #3577243, not yet a documented breaking-changes list)."
+        claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (latest 1.4.3, 2026-06-24, a security release; 1.5.x-dev branch open; docs verified against 1.3.5); refuses 2.0.x (2.0.x-dev branch exists — Drupal ^11.2 only, no tagged releases, hidden from the default releases listing; provider lifecycle rework in flight per issue #3577243, not yet a documented breaking-changes list). Single-sourced in SKILL.md rule 3 since 2026-07-08 — reference docs point there, so a version bump is a one-file edit."
         source: drupal_ai/releases
         cadence: monthly
         volatility: high
