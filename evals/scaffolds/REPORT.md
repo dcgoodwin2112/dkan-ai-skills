@@ -11,9 +11,11 @@ runs anywhere.
 
 ## Method
 
-- **9 scaffold/codegen commands** (the `scaffold-*`, `ai-scaffold-*`, `mcp-scaffold-tool`,
-  `add-drupal-route`, `add-event-subscriber`). The 3 non-codegen commands
-  (`validate-*`, `dkan-core-test`) are out of scope.
+- **10 commands that embed code templates** (the `scaffold-*`, `ai-scaffold-*`,
+  `mcp-scaffold-tool`, `add-drupal-route`, `add-event-subscriber`, and — added
+  2026-07-08 after a coverage review flagged its four fenced PHP templates as
+  ungated — `dkan-core-test`). The 2 procedural commands (`validate-*`, zero
+  code fences) are out of scope.
 - For each, `check_scaffolds.py` extracts every fenced code block and runs assertions from
   `checks.json`:
   - **`assert_pos`** — required forms that MUST be present: the plugin attribute, the correct
@@ -31,7 +33,7 @@ runs anywhere.
 
 ## Result
 
-**9/9 commands pass · 75/75 assertions (64 positive, 11 negative).**
+**10/10 commands pass · 84/84 assertions (71 positive, 13 negative).**
 
 | command | skill | kind | pos | neg |
 |---|---|---|---|---|
@@ -44,6 +46,7 @@ runs anywhere.
 | scaffold-drupal-service | drupal-module-dev | snippet | 4 | 0 |
 | add-drupal-route | drupal-module-dev | snippet | 5 | 0 |
 | add-event-subscriber | dkan-module-author | snippet | 5 | 0 |
+| dkan-core-test | dkan-core-contributor | full-template | 7 | 2 |
 
 `full-template` commands embed complete canonical files (checked thoroughly); `snippet`
 commands embed illustrative patterns (checked more lightly — honestly labeled).
@@ -54,7 +57,7 @@ A green gate is worthless if its assertions can't fail — and a typo'd negative
 *silently* forever. This is the Phase-3 analog of Phase 2's discrimination pre-check, but
 enforced rather than checked once:
 
-- **11/11 negatives are live, re-verified on every run.** Each `assert_neg` carries a
+- **13/13 negatives are live, re-verified on every run.** Each `assert_neg` carries a
   `neg_example` (the violation it exists to catch); the checker fails the gate if a negative
   cannot match its own example. A negative can never silently rot into vacuity.
 - Positive signatures are **non-vacuous** — they currently match, so removing or breaking

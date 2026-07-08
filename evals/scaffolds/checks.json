@@ -161,6 +161,24 @@
         {"re": "phpcs --standard=Drupal,DrupalPractice", "scope": "doc", "note": "lint step documented"}
       ],
       "assert_neg": []
+    },
+    {
+      "command": "dkan-core-test.md",
+      "skill": "dkan-core-contributor",
+      "kind": "full-template",
+      "assert_pos": [
+        {"re": "extends Api1TestBase", "scope": "code", "note": "functional API base class"},
+        {"re": "use Drupal\\\\Tests\\\\dkan_common\\\\Functional\\\\Api1TestBase", "scope": "code", "note": "exact base-class FQN"},
+        {"re": "extends KernelTestBase", "scope": "code", "note": "kernel base class"},
+        {"re": "@group dkan", "scope": "code", "note": "required DKAN group annotation"},
+        {"re": "@group functional1", "scope": "code", "note": "CI-split group carries a digit"},
+        {"re": "Drupal\\\\Tests\\\\dkan_common\\\\Traits\\\\QueueRunnerTrait", "scope": "code", "note": "queue-drain trait FQN"},
+        {"re": "namespace Drupal\\\\Tests\\\\", "scope": "code", "note": "test namespace root"}
+      ],
+      "assert_neg": [
+        {"re": "@group functional(?![0-9])", "scope": "code", "note": "observed T4 baseline hallucination: functional group without the CI-split digit (evals/tasks/runs/raw_runs.json)", "neg_example": " * @group functional"},
+        {"re": "@group btb", "scope": "code", "note": "observed T4 baseline hallucination (evals/tasks/runs/raw_runs.json)", "neg_example": " * @group btb"}
+      ]
     }
   ]
 }

@@ -21,8 +21,8 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       accepted-gap note in the manifest
 - [ ] Every version-pinned fact lives in exactly one skill file; other files link
       (the fact-spray ratchet — see items 12–17)
-- [ ] Every command that embeds code templates is scaffold-gated (dkan-core-test
-      currently isn't — item 6)
+- [x] Every command that embeds code templates is scaffold-gated — met 2026-07-08
+      (PR #51; the two `validate-*` commands have zero code fences)
 
 ## Improvement backlog
 
@@ -64,10 +64,13 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
 
 ### P2 — eval gaps
 
-- [ ] 6. **Add `dkan-core-test` to the scaffold gate.** It embeds 4 fenced PHP
+- [x] 6. **Add `dkan-core-test` to the scaffold gate.** It embeds 4 fenced PHP
       templates (`Api1TestBase`, `@group dkan`/`functional1`, `QueueRunnerTrait`,
       `namespace Drupal\Tests\…`) but has no `checks.json` entry — a fabricated
       base class would ship ungated. ~10 lines using existing machinery.
+      — done 2026-07-08, PR #51. 7 pos + 2 failure-driven negs (both
+      hallucinations found in T4's recorded baseline runs). Gate now 10/10
+      commands / 84 assertions.
 - [ ] 7. **Split task T3's alternation.** `MetastoreService|dkan\.metastore\.service`
       passes on either token though the prompt demands both; baseline passes 3/3
       (non-discriminating). Split into two `assert_pos`, regrade, commit benchmark.
