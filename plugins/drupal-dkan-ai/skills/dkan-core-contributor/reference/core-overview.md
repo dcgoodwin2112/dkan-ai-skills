@@ -80,15 +80,16 @@ On **`4.x`** (`composer.json`):
 | `getdkan/procrastinator` (^5.0.3) | Async, resumable job execution — the import/harvest queue engine |
 | `getdkan/csv-parser` (^1.3.3) | CSV parsing for datastore import |
 | `getdkan/file-fetcher` (^5.1) | Resumable remote-file download (resource localization) |
-| `getdkan/rooted-json-data` (^0.2.2) | `RootedJsonData` — JSON-path-addressable, schema-validated metadata wrapper |
+| `getdkan/rooted-json-data` (^1.0) | `RootedJsonData` — JSON-path-addressable, schema-validated metadata wrapper |
 | `getdkan/pdlt` (^0.1.7) | Date/format helper |
-| `justinrainbow/json-schema` (^5.2 \|\| ^6.6.1) | The JSON-schema validator behind `RootedJsonData` on `4.x` |
-| `m1x0n/opis-json-schema-error-presenter` (^0.5.3) | Error formatting |
+| `opis/json-schema` (^2.4) | Metastore schema validation (see the validator note below) |
+| `justinrainbow/json-schema` (^5.2 \|\| ^6.6.1) | Still required on some validation paths |
 
 > A change that touches CSV handling, file download, or queue/job state usually means
 > a PR (and version bump) to the corresponding `getdkan/*` repo — not just `drupal/dkan`.
-> The JSON-schema validator is **mid-migration** (justinrainbow → opis) on a feature
-> branch; see [core-internals.md](core-internals.md#schema-validation).
+> The justinrainbow → opis validator migration **landed on `4.x`** — current state
+> and gotchas live in [core-internals.md](core-internals.md#schema-validation) (the
+> single home for that fact).
 
 ## REST API surface
 

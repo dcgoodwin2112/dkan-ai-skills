@@ -115,9 +115,13 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       "~38 — see dkan-integration.md; verify live"; the live gate owns the number.
       — done 2026-07-08, PR #57. Tripwire interaction checked (regexes target
       stale ~35/22 only); live gate 25/25 with the change.
-- [ ] 14. **justinrainbow→opis migration note → core-internals.md:66–73 only**
+- [x] 14. **justinrainbow→opis migration note → core-internals.md:66–73 only**
       (also stated in dkan-core-contributor SKILL.md:29–31, :49, and
       core-overview.md:90–91). Feature-branch state; will invalidate all four.
+      — done 2026-07-08, PR #58. The invalidation had already happened: the
+      migration landed on 4.x (PRs #4706/#4730) — facts corrected + single-homed
+      in core-internals.md; a fifth spray site found in dcat-us-overview.md;
+      new quarterly manifest claim added.
 - [ ] 15. **De-triplicate the `create()` override snippet** in
       drupal-ai-module/reference/services.md (:41–56, :64–80, :88–104) — state
       once, reference twice (~35 lines).

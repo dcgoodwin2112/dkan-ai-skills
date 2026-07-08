@@ -58,6 +58,6 @@ DKAN validates every metadata write against the **installed** `schema/collection
 using `RootedJsonData` (via `ValidMetadataFactory`); invalid metadata is rejected before
 storage. Because validation is schema-driven, the deployed schema file — not this doc — is
 the final authority. When in doubt, read it (`schema/collections/dataset.json`) or run
-`/validate-dcat-metadata`. The validator internals (the json-schema library, currently
-justinrainbow on 4.x) are covered in
+`/validate-dcat-metadata`. The validator internals (which json-schema library `4.x`
+uses — deliberately not stated here) are covered in
 [dkan-core-contributor/core-internals.md#schema-validation](../../dkan-core-contributor/reference/core-internals.md#schema-validation).
