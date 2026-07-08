@@ -127,12 +127,21 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       once, reference twice (~35 lines).
       — done 2026-07-08, PR #59. Provider owns the block; two anchored
       pointers; −33 lines, section-specific constructor facts kept.
-- [ ] 16. **Drop dkan-frontend/SKILL.md:78–82's lineages table** (architecture.md's
+- [x] 16. **Drop dkan-frontend/SKILL.md:78–82's lineages table** (architecture.md's
       copy is fuller); collapse `datastore_query_api` explanations (4 files) to
       SKILL.md rule + build-deploy-customize.md detail.
-- [ ] 17. **De-duplicate the reference-resolution algorithm** within
+      — done 2026-07-08, PR #60 (batch with 17). architecture.md owns the lineage
+      table and version pins (rule 7 + version notes de-pinned too, beyond the
+      cited table); build-deploy-customize.md owns the route shapes (SKILL.md
+      rule 6 keeps the coupling + config-key name — T7's assertion — and points
+      there). architecture.md and dkan-js-frontend-module.md copies were already
+      pointer/table-row brief. Both currency claims annotated single-sourced.
+- [x] 17. **De-duplicate the reference-resolution algorithm** within
       dkan-module-author (dkan-overview.md:61–71 vs dkan-workflows.md:208–245,
       ~35 lines; the core-contributor inside-view copy is justified).
+      — done 2026-07-08, PR #60 (batch with 16). dkan-workflows.md owns the
+      step-by-step algorithm; dkan-overview.md keeps the one-paragraph concept
+      (%Ref shape, defaults, downloadURL→resource ID) + pointer.
 
 ### P4 — content quality
 
