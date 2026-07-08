@@ -128,4 +128,4 @@ The `describedBy` URL points at a `data-dictionary` metastore schema item (e.g. 
 
 `returnDataDictionaryFields($identifier)` returns the resolved `$.data.fields` array for either mode (NULL in `none`).
 
-> For a working, self-contained resolution example in custom code, see `findDictionaryFor()` in `DatastoreTools` (`<webroot>/modules/custom/dkan_query_tools/src/Tool/DatastoreTools.php`): it walks `dataset` items, matches a distribution's `%Ref:downloadURL[0]->data` against the parsed resource ID, reads the inline `describedBy`, and fetches the `data-dictionary` item.
+> For a working, self-contained resolution example in custom code, see `findDictionaryFor()` in `DatastoreTools` (`<webroot>/modules/custom/dkan_query_tools/src/Tool/DatastoreTools.php` — a site-specific custom module; the pattern applies even where it's absent): it walks `dataset` items, matches a distribution's `%Ref:downloadURL[0]->data` against the parsed resource ID, reads the inline `describedBy`, and fetches the `data-dictionary` item.

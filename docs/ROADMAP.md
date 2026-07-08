@@ -145,24 +145,40 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
 
 ### P4 — content quality
 
-- [ ] 18. **Remove checkout-specific state from distributable skills:**
+- [x] 18. **Remove checkout-specific state from distributable skills:**
       ai-search-rag.md:5 "Install status (this checkout)", dkan-module-author
       SKILL.md:85 "This site runs…", dkan-drush.md:7 DDEV assumption; flag
       `dkan_query_tools` / `dkan_ai_query` worked examples as "may not exist on
       your site" (replace state with a verify command: `composer show`, `drush pml`).
-- [ ] 19. **Condense drupal-mcp-server/reference/auth-and-access.md:7–34** (generic
+      — done 2026-07-08, PR #61 (batch with 19/20/23). All three cited sites
+      reworded state→verify-command; worked-example flags added in
+      dkan-testing.md, testing-ai-plugins.md, mcp testing.md, dkan-overview.md.
+      dkan-integration.md deliberately left — it documents the live deployment
+      and is pinned by the live gate.
+- [x] 19. **Condense drupal-mcp-server/reference/auth-and-access.md:7–34** (generic
       lethal-trifecta/OWASP doctrine a strong model knows) to ~5 lines; the doc's
       job starts at the unenforced-`checkAccess()` content.
-- [ ] 20. **Cut dead weight:** drupal-ai-module pitfalls.md #8 ("no functional
+      — done 2026-07-08, PR #61. 30→15 lines; the DKAN-specific dkan-ro/dkan-rw
+      split + OAuth scopes kept (that part wasn't generic), generic bullets and
+      OWASP name-drops folded to one parenthetical.
+- [x] 20. **Cut dead weight:** drupal-ai-module pitfalls.md #8 ("no functional
       impact" — not a pitfall); drupal-mcp-server testing.md:70–85 aspirational
       contract-test essay (or move to this ROADMAP as a real deferral).
+      — done 2026-07-08, PR #61. Pitfall #8 cut (fact survives in
+      services.md's FunctionCall section), 9–17 renumbered, no numeric refs
+      existed. Contract-test section condensed 18→8 lines rather than cut —
+      verification judged the invariant recipe actionable, not aspirational.
 - [ ] 21. **permissions.yml gap:** drupal-module-dev has no permissions.yml coverage
       while routing docs lead with `_permission` and `/add-drupal-route` promises
       one. Small subsection in routing-forms-rendering.md or module-lifecycle.md.
 - [ ] 22. **dkan-frontend dev-server gap:** no local `npm start`-against-a-DKAN-
       backend workflow (proxy/CORS) — a first-hour task for frontend customizers.
-- [ ] 23. **dkan-core-contributor SKILL.md rules↔pitfalls restatement** (4 of 6
+- [x] 23. **dkan-core-contributor SKILL.md rules↔pitfalls restatement** (4 of 6
       pitfalls re-word rules from 20 lines earlier) — merge or differentiate.
+      — done 2026-07-08, PR #61. Verification found it's 5 of 6; pitfalls
+      became a symptom→rule lookup table (differentiate: symptoms index into
+      the rules instead of restating fixes), pitfall 4 (wrong tree) kept as
+      the one non-rule row.
 
 ### P5 — commands & infra polish
 

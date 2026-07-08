@@ -82,7 +82,7 @@ For the full tool list, call `tools/list` on a connected server or see https://w
 
 ## Version notes
 
-- This site runs DKAN 4.x (`dev-4.x`) on Drupal 11. Behavior described here is verified against that combination.
+- Verified against DKAN 4.x (`dev-4.x`) on Drupal 11. Confirm the target site's actual versions before code-gen: `composer show getdkan/dkan` + `drush status`.
 - DKAN 4.x renamed its submodules: PHP namespaces are `Drupal\dkan_common`, `Drupal\dkan_datastore`, `Drupal\dkan_metastore`, `Drupal\dkan_harvest` (the pre-4.x un-prefixed forms are gone). Service IDs (`dkan.metastore.service`, etc.) and the REST API did NOT change.
 - Internal APIs (service signatures, event constants) are not guaranteed stable across DKAN minor releases. Before recommending a class or method by name, verify it exists in the installed copy: `find <webroot>/modules/contrib/dkan -name "<ClassName>.php"`.
 - Public REST API endpoints are version-stable across 4.x. See [reference/dkan-api.md](reference/dkan-api.md).

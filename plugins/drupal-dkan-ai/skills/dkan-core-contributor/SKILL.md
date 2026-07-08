@@ -58,14 +58,16 @@ These are the contributor-specific concepts that aren't visible from a quick gre
 
 ## Top pitfalls
 
-The most expensive mistakes when changing DKAN core. Symptom → cause → fix.
+Symptom → the rule above that was skipped (each rule carries the fix):
 
-1. **Import/harvest test asserts on rows that aren't there.** Symptom: count is 0, or the table doesn't exist. Cause: the import job sat in the queue and never ran. Fix: pull in `QueueRunnerTrait` and drain the queue in the test ([testing-core.md](reference/testing-core.md#async-and-queues)).
-2. **New test runs on the wrong CI node (or not in parallel).** Cause: missing/incorrect `@group functionalN`. Fix: tag functional tests `@group functional1`, `2`, or `3` (node 0 runs the non-functional suite) plus `@group dkan`.
-3. **Relying on a class/method/dep that only exists on a feature branch.** Symptom: "works on my checkout," fails review/CI on `4.x`. Cause: asserted against the wrong branch. Fix: `git show 4.x:<path>` to confirm before coding.
-4. **"Fixing DKAN" while actually editing a copy under `modules/custom/`.** Cause: wrong tree/perspective. Fix: confirm you're in `<dkan>/` core source (the `drupal/dkan` package), not a vendored custom module; if it's a custom module, switch to `dkan-module-author`.
-5. **Schema or config change merged with no update hook.** Symptom: existing sites error on `drush updatedb` / config import. Fix: add `<module>_update_NNNN()` in the right `.install` ([contributing-and-ci.md](reference/contributing-and-ci.md#update-hooks)).
-6. **Querying a datastore table by name directly.** Symptom: table-not-found or wrong rows. Cause: bypassing the factory + UUID/perspective mapping. Fix: resolve through `DatastoreService` / the table factory, not a raw `SELECT`.
+| Symptom | Rule |
+|---|---|
+| Import/harvest test asserts on rows that aren't there (count 0, missing table) | 3 — drain the queue |
+| Test is green locally but never runs in CI, or lands on the wrong node | 4 — `@group functionalN` |
+| "Works on my checkout," fails review/CI on `4.x` | 1 — verify against the target branch |
+| Existing sites error on `drush updatedb` / config import after your merge | 7 — update hook |
+| Table-not-found or wrong rows from a hand-built datastore table name | 5 — resolve through the factory |
+| "Fixing DKAN" while actually editing a copy under `modules/custom/` | not a rule — wrong tree: confirm you're in `<dkan>/` (the `drupal/dkan` package source); if it's a custom module, switch to `dkan-module-author` |
 
 ## Core-internals cheat sheet
 

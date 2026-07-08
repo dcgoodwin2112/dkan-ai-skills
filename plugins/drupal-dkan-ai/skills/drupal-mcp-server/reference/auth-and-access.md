@@ -5,35 +5,20 @@ ships zero auth policy.** Read this before exposing any write tool.
 
 ## Threat model: the lethal trifecta
 
-Before any enforcement mechanism, decide what the surface is *allowed* to do. Risk
-concentrates when one agent context holds all three of the **lethal trifecta**:
-(1) access to **private data** (the metastore, datastore rows, harvest config),
-(2) exposure to **untrusted content**, and (3) a way to **exfiltrate or mutate** (a
-write tool, an outbound request). Any two are survivable; all three is exploitable.
+Risk concentrates when one agent context holds all three: **private data** (the
+metastore, datastore rows, harvest config), **untrusted content** (tool outputs
+count — a dataset title or harvest error your *read* tool returns is
+attacker-controllable text the model will follow), and a way to **exfiltrate or
+mutate** (a write tool). Any two are survivable; all three is exploitable
+(OWASP LLM01/05/06).
 
-Tool **outputs are untrusted content too** — a dataset title, a column value, or a
-harvest error your *read* tool returns is attacker-controllable text, and the model
-will follow instructions embedded in it (indirect prompt injection) as readily as
-instructions from the operator. Design accordingly:
-
-- **Separate read from write.** Keep read-only and read-write tools on **distinct,
-  separately-credentialed surfaces** (the `dkan-ro` / `dkan-rw` split — on DKAN,
-  per-account stdio `--user` plus the OAuth `dkan_mcp:read`/`dkan_mcp:write`
-  scopes) so text injected on the read path has no write tool in reach. A read
-  tool must never call a destructive path.
-- **Human-gate destructive verbs.** `delete`, `drop`, `unpublish`, `publish`, bulk
-  `patch` — keep these behind explicit human approval that shows the full,
-  untruncated parameters, not autonomous on the agent's say-so.
-- **Treat every tool return value as data, never instructions.** Default and
-  type-check it; never dispatch an action off its contents.
-- **Least privilege per tool.** Scope each tool's credentials to exactly what it
-  needs; no omnibus token shared across read and write.
-
-This maps to **OWASP LLM Top 10** — LLM01 (prompt injection), LLM05 (improper
-output handling), LLM06 (excessive agency) — and the **OWASP Top 10 for
-Agentic Applications**.
-The enforcement mechanics that make the split real follow below; this is the policy
-they implement.
+The policy consequence this module's DKAN deployment implements: keep read-only
+and read-write tools on **distinct, separately-credentialed surfaces** (the
+`dkan-ro` / `dkan-rw` split — per-account stdio `--user` plus the OAuth
+`dkan_mcp:read`/`dkan_mcp:write` scopes) so text injected on the read path has no
+write tool in reach, and **human-gate destructive verbs** (`delete`, `drop`,
+`unpublish`, bulk `patch`) behind approval that shows full, untruncated
+parameters. The enforcement mechanics follow.
 
 ## The gotcha: `checkAccess()` is declared but not enforced
 
