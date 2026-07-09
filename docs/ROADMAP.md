@@ -17,11 +17,22 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
 - [x] Every task-eval assertion fails the baseline on ≥1 run or is an explicitly
       accepted tie — met 2026-07-08 (PR #52 made T3 discriminate; PR #53 accepted
       T1/T5 as documented harm canaries)
-- [ ] Every high-volatility `skills-currency.yml` claim has a mechanical tripwire
+- [x] Every high-volatility `skills-currency.yml` claim has a mechanical tripwire
       (live check, scaffold/doc assertion, or staleness warning) or an explicit
-      accepted-gap note in the manifest
+      accepted-gap note in the manifest — met 2026-07-08 (PR #65). Audited all
+      six high-volatility claims: mcp Module+SDK version has the PR #54 doc
+      assertion, SDK API surface has scaffold-gate + T6 assertions, DKAN MCP
+      modules has the live gate; the other three (contribution credit, recipes,
+      drupal-ai version line) are staleness-warning-only with accepted-gap
+      notes now in the manifest (upstream/process facts — no local artifact to
+      content-assert).
 - [ ] Every version-pinned fact lives in exactly one skill file; other files link
-      (the fact-spray ratchet — see items 12–17)
+      (the fact-spray ratchet — see items 12–17). Sweep run 2026-07-08 (PR #65):
+      13 multi-file version tokens triaged; accepted patterns are per-doc
+      "Targets …" scope headers, "verified against" stamps, live-gate-pinned
+      deployment docs (dkan-integration.md), and frozen history notes (mcp/sdk
+      ^0.4). Two residual same-fact sprays found → item 31; check this off when
+      31 lands and a re-sweep is clean.
 - [x] Every command that embeds code templates is scaffold-gated — met 2026-07-08
       (PR #51; the two `validate-*` commands have zero code fences)
 
@@ -127,6 +138,15 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       once, reference twice (~35 lines).
       — done 2026-07-08, PR #59. Provider owns the block; two anchored
       pointers; −33 lines, section-specific constructor facts kept.
+- [ ] 31. **Residual single-sourcing sweep fixes** (from the 2026-07-08 ratchet
+      sweep, PR #65): (a) core-overview.md:83–86's dependency-table rows restate
+      the validator pins (`opis ^2.4`, `justinrainbow ^5.2 || ^6.6.1`,
+      `rooted-json-data ^1.0`) that core-internals.md#schema-validation declares
+      itself the single home for — drop the pins from the table rows, keep
+      package name + purpose + the existing "see the validator note" pointer;
+      (b) drupal-module-dev SKILL.md:120 restates the `11.1.8` backport pin that
+      hooks-events-plugins.md:40 owns — drop the parenthetical from the rule.
+      Then re-run the sweep and check off the single-sourcing ratchet target.
 - [x] 16. **Drop dkan-frontend/SKILL.md:78–82's lineages table** (architecture.md's
       copy is fuller); collapse `datastore_query_api` explanations (4 files) to
       SKILL.md rule + build-deploy-customize.md detail.
