@@ -124,6 +124,9 @@ skills:
         volatility: low
         last_verified: 2026-07-08
       - subject: drupal.org issues & contribution credit
+        # Tripwire: staleness warning only (bin/currency-staleness). Process
+        # facts on a remote service — no content assertion is possible without
+        # network in CI. Accepted gap; /check-skill-currency owns verification.
         claim: "Credit is issue-based via the Contribution Records system (issue participants sync automatically; maintainer checks credit boxes on drupal.org; record generates the squash-commit message). DKAN custom modules use GitLab issues on drupalcode (POST projects/<id>/issues via raw glab api); classic d.o. queues are being retired via DA-managed opt-in migration. Undisclosed AI-generated contributions and backfilled/bulk low-effort issues count as credit farming."
         source: drupalorg_credit/gitlab_issues
         cadence: monthly
@@ -136,6 +139,8 @@ skills:
         volatility: medium
         last_verified: 2026-07-08
       - subject: Recipes & config actions
+        # Tripwire: staleness warning only. Upstream core feature set — no
+        # local artifact to assert against. Accepted gap.
         claim: "Recipes experimental from D10.3, stabilizing across 11.x; setProperties action added D11.2. Exact action set is version-dependent."
         source: drupal_core/change_records
         cadence: monthly
@@ -184,6 +189,9 @@ skills:
     targets: "drupal/ai 1.4.x (current stable 1.4.3, a security release; docs verified against 1.3.5; refuses 2.0.x)"
     claims:
       - subject: Version line
+        # Tripwire: staleness warning only (monthly/45d). Upstream release
+        # facts — no local artifact to assert against; single-sourcing makes
+        # a bump a one-file edit. Accepted gap.
         claim: "Skill targets the drupal/ai 1.x line; current stable is 1.4.x (latest 1.4.3, 2026-06-24, a security release; 1.5.x-dev branch open; docs verified against 1.3.5); refuses 2.0.x (2.0.x-dev branch exists — Drupal ^11.2 only, no tagged releases, hidden from the default releases listing; provider lifecycle rework in flight per issue #3577243, not yet a documented breaking-changes list). Single-sourced in SKILL.md rule 3 since 2026-07-08 — reference docs point there, so a version bump is a one-file edit."
         source: drupal_ai/releases
         cadence: monthly
