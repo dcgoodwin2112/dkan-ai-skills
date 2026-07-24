@@ -31,7 +31,8 @@ the single biggest hazard; treat every API below as version-contingent.
   `Mcp\Server\Handler\ToolHandlerInterface`, `Mcp\Server\ClientGateway`,
   `Builder::add()`. `mcp/sdk` broke BC twice across 0.4 → 0.5 → 0.6, but **`0.6.0`
   was tagged 2026-06-02**, so the module now pins a released SDK (`^0.6`) rather
-  than `dev-main`. `mcp/sdk` is the official MCP PHP SDK
+  than `dev-main` (upstream has since tagged `0.7.0`, 2026-07-14; the module has
+  not bumped — check `composer.json` before assuming the newer API). `mcp/sdk` is the official MCP PHP SDK
   (`modelcontextprotocol/php-sdk`, a PHP Foundation + Symfony collaboration).
 - The earlier `0.4`/`0.5` API (`Builder::addTool()`, no `ClientGateway`) is
   **incompatible** — code written against it will not load against `0.6`.
