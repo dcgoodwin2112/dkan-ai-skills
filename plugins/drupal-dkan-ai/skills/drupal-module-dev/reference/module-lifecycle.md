@@ -101,7 +101,7 @@ class MyModuleRequirements implements InstallRequirementsInterface {
 ```
 
 > **Version-dependent.** The split landed in D11.2 and the old `hook_requirements`
-> deprecation was formalized in later 11.x. On D10/early-11 use `hook_requirements($phase)`
+> deprecation was formalized in D11.3. On D10/early-11 use `hook_requirements($phase)`
 > with the `$phase` switch. Verify against your core version.
 
 ## Recipes & config actions (D10.3+)

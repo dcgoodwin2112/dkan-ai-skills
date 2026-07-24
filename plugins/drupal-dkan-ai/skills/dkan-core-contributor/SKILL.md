@@ -98,7 +98,7 @@ git show 4.x:composer.json                   # check a fact on the target branch
 
 ## Version notes
 
-- Targets **DKAN 4.x** on Drupal `^10.2 || ^11`. CI exercises Drupal ~10.5 / ~10.6 / ~11.2 / ~11.3 across PHP 8.1–8.4 (mysql 5.7 + mariadb 10.11) — see [contributing-and-ci.md](reference/contributing-and-ci.md#ci).
+- Targets **DKAN 4.x** on Drupal `^10.2 || ^11`. CI exercises Drupal ~10.6 / ~11.2 / ~11.3 / ~11.4 across PHP 8.2–8.4 (mysql 5.7 + mariadb 10.11) — see [contributing-and-ci.md](reference/contributing-and-ci.md#ci).
 - DKAN 4.x submodules carry the `dkan_` prefix (`dkan_common`, `dkan_metastore`, `dkan_datastore`, `dkan_harvest`); pre-4.x un-prefixed names are gone.
 - Internal APIs (service signatures, event constants, storage internals) are **not** guaranteed stable across DKAN minors — they're fair game to change in a core PR, which is exactly why downstream consumers get a stability contract only on the REST API and documented service IDs.
 - Dependencies in this doc reflect **`4.x`**; confirm with `git show 4.x:composer.json` since the working tree may be ahead of mainline.
