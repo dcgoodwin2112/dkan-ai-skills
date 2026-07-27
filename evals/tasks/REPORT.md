@@ -22,62 +22,52 @@ DKAN/Drupal tasks than no skill? The skill must actually *change the output*.
   is unrecorded, pre-Claude-5). Tasks that tie on a newer baseline are trim candidates, not
   regressions — see the accepted-tie notes on T1/T5.
 
-## Result
+## Result — 2026-07-27, `claude-fable-5` (current)
 
 | | passed | rate |
 |---|---|---|
-| **with skill** | 20/21 | **95%** |
-| **baseline (no skill)** | 7/21 | **33%** |
-| **delta** | | **+62 pts** |
-
-*(Regraded 2026-07-08 after recalibrating T3, whose original alternation never
-discriminated — see the T3 note in `tasks.json` and "Grader calibration" below.)*
-
-**Consistency & variance (3 runs/arm).** A pooled rate hides whether the skill helps on *every*
-run or just *some*:
+| **with skill** | 21/21 | **100%** |
+| **baseline (no skill)** | 6/21 | **29%** |
+| **delta** | | **+71 pts** |
 
 | metric | with skill | baseline |
 |---|---|---|
-| pass^3 — tasks passing on **all 3** runs | **6/7** | 2/7 |
-| pass@3 — tasks passing on **any** run | 7/7 | 3/7 |
-| per-run pass rate (mean ± stddev) | 95% ± 8% | 33% ± 8% |
+| pass^3 — tasks passing on **all 3** runs | **7/7** | 2/7 |
+| pass@3 — tasks passing on **any** run | 7/7 | 2/7 |
+| per-run pass rate (mean ± stddev) | 100% ± 0% | 29% ± 0% |
 
-Baseline's pass@3 (3/7) exceeds its pass^3 (2/7) because task 4 passes only 1 of 3
-runs; with-skill's single miss is T3 run 1 (a hedged answer giving both the correct
-and the pre-4.x class namespace — graded a fail, honestly). **Normalized gain
-g = 0.93** (Hake's g = (r_skill − r_base) / (1 − r_base) — the skill closes 93% of
-the achievable gap, not just +62 raw points).
+**Normalized gain g = 1.00** — the skill closes the entire achievable gap; both arms
+are perfectly consistent across runs. **5 of 7 tasks discriminate** (T2, T3, T4, T6,
+T7): on that drift-prone subset the contrast is **15/15 vs 0/15 (+100pp)**. Baseline
+again produced confident, **plausible-but-wrong** answers:
 
-| # | skill | with | base | result |
-|---|---|---|---|---|
-| 1 | drupal-module-dev | 3/3 | 3/3 | — tie |
-| 2 | drupal-ai-module | 3/3 | 0/3 | ✅ skill wins |
-| 3 | dkan-module-author | 2/3 | 0/3 | ✅ skill wins |
-| 4 | dkan-core-contributor | 3/3 | 1/3 | ✅ skill wins |
-| 5 | open-data-dcat | 3/3 | 3/3 | — tie |
-| 6 | drupal-mcp-server | 3/3 | 0/3 | ✅ skill wins |
-| 7 | dkan-frontend | 3/3 | 0/3 | ✅ skill wins |
-
-**5 of 7 tasks discriminate** — on that drift-prone subset the contrast is **14/15 vs
-1/15 (+87pp)**; the 2 ties dilute the pooled headline. On the discriminating tasks
-baseline didn't just score lower — it produced confident, **plausible-but-wrong**
-answers (the failure mode the skills exist to prevent):
-
-| task | correct (with skill) | baseline hallucinated |
+| task | correct (with skill) | claude-fable-5 baseline hallucinated |
 |---|---|---|
 | 2 drupal/ai core floor | `^10.5 \|\| ^11.2` | `^10.3 \|\| ^11` (all 3 runs) |
-| 3 metastore class | `Drupal\dkan_metastore\MetastoreService` | `Drupal\metastore\MetastoreService` — the pre-4.x namespace (all 3 runs) |
-| 4 DKAN CI groups | `functional1/2/3` | `@group functional`, `btb` (2/3 runs) |
-| 6 MCP write tool | `#[Tool]` + `ClientGateway` + `checkAccess` | `ToolBase` + `CallToolResult` (wrong/older mcp/sdk API; no access gate) |
-| 7 frontend config key | `datastore_query_api` | `datastore_query_version`, `root_url`, "not sure" |
+| 3 metastore class | `Drupal\dkan_metastore\MetastoreService` | led with the pre-4.x `Drupal\metastore\` namespace (all 3 runs) |
+| 4 DKAN CI groups | `functional1/2/3` | recommended the bare `@group functional` (all 3 runs; caught by the neg added 2026-07-27) |
+| 6 MCP write tool | `#[Tool]` + `ClientGateway` + `checkAccess` | invented `Mcp\Schema\…` result types, `execute()` without `ClientGateway`, no enforcement gate |
+| 7 frontend config key | `datastore_query_api` | `datastore_endpoint`, `useSqlEndpoint`, `useDatastoreQuery` |
 
-The 2 **ties** (T1, T5) are honest and — as of 2026-07-08 — **formally accepted**
-(see their `tasks.json` notes): they're facts the base model already knows (the
-requirements split, `R/P3M`), re-verified to hold no hidden discriminator in the
-recorded runs. They are retained as **harm canaries**, not skill-value coverage: in
-the paired design, a future skill-doc error on these facts would surface as the
-with-skill arm dropping *below* baseline. The skill's value concentrates exactly
-where parametric knowledge is stale or absent.
+**Cross-generation finding (the point of the re-baseline):** upgrading the base
+model did **not** make the skills redundant. The discriminating set is unchanged
+from the pre-Claude-5 corpus — the ties are still exactly T1 and T5, the accepted
+harm canaries — so the 2026-07-27 sweep produced **zero new eval-backed trim
+candidates** (ROADMAP item 34's evidence). The baseline is *more fluent* but wrong
+about the same version-pinned, post-cutoff facts; one hedged run even slipped the
+positive-only T4 regex while recommending the wrong group, which is why T4 gained
+its failure-driven neg. The 2 ties (T1, T5) remain harm canaries per their
+`tasks.json` notes: a future skill-doc error there would surface as the with-skill
+arm dropping below baseline.
+
+## Result — 2026-06-08 corpus (archived; model unrecorded, pre-Claude-5)
+
+Graded under that date's assertions: **with skill 20/21 (95%) vs baseline 7/21
+(33%), +62pp; pass^3 6/7 vs 2/7; g = 0.93**; same 5 discriminating tasks (14/15 vs
+1/15, +87pp on the subset). With-skill's single miss was T3 run 1, a hedged answer
+giving both namespaces — graded a fail, honestly. Corpus archived at
+`runs/raw_runs-2026-06-08.json`; numbers are that era's published record and are
+not regraded under later assertion changes.
 
 ## Honest caveats
 
@@ -93,7 +83,13 @@ where parametric knowledge is stale or absent.
   dismiss it) and tightened the `#[Tool]` pattern. On 2026-07-08 T3 was recalibrated: its
   alternation passed on either of two tokens and never discriminated; it now requires the 4.x
   `dkan_metastore` namespace and rejects the pre-4.x FQN observed in the recorded runs — which
-  also (correctly) fails one hedged with-skill run. See `tasks.json` notes.
+  also (correctly) fails one hedged with-skill run. On 2026-07-27 T4 gained a failure-driven
+  neg (`@group functional` bare, excluding the `functionalN` placeholder) after all three
+  claude-fable-5 baseline runs recommended it and one slipped the positive-only regex. See
+  `tasks.json` notes.
+- **Subagent environment context** includes the repo's git summary (recent commit subjects);
+  one baseline run's prose referenced it. None of the graded assertion tokens appear in commit
+  subjects, so grading is unaffected — recorded in `raw_runs.json` `_meta.caveat`.
 
 ## Reproduce
 
@@ -106,6 +102,7 @@ step is deterministic).
 ## Files
 
 - `tasks.json` — corpus + deterministic assertions (source of truth)
-- `runs/raw_runs.json` — recorded paired runs (3/arm)
+- `runs/raw_runs.json` — recorded paired runs (3/arm, current: 2026-07-27 `claude-fable-5`)
+- `runs/raw_runs-2026-06-08.json` — archived pre-Claude-5 corpus
 - `benchmark.json` — graded results (per-task + overall + embedded answers)
 - `../lib/grade_tasks.py` — grader
