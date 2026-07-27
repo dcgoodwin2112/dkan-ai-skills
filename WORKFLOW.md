@@ -391,6 +391,20 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   procedural memory adds the *newly-learned* ones. **Example:** the
   unenforced-`checkAccess` gotcha, captured into the `drupal-mcp-server` skill so
   no later session rediscovers it.
+- **Route a failure by its class before fixing it**: when a session produces a
+  wrong answer or a user correction, name why it happened — guidance **gap**,
+  guidance **stale**, **eval-gap** (nothing would catch it), **hook-candidate**
+  (deterministically checkable), **confabulation** (invented API/fact), or
+  **wrong-inference** (right facts, wrong conclusion) — then fix at the
+  strongest rung the class supports: **patch the skill → add the eval assertion
+  (the wrong answer is the `assert_neg`) → add a hook/gate case → record the
+  decision** in the ROADMAP. Deterministically checkable rules become hooks, not
+  prose — that's how dependency-gate and commit-gate exist, and prose
+  restatements of enforceable rules are exactly what the next bullet prunes.
+  Tag ROADMAP rationale notes with the class; repeat sightings of one class in
+  one area are the signal to promote a one-off fix to a dedicated section, eval
+  task, or gate. (Ladder adapted from `drupal/ai_best_practices`'
+  expert-corrections taxonomy, 2026-07-27 review.)
 - **Prune the contract**: currency and procedural memory only *add* to the
   `AGENTS.md`/`CLAUDE.md` contract and skills, so periodically cut the other way or
   the layer bloats until its rules get ignored (a long contract dilutes

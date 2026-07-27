@@ -327,6 +327,61 @@ pre-Claude-5 baseline. Order matters: 32 → 33 → 34.
       No repo diff: docs/plans/ was untracked by design (docs/.gitignore
       allowlist), so disposal is local-only.
 
+### P7 — learnings from the `drupal/ai_best_practices` deep dive (2026-07-27)
+
+Source: review of `drupal/ai_best_practices` 1.0.x-dev (git.drupalcode.org,
+commits through 2026-07-01). Upstream contributions deliberately on hold; these
+items adopt what their approach exposed as gaps in ours. Their placement
+doctrine (module/project skills belong with the project) confirms this repo's
+existence and scope — no structural change needed. Order: 36 → 37 → 38 → 39.
+
+- [x] 36. **Write the failure-classification → remediation ladder into
+      WORKFLOW.md §12.** Their expert-corrections pipeline makes explicit a rule
+      we've only followed by instinct: classify an observed failure before
+      fixing it, and route *deterministically checkable* failures to a hook/gate,
+      not prose (their `HOOK_CANDIDATE` tier — exactly how dependency-gate and
+      commit-gate came to exist, but the decision rule is written nowhere). Add
+      a §12 bullet: a short ladder — patch skill → add eval assertion → add
+      hook/gate case → record decision — with a one-line classification
+      vocabulary (gap / stale / eval-gap / hook-candidate / confabulation /
+      wrong-inference) for ROADMAP rationale notes, and align the improve-pass
+      standing rule ("a real wrong answer becomes an eval") to point at it.
+      — done 2026-07-27, PR #72. §12 bullet inserted after Procedural memory
+      (it governs where a captured correction lands, before Prune trims it);
+      improve-pass step-3 rule now routes fixes through the ladder.
+- [ ] 37. **State the option-ordering principle and audit for violations.** Their
+      authoring guide: list options in the order you want the agent to *choose*,
+      not alphabetical/conceptual order, because agents treat earlier entries as
+      higher-priority defaults (their example: Functional before Unit tests,
+      because agents over-reach for Unit). Add the principle to WORKFLOW.md's
+      authoring notes, then one-pass audit our skills' choice tables (test-type
+      tables in dkan-core-contributor/drupal-module-dev, storage-mechanism and
+      scaffold-choice lists) for orderings that fight the preferred default.
+      Claim, not fact: our orderings may already be correct — an audit that
+      finds nothing is a valid pass (note it and check off).
+- [ ] 38. **Add a `php -l` grading axis to the task eval.** Their harness lints
+      every PHP code block in a graded response — a deterministic second axis
+      our regex-only grader lacks. Scope: `grade_tasks.py` gains an opt-in
+      per-task `check_php_lint` flag (extract fenced ```php blocks, `php -l`
+      each, fail the run on syntax errors); enable only for tasks whose answers
+      contain PHP. Precondition to verify first: which of T1–T7 actually elicit
+      PHP blocks in the existing corpora (check `raw_runs.json` before touching
+      the grader), and that host `php` exists (skip-with-warning fallback, never
+      silent pass). Re-grade both corpora; expect no result change (the axis is
+      for *future* regressions) — REPORT.md method bullet documents it.
+- [ ] 39. **Document an edit-level A/B protocol for skill changes.** Our harness
+      answers "skill vs no skill"; theirs also answers "my edit vs last
+      committed version" (`compare.py` git-baseline mode). We felt this gap in
+      the P6 arc: the generic-prose trim was declined partly because we had no
+      cheap way to show an edit was harmless. Scope: a documented protocol
+      (REPORT.md or `evals/tasks/EDIT-AB.md`) — for a candidate skill edit, run
+      the with-skill arm only, discriminating tasks only (T2/3/4/6/7), 3 runs
+      against the edited skill dir vs a scratch checkout of the committed
+      version, same subagent protocol; grader gains a flag to compare two
+      with-skill corpora. No new automation harness — invoked only when a
+      trim/rewrite is contested; explicitly cheaper than a full re-baseline
+      (no baseline arm).
+
 ## Deferred / not scheduled
 
 - **`.codex/skills/` adapter target** — emit canonical skills in Codex's skills
@@ -339,6 +394,17 @@ pre-Claude-5 baseline. Order matters: 32 → 33 → 34.
   asymmetry finding): use `/codex:rescue` ad hoc; codify only if results warrant.
 - **Trigger-eval rebuild**: designated path is promptfoo's `skill-used` assertion,
   not a bespoke harness (docs/EVALS.md, Removed).
+- **Adapter-arm eval** — `ai_best_practices`' multi-provider harness shows running
+  our task evals through the Codex CLI is feasible, which would *evidence* the
+  Copilot/Codex adapters' value (currently asserted, never measured — WORKFLOW
+  §12 notes adapters don't share the strongest model's baseline). Heavy setup;
+  revisit if adapter accuracy is questioned.
+- **Revisit `drupal/ai_best_practices` at first stable release** — if their
+  generic-Drupal content matures, thin our `drupal-module-dev` generics toward
+  pointers at theirs (the internal dedup-by-pointer rule, applied outward).
+  Watch trigger: a tagged 1.0.0 on drupal.org. Until then no dependency:
+  pre-release churn, overlapping context, different distribution channel
+  (Composer/`AGENTS.md` vs Claude Code plugin).
 
 ## Declined (with rationale)
 
