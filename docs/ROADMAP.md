@@ -349,7 +349,7 @@ existence and scope — no structural change needed. Order: 36 → 37 → 38 →
       — done 2026-07-27, PR #72. §12 bullet inserted after Procedural memory
       (it governs where a captured correction lands, before Prune trims it);
       improve-pass step-3 rule now routes fixes through the ladder.
-- [ ] 37. **State the option-ordering principle and audit for violations.** Their
+- [x] 37. **State the option-ordering principle and audit for violations.** Their
       authoring guide: list options in the order you want the agent to *choose*,
       not alphabetical/conceptual order, because agents treat earlier entries as
       higher-priority defaults (their example: Functional before Unit tests,
@@ -359,6 +359,15 @@ existence and scope — no structural change needed. Order: 36 → 37 → 38 →
       scaffold-choice lists) for orderings that fight the preferred default.
       Claim, not fact: our orderings may already be correct — an audit that
       finds nothing is a valid pass (note it and check off).
+      — done 2026-07-27, PR #73. Principle added to WORKFLOW.md §1 (Skills
+      bullet — the natural home; no "authoring notes" section existed).
+      Audit: one violation found and fixed — testing-and-standards.md's
+      base-class table had no stated default and led with Unit (the exact
+      failure mode; contradicted kernel-first guidance in 3 sibling docs);
+      now states the kernel default ahead of the table, table keeps scope
+      order deliberately. All other choice points already conform.
+      dkan-testing.md standalone-first examined and kept (doc's stated
+      purpose, constrained inline). Plugin 0.11.21.
 - [ ] 38. **Add a `php -l` grading axis to the task eval.** Their harness lints
       every PHP code block in a graded response — a deterministic second axis
       our regex-only grader lacks. Scope: `grade_tasks.py` gains an opt-in
