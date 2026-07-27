@@ -33,7 +33,9 @@ when the user is present to merge between iterations.
      pattern). Update `skills-currency.yml` if a claim's wording or home moved.
    - **A real wrong answer becomes an eval**: if the item shows a skill giving a
      wrong answer (not just weak prose), add the failure-driven task or assertion
-     per docs/EVALS.md — the wrong answer is the `assert_neg`.
+     per docs/EVALS.md — the wrong answer is the `assert_neg`. Route the fix by
+     the failure ladder (WORKFLOW.md §12): a deterministically checkable rule
+     becomes a hook/gate case, not prose.
    Scope creep goes to ROADMAP as a new line, not into the PR.
 
 4. **Gate.**
