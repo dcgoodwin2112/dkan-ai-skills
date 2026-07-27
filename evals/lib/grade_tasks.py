@@ -15,7 +15,10 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import statistics
+import subprocess
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -24,14 +27,47 @@ TASKS_DIR = ROOT / "evals" / "tasks"
 
 ARMS = ["with_skill", "baseline"]
 
+# Second grading axis (opt-in per task via "check_php_lint"): syntax-lint the
+# ```php blocks in an answer with `php -l`. Deterministic like the regex axis.
+# No host php => skip with a loud warning, never a silent pass-as-lint-clean.
+PHP_BIN = shutil.which("php")
+
+
+def php_lint_errors(answer: str) -> list[str]:
+    """Run `php -l` over each complete-file ```php fence; return error strings.
+
+    Only blocks containing `<?php` are linted — that opening tag is the answer's
+    own signal of a complete parse unit. Fences without it are fragments (a bare
+    method, a two-line snippet); `php -l` cannot judge those without guess-
+    wrapping, and a wrong guess turns correct answers into false failures
+    (observed: with_skill/run1/T6's bare-method block, 2026-07-27 calibration).
+    """
+    if not PHP_BIN:
+        return []
+    errors = []
+    for i, block in enumerate(re.findall(r"```php\s*\n(.*?)```", answer, re.S)):
+        if "<?php" not in block:
+            continue
+        with tempfile.NamedTemporaryFile("w", suffix=".php", delete=False) as f:
+            f.write(block)
+        proc = subprocess.run([PHP_BIN, "-l", f.name], capture_output=True, text=True)
+        Path(f.name).unlink()
+        if proc.returncode != 0:
+            msg = (proc.stderr or proc.stdout).strip().replace(f.name, "<block>")
+            errors.append(f"block {i + 1}: {msg}")
+    return errors
+
 
 def grade(task: dict, answer: str):
     pos = task.get("assert_pos", [])
     neg = task.get("assert_neg", [])
     pos_missing = [p for p in pos if not re.search(p, answer, re.I)]
     neg_hit = [n for n in neg if re.search(n, answer, re.I)]
-    passed = (not pos_missing) and (not neg_hit)
-    return passed, pos_missing, neg_hit
+    lint_errors = []
+    if task.get("check_php_lint") and PHP_BIN:
+        lint_errors = php_lint_errors(answer)
+    passed = (not pos_missing) and (not neg_hit) and (not lint_errors)
+    return passed, pos_missing, neg_hit, lint_errors
 
 
 def main():
@@ -49,12 +85,15 @@ def main():
             for item in answers:
                 tid = item["task_id"]
                 ans = item["answer"]
-                passed, pos_missing, neg_hit = grade(tasks[tid], ans)
+                passed, pos_missing, neg_hit, lint_errors = grade(tasks[tid], ans)
                 table[arm][tid].append(passed)
-                outputs[arm][run_id].append({
+                out = {
                     "task_id": tid, "answer": ans, "passed": passed,
                     "pos_missing": pos_missing, "neg_hit": neg_hit,
-                })
+                }
+                if lint_errors:
+                    out["lint_errors"] = lint_errors
+                outputs[arm][run_id].append(out)
 
     per_task = []
     tot = {arm: [0, 0] for arm in ARMS}
@@ -146,6 +185,10 @@ def main():
                 "3 binary runs/arm is a coarse sample (reported artifact, not a gate). Ties on "
                 + (", ".join(f"T{r['id']}" for r in per_task if not r["discriminating"]) or "none")
                 + " are facts the base model already knows; the skill's value concentrates on version- and DKAN-specific specifics that drift.",
+                "check_php_lint tasks ("
+                + (", ".join(f"T{t}" for t in sorted(tid for tid, t2 in tasks.items() if t2.get("check_php_lint"))) or "none")
+                + ") add a php -l axis over ```php blocks; "
+                + ("php available — axis active." if PHP_BIN else "php NOT on PATH for this grade — axis skipped (warned on console)."),
             ],
         },
         "summary": summary,
@@ -155,6 +198,11 @@ def main():
     (TASKS_DIR / "benchmark.json").write_text(json.dumps(benchmark, indent=2) + "\n")
 
     # ---- console summary + verification ----
+    lint_tids = sorted(tid for tid, t in tasks.items() if t.get("check_php_lint"))
+    if lint_tids and not PHP_BIN:
+        print("WARN     php not on PATH — check_php_lint SKIPPED for "
+              + ", ".join(f"T{t}" for t in lint_tids)
+              + " (regex grading unaffected)")
     print(f"RUNS     collected {meta.get('collected', 'unknown')}  "
           f"model {meta.get('model', 'unrecorded')}")
     print(f"OVERALL  with_skill {summary['with_skill']['pass']}/{summary['with_skill']['total']} "
