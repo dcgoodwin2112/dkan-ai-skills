@@ -6,6 +6,12 @@ toolchain. Examples use `my_module`.
 
 ## Test base classes
 
+**Default to `KernelTestBase` for module behavior** — real services, no mock
+drift, fast enough. Use `UnitTestCase` only for pure logic with no container
+dependencies (a heavily mocked unit test verifies the mocks, not Drupal), and
+the functional bases only at the HTTP/UI seam (full site install, an order of
+magnitude slower). The table runs in scope order, smallest to largest:
+
 | Base class | Scope | Bootstraps |
 |---|---|---|
 | `UnitTestCase` | pure unit — no Drupal | nothing; mock all collaborators |
