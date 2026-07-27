@@ -335,7 +335,7 @@ items adopt what their approach exposed as gaps in ours. Their placement
 doctrine (module/project skills belong with the project) confirms this repo's
 existence and scope — no structural change needed. Order: 36 → 37 → 38 → 39.
 
-- [ ] 36. **Write the failure-classification → remediation ladder into
+- [x] 36. **Write the failure-classification → remediation ladder into
       WORKFLOW.md §12.** Their expert-corrections pipeline makes explicit a rule
       we've only followed by instinct: classify an observed failure before
       fixing it, and route *deterministically checkable* failures to a hook/gate,
@@ -346,6 +346,9 @@ existence and scope — no structural change needed. Order: 36 → 37 → 38 →
       vocabulary (gap / stale / eval-gap / hook-candidate / confabulation /
       wrong-inference) for ROADMAP rationale notes, and align the improve-pass
       standing rule ("a real wrong answer becomes an eval") to point at it.
+      — done 2026-07-27, PR #72. §12 bullet inserted after Procedural memory
+      (it governs where a captured correction lands, before Prune trims it);
+      improve-pass step-3 rule now routes fixes through the ladder.
 - [ ] 37. **State the option-ordering principle and audit for violations.** Their
       authoring guide: list options in the order you want the agent to *choose*,
       not alphabetical/conceptual order, because agents treat earlier entries as
