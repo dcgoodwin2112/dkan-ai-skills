@@ -162,19 +162,34 @@ pre-Claude-5 baseline. Order matters: 32 → 33 → 34.
       reads it instead of hardcoding date/cli and prints a RUNS line; REPORT.md
       states results are model-generation-pinned and newer-baseline ties are
       trim candidates. — done 2026-07-27, PR #67.
-- [ ] 33. **Re-baseline the task eval on a Claude 5 session model.** Collect
+- [x] 33. **Re-baseline the task eval on a Claude 5 session model.** Collect
       fresh paired runs (7 tasks × 3 runs × 2 arms, in-session subagents, same
       protocol as raw_runs.json `_about`), stamp `_meta.model` with the exact
       session model id, regrade, and add a second dated entry to REPORT.md
       keeping the 2026-06-08 corpus for comparison. Expect baseline gains;
       every task that newly ties is evidence for item 34, not a regression.
-- [ ] 34. **Evidence-driven model-generation trim pass** (blocked on 33): trim
-      skill content the Claude 5 baseline demonstrably knows (newly-tying
-      tasks' subject areas; audit Always-true rules / pitfalls for
-      generic-knowledge entries), keeping version-pinned facts, scaffold-gate
-      discriminators, and anything the multi-consumer adapters (Copilot/Codex)
-      still need — the eval only measures the Claude arm, so trim
-      conservatively and record the policy in WORKFLOW.md.
+      — done 2026-07-27, PR #68. claude-fable-5: with-skill 21/21 (100%),
+      baseline 6/21 (29%), g=1.00; discriminating set UNCHANGED (T2/3/4/6/7;
+      ties still only T1/T5). The expected baseline gains did not materialize —
+      Fable is more fluent but wrong about the same drift-prone facts. T4
+      gained a failure-driven neg (all 3 baseline runs recommended the bare
+      `@group functional`; one hedged run slipped the positive-only regex).
+      Old corpus archived; README headline updated.
+- [ ] 34. **Model-generation trim pass** — narrowed by 33's evidence: the
+      re-baseline produced **zero** newly-tying tasks, so there are no
+      eval-backed trim candidates. Remaining scope is the article's
+      generic-prose audit only (Always-true rules / pitfalls entries a strong
+      model knows without version-pinned content), trimmed conservatively for
+      the multi-consumer adapters (Copilot/Codex don't get the Claude 5
+      baseline) — and record the trim policy in WORKFLOW.md. If the audit
+      also comes up empty, decline with rationale; do not trim to satisfy
+      the article.
+- [ ] 35. **SKILL.md rule 4 vs testing-core.md on `functional0`** (observed in
+      the 2026-07-27 with-skill runs): dkan-core-contributor SKILL.md rule 4
+      says "@group functionalN (N = 0–3)" while testing-core.md says CI uses
+      only functional1–3 with node 0 running the non-functional suite —
+      with-skill answers surfaced the discrepancy verbatim. Verify against
+      upstream CircleCI config, then make one file own the fact.
 - [x] 16. **Drop dkan-frontend/SKILL.md:78–82's lineages table** (architecture.md's
       copy is fuller); collapse `datastore_query_api` explanations (4 files) to
       SKILL.md rule + build-deploy-customize.md detail.
