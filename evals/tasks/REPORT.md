@@ -15,6 +15,12 @@ DKAN/Drupal tasks than no skill? The skill must actually *change the output*.
 - **Deterministic grading** (`grade_tasks.py`): `pass` ⇔ every `assert_pos` regex matches AND
   no `assert_neg` matches. No LLM judge → no judge bias, fully reproducible. (This is how the
   plan's grader-calibration concern is met: by construction, not by trusting a judge.)
+- **`php -l` axis** (opt-in per task via `check_php_lint`; currently T6 only — the one task
+  whose answers reliably contain PHP): each ```php block containing `<?php` must lint clean.
+  Fragments without the opening tag are skipped — guess-wrapping false-fails valid bare-method
+  snippets (observed during 2026-07-27 calibration). No host `php` → axis skipped with a
+  console warning, never a silent lint-clean. All 6 complete-file blocks in the current corpus
+  verified clean (via `ddev php -l`); the axis exists to catch *future* regressions.
 - **Results are model-generation-pinned.** Both arms use the collecting session's model, so
   every number below is a property of *that model + the skills*, not of the skills alone —
   a stronger base model raises the baseline and shrinks the delta. `raw_runs.json` `_meta`

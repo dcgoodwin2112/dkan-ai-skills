@@ -1,35 +1,51 @@
 {
-  "_about": "Phase 2 task-outcome eval. Each task is self-contained (subagents cannot see external DKAN/Drupal source). Grading is DETERMINISTIC string/regex matching (re.search, case-insensitive) to sidestep LLM-judge bias: pass = all assert_pos match AND no assert_neg matches. Tokens were verified present in the skill docs (the with-skill arm reads those docs), so a doc-informed answer passes; baseline relies on parametric knowledge. assert_neg tokens are known stale/hallucinated forms the skills corrected. T1 and T5 are ACCEPTED TIES (baseline answers correctly on all recorded runs) retained as harm canaries — see their _calibration_note.",
+  "_about": "Phase 2 task-outcome eval. Each task is self-contained (subagents cannot see external DKAN/Drupal source). Grading is DETERMINISTIC string/regex matching (re.search, case-insensitive) to sidestep LLM-judge bias: pass = all assert_pos match AND no assert_neg matches. Tokens were verified present in the skill docs (the with-skill arm reads those docs), so a doc-informed answer passes; baseline relies on parametric knowledge. assert_neg tokens are known stale/hallucinated forms the skills corrected. T1 and T5 are ACCEPTED TIES (baseline answers correctly on all recorded runs) retained as harm canaries \u2014 see their _calibration_note.",
   "tasks": [
     {
       "id": 1,
       "skill": "drupal-module-dev",
       "prompt": "In Drupal 11.2 the combined hook_requirements() was split. Name the THREE replacements: the hook for runtime checks, the hook for update-time checks, and the class-based mechanism for install-time checks. Be exact.",
-      "assert_pos": ["hook_runtime_requirements", "hook_update_requirements", "InstallRequirementsInterface"],
+      "assert_pos": [
+        "hook_runtime_requirements",
+        "hook_update_requirements",
+        "InstallRequirementsInterface"
+      ],
       "assert_neg": [],
-      "_calibration_note": "Accepted tie (2026-07-08, ROADMAP item 8): every recorded baseline run answers correctly and in detail — parametric knowledge covers the requirements split. All six recorded answers were re-read for a hidden discriminator (the T3 pattern); none exists. Retained as a harm canary: the paired design means a future skill-doc error here would show as with-skill dropping BELOW baseline. Do not count it as skill-value coverage."
+      "_calibration_note": "Accepted tie (2026-07-08, ROADMAP item 8): every recorded baseline run answers correctly and in detail \u2014 parametric knowledge covers the requirements split. All six recorded answers were re-read for a hidden discriminator (the T3 pattern); none exists. Retained as a harm canary: the paired design means a future skill-doc error here would show as with-skill dropping BELOW baseline. Do not count it as skill-value coverage."
     },
     {
       "id": 2,
       "skill": "drupal-ai-module",
       "prompt": "What exact Drupal core version constraint does drupal/ai 1.4.x require? Give the precise constraint string.",
-      "assert_pos": ["10\\.5", "11\\.2"],
+      "assert_pos": [
+        "10\\.5",
+        "11\\.2"
+      ],
       "assert_neg": []
     },
     {
       "id": 3,
       "skill": "dkan-module-author",
       "prompt": "In DKAN 4.x's metastore, which service do you inject to load a dataset item by UUID from a custom module? Give the service class and its exact service ID.",
-      "assert_pos": ["dkan\\.metastore\\.service", "Drupal\\\\dkan_metastore\\\\MetastoreService"],
-      "assert_neg": ["Drupal\\\\metastore\\\\MetastoreService"],
-      "_calibration_note": "Recalibrated 2026-07-08 (tightened after codex review): the original alternation (MetastoreService|service id) passed on either token and never discriminated (baseline 3/3). Now the prompt's two demands are asserted separately — the service id and the exact 4.x class FQN — and the neg is the pre-4.x FQN Drupal\\metastore\\MetastoreService observed verbatim in all 3 baseline runs AND with-skill run 1 (a hedged answer giving both namespaces). Final grade: with-skill 2/3, baseline 0/3 — failing the hedged run is the honest reading. Note the neg cannot match the correct FQN (the char before 'metastore' differs: backslash vs underscore)."
+      "assert_pos": [
+        "dkan\\.metastore\\.service",
+        "Drupal\\\\dkan_metastore\\\\MetastoreService"
+      ],
+      "assert_neg": [
+        "Drupal\\\\metastore\\\\MetastoreService"
+      ],
+      "_calibration_note": "Recalibrated 2026-07-08 (tightened after codex review): the original alternation (MetastoreService|service id) passed on either token and never discriminated (baseline 3/3). Now the prompt's two demands are asserted separately \u2014 the service id and the exact 4.x class FQN \u2014 and the neg is the pre-4.x FQN Drupal\\metastore\\MetastoreService observed verbatim in all 3 baseline runs AND with-skill run 1 (a hedged answer giving both namespaces). Final grade: with-skill 2/3, baseline 0/3 \u2014 failing the hedged run is the honest reading. Note the neg cannot match the correct FQN (the char before 'metastore' differs: backslash vs underscore)."
     },
     {
       "id": 4,
       "skill": "dkan-core-contributor",
       "prompt": "You are adding a functional PHPUnit test to DKAN core that must run in its CircleCI matrix. What @group identifiers does DKAN use to split functional tests across CI nodes? Name the exact group(s).",
-      "assert_pos": ["functional1|functional2|functional3"],
-      "assert_neg": ["@group functional(?![0-9N])"],
+      "assert_pos": [
+        "functional1|functional2|functional3"
+      ],
+      "assert_neg": [
+        "@group functional(?![0-9N])"
+      ],
       "_neg_note": "Dropped neg 'functional0' during grader calibration: correct answers also mention it (to say 'do not use it'), so a substring neg false-fails them; the positive functional1|2|3 already captures correctness.",
       "_calibration_note": "Neg added 2026-07-27 from the claude-fable-5 baseline runs: all three recommended the bare '@group functional' (one hedged run also name-dropped functional1/2 and slipped the positive-only regex). The lookahead excludes digits AND the N placeholder ('@group functionalN' appears in a correct archived with-skill answer). Verified on both corpora: hits only baseline wrong answers, zero with-skill hits."
     },
@@ -37,22 +53,34 @@
       "id": 5,
       "skill": "open-data-dcat",
       "prompt": "A dataset record sets accrualPeriodicity to \"quarterly\". Is that a valid value in DKAN's Project Open Data / DCAT-US v1.1 schema? If not, what is the correct value representing quarterly?",
-      "assert_pos": ["R/P3M"],
+      "assert_pos": [
+        "R/P3M"
+      ],
       "assert_neg": [],
-      "_calibration_note": "Accepted tie (2026-07-08, ROADMAP item 8): every recorded baseline run gives R/P3M — parametric knowledge covers the common accrualPeriodicity values. Re-read for a hidden discriminator; none exists (with-skill adds the closed-enum/'irregular' framing but baseline is not wrong). Retained as a harm canary. Do not count it as skill-value coverage."
+      "_calibration_note": "Accepted tie (2026-07-08, ROADMAP item 8): every recorded baseline run gives R/P3M \u2014 parametric knowledge covers the common accrualPeriodicity values. Re-read for a hidden discriminator; none exists (with-skill adds the closed-enum/'irregular' framing but baseline is not wrong). Retained as a harm canary. Do not count it as skill-value coverage."
     },
     {
       "id": 6,
       "skill": "drupal-mcp-server",
       "prompt": "Write a minimal write-capable #[Tool] plugin for the contrib drupal/mcp_server module on the mcp/sdk 0.6 API. Show the attribute, the base class, the execute() method signature, and how the tool gates access. Keep it short.",
-      "assert_pos": ["#\\[Tool\\b", "ClientGateway", "checkAccess"],
-      "assert_neg": ["RuntimeToolHandlerInterface"]
+      "assert_pos": [
+        "#\\[Tool\\b",
+        "ClientGateway",
+        "checkAccess"
+      ],
+      "assert_neg": [
+        "RuntimeToolHandlerInterface"
+      ],
+      "check_php_lint": true,
+      "_lint_note": "2026-07-27: T6 is the only task that reliably elicits ```php blocks (all 6 answers in the claude-fable-5 corpus; zero in the archived 2026-06-08 corpus, so the axis is vacuous there). Only blocks containing <?php are linted \u2014 fragments (e.g. a bare method) false-fail under guess-wrapping; observed on with_skill/run1/T6 during calibration. All 6 complete-file blocks verified clean via ddev php -l. Grader skips the axis with a console warning when php is not on PATH."
     },
     {
       "id": 7,
       "skill": "dkan-frontend",
       "prompt": "In DKAN's decoupled React frontend (dkan_js_frontend), which configuration key controls which datastore query API style/endpoint the React app calls? Give the exact config key name.",
-      "assert_pos": ["datastore_query_api"],
+      "assert_pos": [
+        "datastore_query_api"
+      ],
       "assert_neg": []
     }
   ]

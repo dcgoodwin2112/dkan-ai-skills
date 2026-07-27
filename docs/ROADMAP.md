@@ -368,7 +368,7 @@ existence and scope — no structural change needed. Order: 36 → 37 → 38 →
       order deliberately. All other choice points already conform.
       dkan-testing.md standalone-first examined and kept (doc's stated
       purpose, constrained inline). Plugin 0.11.21.
-- [ ] 38. **Add a `php -l` grading axis to the task eval.** Their harness lints
+- [x] 38. **Add a `php -l` grading axis to the task eval.** Their harness lints
       every PHP code block in a graded response — a deterministic second axis
       our regex-only grader lacks. Scope: `grade_tasks.py` gains an opt-in
       per-task `check_php_lint` flag (extract fenced ```php blocks, `php -l`
@@ -378,6 +378,14 @@ existence and scope — no structural change needed. Order: 36 → 37 → 38 →
       the grader), and that host `php` exists (skip-with-warning fallback, never
       silent pass). Re-grade both corpora; expect no result change (the axis is
       for *future* regressions) — REPORT.md method bullet documents it.
+      — done 2026-07-27, PR #74. Verification: T6 is the only task that
+      reliably elicits PHP (all 6 answers in the fable-5 corpus; zero fences
+      in the archived corpus — vacuous there, no regrade). Host php absent →
+      loud-skip path is load-bearing (WARN + benchmark caveat). Calibration
+      caught a design trap: guess-wrapping fragments false-fails valid
+      bare-method snippets, so only blocks containing <?php are linted; all
+      6 complete-file blocks verified clean via ddev php -l. Results
+      unchanged (21/21 vs 6/21, g=1.00).
 - [ ] 39. **Document an edit-level A/B protocol for skill changes.** Our harness
       answers "skill vs no skill"; theirs also answers "my edit vs last
       committed version" (`compare.py` git-baseline mode). We felt this gap in
