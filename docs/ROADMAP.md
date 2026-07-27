@@ -147,6 +147,34 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       (b) drupal-module-dev SKILL.md:120 restates the `11.1.8` backport pin that
       hooks-events-plugins.md:40 owns — drop the parenthetical from the rule.
       Then re-run the sweep and check off the single-sourcing ratchet target.
+
+### P6 — Claude 5 model-generation tuning (from the 2026-07-27 context-engineering review)
+
+Source: claude.com/blog "The new rules of context engineering for Claude 5
+generation models". Assessment: the repo already matches the article's structural
+guidance (progressive disclosure, single-sourcing, domain-gotchas-over-doctrine);
+the actionable gap is that eval evidence and skill content are pinned to a
+pre-Claude-5 baseline. Order matters: 32 → 33 → 34.
+
+- [x] 32. **Record model identity in the task-eval artifacts.** raw_runs.json
+      gains a `_meta` block (collection date, claude_cli, model — the 2026-06-08
+      corpus marked model-unrecorded/pre-Claude-5); grade_tasks.py provenance
+      reads it instead of hardcoding date/cli and prints a RUNS line; REPORT.md
+      states results are model-generation-pinned and newer-baseline ties are
+      trim candidates. — done 2026-07-27, PR #67.
+- [ ] 33. **Re-baseline the task eval on a Claude 5 session model.** Collect
+      fresh paired runs (7 tasks × 3 runs × 2 arms, in-session subagents, same
+      protocol as raw_runs.json `_about`), stamp `_meta.model` with the exact
+      session model id, regrade, and add a second dated entry to REPORT.md
+      keeping the 2026-06-08 corpus for comparison. Expect baseline gains;
+      every task that newly ties is evidence for item 34, not a regression.
+- [ ] 34. **Evidence-driven model-generation trim pass** (blocked on 33): trim
+      skill content the Claude 5 baseline demonstrably knows (newly-tying
+      tasks' subject areas; audit Always-true rules / pitfalls for
+      generic-knowledge entries), keeping version-pinned facts, scaffold-gate
+      discriminators, and anything the multi-consumer adapters (Copilot/Codex)
+      still need — the eval only measures the Claude arm, so trim
+      conservatively and record the policy in WORKFLOW.md.
 - [x] 16. **Drop dkan-frontend/SKILL.md:78–82's lineages table** (architecture.md's
       copy is fuller); collapse `datastore_query_api` explanations (4 files) to
       SKILL.md rule + build-deploy-customize.md detail.

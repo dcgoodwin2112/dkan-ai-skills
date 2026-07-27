@@ -3,6 +3,7 @@
   "method": "Paired in-session subagent runs, SAME session model both arms (isolates skill access). with_skill read the named skill's docs; baseline answered from parametric knowledge only. Deterministic string/regex grading.",
   "provenance": {
     "date": "2026-06-08",
+    "model": "unrecorded (collection predates model stamping; pre-Claude-5 session model)",
     "claude_cli": "2.1.168",
     "runs_per_arm": 3,
     "tasks": 7,

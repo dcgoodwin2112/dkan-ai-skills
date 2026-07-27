@@ -37,6 +37,7 @@ def grade(task: dict, answer: str):
 def main():
     tasks = {t["id"]: t for t in json.loads((TASKS_DIR / "tasks.json").read_text())["tasks"]}
     raw = json.loads((TASKS_DIR / "runs" / "raw_runs.json").read_text())
+    meta = raw.get("_meta", {})
 
     # per (arm, task) -> list of bools
     table = {arm: {tid: [] for tid in tasks} for arm in ARMS}
@@ -136,8 +137,10 @@ def main():
         "eval": "task_outcome",
         "method": "Paired in-session subagent runs, SAME session model both arms (isolates skill access). with_skill read the named skill's docs; baseline answered from parametric knowledge only. Deterministic string/regex grading.",
         "provenance": {
-            "date": "2026-06-08", "claude_cli": "2.1.168",
-            "runs_per_arm": 3, "tasks": len(tasks),
+            "date": meta.get("collected", "unknown"),
+            "model": meta.get("model", "unrecorded"),
+            "claude_cli": meta.get("claude_cli", "unknown"),
+            "runs_per_arm": k, "tasks": len(tasks),
             "caveats": [
                 "with_skill = the packaged skill end-to-end (docs available to read) vs baseline = no skill. The delta measures the packaged skill's value, not SKILL.md prose alone.",
                 "3 binary runs/arm is a coarse sample (reported artifact, not a gate). Ties on "
@@ -152,6 +155,8 @@ def main():
     (TASKS_DIR / "benchmark.json").write_text(json.dumps(benchmark, indent=2) + "\n")
 
     # ---- console summary + verification ----
+    print(f"RUNS     collected {meta.get('collected', 'unknown')}  "
+          f"model {meta.get('model', 'unrecorded')}")
     print(f"OVERALL  with_skill {summary['with_skill']['pass']}/{summary['with_skill']['total']} "
           f"({summary['with_skill']['rate']:.0%})   baseline {summary['baseline']['pass']}/{summary['baseline']['total']} "
           f"({summary['baseline']['rate']:.0%})   delta +{summary['delta_pp']}pp")
