@@ -73,9 +73,10 @@ Symptom → cause → fix.
 
 1. **`QueryException`/fatal on an entity query.** Cause: no `accessCheck()`. Fix: add
    `->accessCheck(TRUE)` or `->accessCheck(FALSE)` explicitly (rule 1).
-2. **`ConfigFormBase` saves nothing.** Cause: `getEditableConfigNames()` not implemented
-   (or returns the wrong object name). Fix: return the exact config object name(s) the
-   form edits.
+2. **`ConfigFormBase` "saves" but nothing persists.** Cause: `parent::submitForm()` saves
+   only elements mapped with `#config_target` — with none mapped it still prints "The
+   configuration options have been saved." Fix: add `#config_target` to each element, or
+   save explicitly in `submitForm()` ([routing-forms-rendering.md](reference/routing-forms-rendering.md)).
 3. **Config save fails a strict-schema test** (`Schema errors for … missing schema`).
    Cause: a config key with no schema entry, or a validatable object not marked
    `FullyValidatable`. Fix: add the `config/schema/*.schema.yml` mapping for every key.

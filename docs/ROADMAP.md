@@ -182,7 +182,7 @@ pre-Claude-5 baseline. Order matters: 32 → 33 → 34.
       gained a failure-driven neg (all 3 baseline runs recommended the bare
       `@group functional`; one hedged run slipped the positive-only regex).
       Old corpus archived; README headline updated.
-- [ ] 34. **Model-generation trim pass** — narrowed by 33's evidence: the
+- [x] 34. **Model-generation trim pass** — narrowed by 33's evidence: the
       re-baseline produced **zero** newly-tying tasks, so there are no
       eval-backed trim candidates. Remaining scope is the article's
       generic-prose audit only (Always-true rules / pitfalls entries a strong
@@ -191,6 +191,14 @@ pre-Claude-5 baseline. Order matters: 32 → 33 → 34.
       baseline) — and record the trim policy in WORKFLOW.md. If the audit
       also comes up empty, decline with rationale; do not trim to satisfy
       the article.
+      — done 2026-07-27, PR #70. Seven parallel auditors over all SKILL.mds:
+      **broad trim declined** — 5 skills had zero generic-only entries; the 2
+      candidates resolved as something else on verification: drupal-module-dev
+      pitfall 2 was *inaccurate* (rewritten from core source — the real silent
+      no-save is `parent::submitForm()` with no `#config_target`, not
+      `getEditableConfigNames()`; reference doc fixed too) and dkan-frontend
+      pitfall 4 was a dedup (→ pointer to build-deploy-customize.md).
+      Trim policy recorded in WORKFLOW.md §12.
 - [ ] 35. **SKILL.md rule 4 vs testing-core.md on `functional0`** (observed in
       the 2026-07-27 with-skill runs): dkan-core-contributor SKILL.md rule 4
       says "@group functionalN (N = 0–3)" while testing-core.md says CI uses

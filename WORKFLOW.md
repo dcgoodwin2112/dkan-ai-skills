@@ -399,6 +399,15 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   **promote must-happen rules to hooks** instead of restating them, and **link to
   the doc spine, don't inline** (§2). Where `AGENTS.md` is generated (this repo),
   prune the *skills* it builds from, not the output.
+- **Model-generation trims need evidence, not vibes**: when a new model generation
+  lands, re-baseline the paired task eval on it before trimming "things the model
+  now knows" — cut only content the new baseline demonstrably gets right (a
+  newly-tying task) or that verification proves inaccurate. The 2026-07-27
+  claude-fable-5 re-baseline is the cautionary precedent: the expected baseline
+  gains never materialized (discriminating set unchanged), so an article-driven
+  trim would have deleted facts the model still gets wrong. And the skills ship
+  to multiple consumers via the adapters (Copilot/Codex) that don't share the
+  strongest model's baseline — trim to the evidence, not to the newest model.
 - **Earn-its-keep review**: on the same cadence, give every gate, eval, and tool a
   keep/fix/delete decision if it hasn't produced value since the last pass. A
   documented *workaround* for broken tooling is the tell — a workaround is a
