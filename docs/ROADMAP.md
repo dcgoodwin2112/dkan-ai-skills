@@ -26,13 +26,16 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       drupal-ai version line) are staleness-warning-only with accepted-gap
       notes now in the manifest (upstream/process facts — no local artifact to
       content-assert).
-- [ ] Every version-pinned fact lives in exactly one skill file; other files link
+- [x] Every version-pinned fact lives in exactly one skill file; other files link
       (the fact-spray ratchet — see items 12–17). Sweep run 2026-07-08 (PR #65):
       13 multi-file version tokens triaged; accepted patterns are per-doc
       "Targets …" scope headers, "verified against" stamps, live-gate-pinned
       deployment docs (dkan-integration.md), and frozen history notes (mcp/sdk
       ^0.4). Two residual same-fact sprays found → item 31; check this off when
-      31 lands and a re-sweep is clean.
+      31 lands and a re-sweep is clean. — met 2026-07-27 (PR #69): item 31
+      landed, re-sweep clean (every remaining multi-file token is an accepted
+      pattern; the ^0.6 spread re-verified correct — upstream 0.7.0 exists but
+      the module still pins ^0.6, per the 2026-07-24 currency pass).
 - [x] Every command that embeds code templates is scaffold-gated — met 2026-07-08
       (PR #51; the two `validate-*` commands have zero code fences)
 
@@ -147,6 +150,10 @@ when reached; an `/improve-pass` that can't pick a backlog item checks these.
       (b) drupal-module-dev SKILL.md:120 restates the `11.1.8` backport pin that
       hooks-events-plugins.md:40 owns — drop the parenthetical from the rule.
       Then re-run the sweep and check off the single-sourcing ratchet target.
+      — done 2026-07-27, PR #69. Three validator-row pins dropped from the
+      core-overview table (name+purpose+pointer kept; callout now names itself
+      the pin home); 11.1.8 parenthetical → pointer to hooks-events-plugins.md.
+      Re-sweep clean → ratchet target checked off (all 4 now met).
 
 ### P6 — Claude 5 model-generation tuning (from the 2026-07-27 context-engineering review)
 
