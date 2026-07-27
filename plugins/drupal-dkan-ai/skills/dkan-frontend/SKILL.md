@@ -51,7 +51,7 @@ Symptom → cause → fix.
 1. **Blank page after deploy.** Cause: the app's build output path doesn't match the module's `css_folder` / `js_folder`. Fix: align the build base path (`/frontend/build/static/`) with the config, or update the config to the real output dir.
 2. **Deep links (e.g. `/dataset/abc`) 404 in Drupal.** Cause: `system.site` `page.404` (and `403`, `front`) not set to `/home`. Fix: set all three to `/home` so the SPA handles routing.
 3. **Data table renders empty / fails to fetch.** Cause: `datastore_query_api` config doesn't match the route shape the library expects. Fix: align the `dkan_js_frontend.config` flag with the library's `useDatastore` expectation ([build-deploy-customize.md](reference/build-deploy-customize.md)).
-4. **Local edits to the component library don't appear in the site.** Cause: npm-workspace version drift — the consumer's lockfile resolves to the published copy, not the local symlink. Fix: match the consumer's declared version to the library's `package.json`; rebuild (`npm run watch`).
+4. **Local edits to the component library don't appear in the site.** Usually npm-workspace version drift; the diagnosis and fix live in [build-deploy-customize.md](reference/build-deploy-customize.md#local-development-loop) — deliberately not restated here.
 5. **Mixing the two lineages.** Cause: applying `cmsds-open-data-components` props/imports to a `data-catalog-components` app (or vice versa). Fix: check the app's `package.json` for which library it depends on, then use that library's docs.
 6. **Editing `dkan_js_frontend` expecting it to compile assets.** Cause: assuming the Drupal module bundles the React app. Fix: it only serves prebuilt files; build in the app dir (`ddev dkan-frontend-build`).
 

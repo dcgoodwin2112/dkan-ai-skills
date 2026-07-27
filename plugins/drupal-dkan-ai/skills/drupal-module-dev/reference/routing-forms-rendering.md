@@ -67,9 +67,16 @@ return AccessResult::allowedIf($account->hasPermission('administer my_module'))
 ## Form API
 
 Extend `FormBase`, or `ConfigFormBase` for settings forms. The `ConfigFormBase`
-gotcha: `getEditableConfigNames()` must return the exact config object names the form
-edits — omit it and `parent::submitForm()` saves nothing — and `buildForm()`/
-`submitForm()` must call their `parent::` implementations.
+gotchas (source-verified against the 10.2+ `#config_target` flow):
+
+- `parent::submitForm()` saves **only** elements carrying `#config_target` — a form
+  with none mapped persists nothing yet still prints "The configuration options have
+  been saved." Map each element, or save explicitly in your own `submitForm()`.
+- `getEditableConfigNames()` (abstract — the class won't load without it) gates
+  `$this->config($name)`: a name it doesn't list comes back **immutable**, and
+  `set()` throws rather than silently dropping the write.
+- `buildForm()` must call `parent::buildForm()` — it wires the `#config_target`
+  machinery.
 
 ## Render arrays
 
