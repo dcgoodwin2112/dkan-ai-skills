@@ -10,7 +10,7 @@
     "caveats": [
       "with_skill = the packaged skill end-to-end (docs available to read) vs baseline = no skill. The delta measures the packaged skill's value, not SKILL.md prose alone.",
       "3 binary runs/arm is a coarse sample (reported artifact, not a gate). Ties on T1, T5 are facts the base model already knows; the skill's value concentrates on version- and DKAN-specific specifics that drift.",
-      "check_php_lint tasks (T6) add a php -l axis over ```php blocks; php NOT on PATH for this grade \u2014 axis skipped (warned on console)."
+      "check_php_lint tasks (T6) add a php -l axis over complete-file ```php blocks; hosts without php skip it with a console warning. CI's regrade gate runs with php present, so committed results are always lint-enforced."
     ]
   },
   "summary": {

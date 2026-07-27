@@ -185,10 +185,14 @@ def main():
                 "3 binary runs/arm is a coarse sample (reported artifact, not a gate). Ties on "
                 + (", ".join(f"T{r['id']}" for r in per_task if not r["discriminating"]) or "none")
                 + " are facts the base model already knows; the skill's value concentrates on version- and DKAN-specific specifics that drift.",
+                # Static text only — benchmark.json is committed and CI diffs a
+                # regrade against it, so environment state (php present/absent)
+                # must never leak into the artifact. Console warning carries it.
                 "check_php_lint tasks ("
                 + (", ".join(f"T{t}" for t in sorted(tid for tid, t2 in tasks.items() if t2.get("check_php_lint"))) or "none")
-                + ") add a php -l axis over ```php blocks; "
-                + ("php available — axis active." if PHP_BIN else "php NOT on PATH for this grade — axis skipped (warned on console)."),
+                + ") add a php -l axis over complete-file ```php blocks; hosts without php "
+                + "skip it with a console warning. CI's regrade gate runs with php present, "
+                + "so committed results are always lint-enforced.",
             ],
         },
         "summary": summary,
