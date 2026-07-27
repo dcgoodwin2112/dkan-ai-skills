@@ -111,4 +111,5 @@ step is deterministic).
 - `runs/raw_runs.json` — recorded paired runs (3/arm, current: 2026-07-27 `claude-fable-5`)
 - `runs/raw_runs-2026-06-08.json` — archived pre-Claude-5 corpus
 - `benchmark.json` — graded results (per-task + overall + embedded answers)
-- `../lib/grade_tasks.py` — grader
+- `../lib/grade_tasks.py` — grader (also `--edit-ab` compare mode)
+- `EDIT-AB.md` — edit-level A/B protocol for contested skill trims/rewrites
