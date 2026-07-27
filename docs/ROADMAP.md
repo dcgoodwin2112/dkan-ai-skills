@@ -161,7 +161,7 @@ pre-Claude-5 baseline. Order matters: 32 → 33 → 34.
       corpus marked model-unrecorded/pre-Claude-5); grade_tasks.py provenance
       reads it instead of hardcoding date/cli and prints a RUNS line; REPORT.md
       states results are model-generation-pinned and newer-baseline ties are
-      trim candidates. — done 2026-07-27, PR #66.
+      trim candidates. — done 2026-07-27, PR #67.
 - [ ] 33. **Re-baseline the task eval on a Claude 5 session model.** Collect
       fresh paired runs (7 tasks × 3 runs × 2 arms, in-session subagents, same
       protocol as raw_runs.json `_about`), stamp `_meta.model` with the exact
