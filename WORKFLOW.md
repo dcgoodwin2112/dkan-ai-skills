@@ -425,6 +425,9 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   trim would have deleted facts the model still gets wrong. And the skills ship
   to multiple consumers via the adapters (Copilot/Codex) that don't share the
   strongest model's baseline — trim to the evidence, not to the newest model.
+  For a single contested edit, the cheaper instrument is the edit-level A/B
+  (`evals/tasks/EDIT-AB.md`): committed vs edited skill, discriminating tasks
+  only, no baseline arm.
 - **Earn-its-keep review**: on the same cadence, give every gate, eval, and tool a
   keep/fix/delete decision if it hasn't produced value since the last pass. A
   documented *workaround* for broken tooling is the tell — a workaround is a

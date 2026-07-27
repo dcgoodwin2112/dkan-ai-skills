@@ -70,6 +70,64 @@ def grade(task: dict, answer: str):
     return passed, pos_missing, neg_hit, lint_errors
 
 
+def edit_ab(old_path: str, new_path: str) -> None:
+    """Edit-level A/B: grade the with_skill arm of two corpora (committed vs
+    edited skill), print a per-task comparison. Report-only — writes nothing;
+    the human reads the table and decides. Protocol: evals/tasks/EDIT-AB.md.
+    """
+    tasks = {t["id"]: t for t in json.loads((TASKS_DIR / "tasks.json").read_text())["tasks"]}
+
+    def grade_corpus(path):
+        raw = json.loads(Path(path).read_text())
+        per_task: dict[int, list] = {}
+        fails: list[str] = []
+        for run_id, answers in raw["with_skill"].items():
+            for item in answers:
+                tid = item["task_id"]
+                passed, pos_missing, neg_hit, lint_errors = grade(tasks[tid], item["answer"])
+                per_task.setdefault(tid, []).append(passed)
+                if not passed:
+                    why = (f" miss={pos_missing}" if pos_missing else "") + \
+                          (f" NEG={neg_hit}" if neg_hit else "") + \
+                          (f" LINT={lint_errors}" if lint_errors else "")
+                    fails.append(f"    run{run_id}/T{tid}:{why}")
+        return per_task, fails
+
+    old, old_fails = grade_corpus(old_path)
+    new, new_fails = grade_corpus(new_path)
+    tids = sorted(set(old) | set(new))
+    if PHP_BIN is None and any(tasks[t].get("check_php_lint") for t in tids):
+        print("WARN php not on PATH — lint axis skipped on BOTH sides (comparison still fair)")
+    print(f"EDIT A/B  old={old_path}  new={new_path}")
+    print(f"{'task':>4} {'old':>7} {'new':>7}  verdict")
+    regressions = mismatches = 0
+    for tid in tids:
+        po, no_ = sum(old.get(tid, [])), len(old.get(tid, []))
+        pn, nn = sum(new.get(tid, [])), len(new.get(tid, []))
+        # Hand-assembled corpora: a task missing on one side or unequal run
+        # counts makes pass-count comparison meaningless — flag, don't judge.
+        if no_ != nn or no_ == 0:
+            verdict, mismatches = f"MISMATCH ({no_} old vs {nn} new runs)", mismatches + 1
+        elif pn < po:
+            verdict, regressions = "REGRESSION", regressions + 1
+        elif pn > po:
+            verdict = "improved"
+        else:
+            verdict = "="
+        print(f"  T{tid:<2} {po}/{no_:<5} {pn}/{nn:<5}  {verdict}")
+    if new_fails:
+        print("  new-side failures:")
+        print("\n".join(new_fails))
+    if mismatches:
+        print(f"VERDICT  INVALID — {mismatches} task(s) with unequal run counts; "
+              "fix the corpora and re-grade (see EDIT-AB.md step 4).")
+    else:
+        print(f"VERDICT  {regressions} regressed task(s) — "
+              + ("investigate the failing traces before landing the edit." if regressions
+                 else "no regression on the measured surface (3 runs is coarse; the eval "
+                      "surface is not the whole skill)."))
+
+
 def main():
     tasks = {t["id"]: t for t in json.loads((TASKS_DIR / "tasks.json").read_text())["tasks"]}
     raw = json.loads((TASKS_DIR / "runs" / "raw_runs.json").read_text())
@@ -237,4 +295,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if len(sys.argv) == 4 and sys.argv[1] == "--edit-ab":
+        edit_ab(sys.argv[2], sys.argv[3])
+    elif len(sys.argv) == 1:
+        main()
+    else:
+        sys.exit("usage: grade_tasks.py [--edit-ab OLD.json NEW.json]")
