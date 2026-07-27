@@ -15,6 +15,12 @@ DKAN/Drupal tasks than no skill? The skill must actually *change the output*.
 - **Deterministic grading** (`grade_tasks.py`): `pass` ⇔ every `assert_pos` regex matches AND
   no `assert_neg` matches. No LLM judge → no judge bias, fully reproducible. (This is how the
   plan's grader-calibration concern is met: by construction, not by trusting a judge.)
+- **Results are model-generation-pinned.** Both arms use the collecting session's model, so
+  every number below is a property of *that model + the skills*, not of the skills alone —
+  a stronger base model raises the baseline and shrinks the delta. `raw_runs.json` `_meta`
+  records the collection date and model (the 2026-06-08 corpus predates stamping; its model
+  is unrecorded, pre-Claude-5). Tasks that tie on a newer baseline are trim candidates, not
+  regressions — see the accepted-tie notes on T1/T5.
 
 ## Result
 
