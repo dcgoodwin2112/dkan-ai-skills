@@ -386,7 +386,7 @@ existence and scope — no structural change needed. Order: 36 → 37 → 38 →
       bare-method snippets, so only blocks containing <?php are linted; all
       6 complete-file blocks verified clean via ddev php -l. Results
       unchanged (21/21 vs 6/21, g=1.00).
-- [ ] 39. **Document an edit-level A/B protocol for skill changes.** Our harness
+- [x] 39. **Document an edit-level A/B protocol for skill changes.** Our harness
       answers "skill vs no skill"; theirs also answers "my edit vs last
       committed version" (`compare.py` git-baseline mode). We felt this gap in
       the P6 arc: the generic-prose trim was declined partly because we had no
@@ -398,6 +398,11 @@ existence and scope — no structural change needed. Order: 36 → 37 → 38 →
       with-skill corpora. No new automation harness — invoked only when a
       trim/rewrite is contested; explicitly cheaper than a full re-baseline
       (no baseline arm).
+      — done 2026-07-27, PR #75. EDIT-AB.md + grade_tasks.py --edit-ab
+      (report-only; unequal run counts flag INVALID — codex catch). Verified
+      on synthetic corpora: identical pair all '=', mutated answer flags
+      REGRESSION with trace, dropped run flags INVALID. Default grading
+      byte-identical (CI reproduce-gate unaffected).
 
 ## Deferred / not scheduled
 
