@@ -50,7 +50,7 @@ These are the contributor-specific concepts that aren't visible from a quick gre
 1. **Verify facts against the branch you target (`4.x`), not the checked-out branch.** Feature branches change signatures and deps. `git show 4.x:<path>` / `git diff 4.x -- <path>` before asserting an API exists. See the JSON-schema-library migration in [core-internals.md](reference/core-internals.md#schema-validation) for why this bites.
 2. **Tests run in-repo via `ddev phpunit` against a real Drupal kernel** — this is **not** the standalone-stub harness `dkan-module-author` describes (that one is for testing *custom* modules in isolation). Different harness, different base classes; don't mix the patterns. See [testing-core.md](reference/testing-core.md).
 3. **Async work doesn't run in a test unless you pump the queue.** Datastore import and harvest enqueue Procrastinator jobs; asserting on results without draining the queue yields empty/flaky tests. Use `QueueRunnerTrait`. See [testing-core.md](reference/testing-core.md#async-and-queues).
-4. **Functional tests need a `@group functionalN`** (N = 0–3) or CI's parallelized split won't run them; all DKAN tests also carry `@group dkan`. A green local run with no group annotation silently never runs in CI.
+4. **Functional tests need `@group functional1`, `2`, or `3`** to land on a parallel functional CI node; all DKAN tests also carry `@group dkan`. Untagged (or `functional0`-tagged) functional tests aren't skipped — they fall into node 0's non-functional run, slow and unbalanced. Split mechanics: [testing-core.md](reference/testing-core.md#test-groups) — deliberately not restated here.
 5. **Never reach past the storage-factory layer to hit the DB directly.** Business logic goes through `DataFactory→NodeData` (metastore) and `DatabaseTableFactory→DatabaseTable` (datastore), both atop `dkan_common`'s `AbstractDatabaseTable` / `StorageFactoryInterface`. Direct queries break the abstraction, the perspective/UUID mapping, and tests. See [core-internals.md](reference/core-internals.md#storage).
 6. **Metastore items are Drupal nodes** (type `data`, fields `field_json_metadata` + `field_data_type`), not a custom entity. The JSON in `<dkan>/schema/collections/*.json` is the source of truth; validation flows through `RootedJsonData` via `ValidMetadataFactory`. Changing a shape means changing the schema, not just PHP.
 7. **Schema / config / DB-shape changes require an update hook** — `<module>_update_NNNN()` (9xxx series) in *that submodule's* `.install` — and, where it alters stored data, a fixture-backed update-path test. See [contributing-and-ci.md](reference/contributing-and-ci.md#update-hooks).
@@ -63,7 +63,7 @@ Symptom → the rule above that was skipped (each rule carries the fix):
 | Symptom | Rule |
 |---|---|
 | Import/harvest test asserts on rows that aren't there (count 0, missing table) | 3 — drain the queue |
-| Test is green locally but never runs in CI, or lands on the wrong node | 4 — `@group functionalN` |
+| Functional test runs on CI node 0 (slow, unparallelized) instead of a functional node | 4 — `@group functional1/2/3` |
 | "Works on my checkout," fails review/CI on `4.x` | 1 — verify against the target branch |
 | Existing sites error on `drush updatedb` / config import after your merge | 7 — update hook |
 | Table-not-found or wrong rows from a hand-built datastore table name | 5 — resolve through the factory |

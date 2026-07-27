@@ -199,12 +199,18 @@ pre-Claude-5 baseline. Order matters: 32 → 33 → 34.
       `getEditableConfigNames()`; reference doc fixed too) and dkan-frontend
       pitfall 4 was a dedup (→ pointer to build-deploy-customize.md).
       Trim policy recorded in WORKFLOW.md §12.
-- [ ] 35. **SKILL.md rule 4 vs testing-core.md on `functional0`** (observed in
+- [x] 35. **SKILL.md rule 4 vs testing-core.md on `functional0`** (observed in
       the 2026-07-27 with-skill runs): dkan-core-contributor SKILL.md rule 4
       says "@group functionalN (N = 0–3)" while testing-core.md says CI uses
       only functional1–3 with node 0 running the non-functional suite —
       with-skill answers surfaced the discrepancy verbatim. Verify against
       upstream CircleCI config, then make one file own the fact.
+      — done 2026-07-27, PR #71. Upstream 4.x config confirms testing-core.md
+      on both counts: nodes 1–3 run --group functional1/2/3; node 0 excludes
+      them, so untagged tests RUN on node 0 (misplaced, not "silently never
+      runs" as rule 4 claimed — a second error beyond the filed one). Rule 4,
+      its pitfall-table row, and dkan-core-test.md:32 (same double error)
+      all corrected and deferred to testing-core.md#test-groups, the owner.
 - [x] 16. **Drop dkan-frontend/SKILL.md:78–82's lineages table** (architecture.md's
       copy is fuller); collapse `datastore_query_api` explanations (4 files) to
       SKILL.md rule + build-deploy-customize.md detail.

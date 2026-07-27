@@ -29,7 +29,7 @@ target module and match it exactly.
   `modules/custom/`, stop and use `/scaffold-dkan-module --with-tests` instead.
 - **No DKAN stubs.** Inside core you use the real classes/services; never stub a DKAN
   class here.
-- **Functional tests need `@group functionalN`** (0–3) or CI's split skips them.
+- **Functional tests need `@group functional1`, `2`, or `3`** — untagged (or `functional0`) tests fall into CI node 0's non-functional run instead of a parallel node.
 - **Async work needs the queue drained** — add `QueueRunnerTrait` when the code under
   test imports/harvests.
 
