@@ -64,7 +64,10 @@ project starts equal.
 - **Skills** (`plugins/drupal-dkan-ai/skills/*/SKILL.md`): auto-load by
   `description` when a task matches (editing a `*.services.yml`, working in
   `Drupal\dkan_*`). Each is decision support + curated `reference/` docs, not a
-  tutorial dump.
+  tutorial dump. In decision-support content, **list options in the order the
+  agent should reach for them** — agents read earlier entries as
+  higher-priority defaults, so when the common failure is picking the wrong
+  option, put the right one first (not alphabetical, not simplest-first).
 - **Slash commands** (`commands/*.md`): two kinds — *scaffolding*
   (`/scaffold-dkan-module`, `/mcp-scaffold-tool`, `/ai-scaffold-*`) that emit
   correct skeletons, and *validation* (`/validate-module`) that runs the gates.
