@@ -446,7 +446,8 @@ The loop doesn't end at merge — the toolkit and its knowledge need upkeep:
   diff. For a server you *build*, add a **tool-permission contract test** to the
   suite above: snapshot each tool's `id` → access gate and fail the build if a
   write/destructive tool is added without a `checkAccess` + subscriber gate, or an
-  existing one loses it (the excessive-agency / OWASP LLM06 guard). **Example:** the
+  existing one loses it (the excessive-agency guard — OWASP LLM06:2025 /
+  LLM03:2026). **Example:** the
   DKAN MCP `ToolAccessSubscriber` + a snapshot over the read-only vs read-write
   tool split.
 - **AI-surface regression**: prompts, agents, and tool schemas drift as models and

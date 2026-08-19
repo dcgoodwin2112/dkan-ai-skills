@@ -10,7 +10,9 @@ metastore, datastore rows, harvest config), **untrusted content** (tool outputs
 count — a dataset title or harvest error your *read* tool returns is
 attacker-controllable text the model will follow), and a way to **exfiltrate or
 mutate** (a write tool). Any two are survivable; all three is exploitable
-(OWASP LLM01/05/06).
+(OWASP LLM Top 10: prompt injection, improper output handling, excessive
+agency — LLM01/05/06 on the 2025 list; the 2026 list renumbers the latter two
+to LLM10/LLM03).
 
 The policy consequence this module's DKAN deployment implements: keep read-only
 and read-write tools on **distinct, separately-credentialed surfaces** (the
