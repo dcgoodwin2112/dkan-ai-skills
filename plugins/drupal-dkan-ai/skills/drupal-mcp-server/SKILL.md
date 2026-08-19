@@ -31,8 +31,8 @@ the single biggest hazard; treat every API below as version-contingent.
   `Mcp\Server\Handler\ToolHandlerInterface`, `Mcp\Server\ClientGateway`,
   `Builder::add()`. `mcp/sdk` broke BC twice across 0.4 → 0.5 → 0.6, but **`0.6.0`
   was tagged 2026-06-02**, so the module now pins a released SDK (`^0.6`) rather
-  than `dev-main` (upstream has since tagged `0.7.0`, 2026-07-14; the module has
-  not bumped — check `composer.json` before assuming the newer API). `mcp/sdk` is the official MCP PHP SDK
+  than `dev-main` (upstream is on `0.7.x` — latest `0.7.1`, 2026-08-10; the module
+  has not bumped — check `composer.json` before assuming the newer API). `mcp/sdk` is the official MCP PHP SDK
   (`modelcontextprotocol/php-sdk`, a PHP Foundation + Symfony collaboration).
 - The earlier `0.4`/`0.5` API (`Builder::addTool()`, no `ClientGateway`) is
   **incompatible** — code written against it will not load against `0.6`.
@@ -43,7 +43,8 @@ the single biggest hazard; treat every API below as version-contingent.
   + `psr/simple-cache` at the Composer level. OAuth, admin UI, and the `drupal/tool`
   bridge are separate companion projects (extracted from in-tree submodules
   2026-06-09; see below).
-- First tag: `2.0.0-alpha1` (2026-06-11) — still pre-stable. Per its maintainer:
+- Latest tag: `2.0.0-beta1` (2026-07-20; first tag `2.0.0-alpha1`, 2026-06-11) —
+  still pre-stable. Per its maintainer:
   *add no backwards-compatibility layers or migrations in your solutions.*
 
 Always confirm the installed reality before relying on a signature:
