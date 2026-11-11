@@ -6,15 +6,14 @@ A Claude Code plugin (`drupal-dkan-ai`) for [DKAN](https://github.com/GetDKAN/dk
 
 ```
 plugins/drupal-dkan-ai/
-  skills/dkan/SKILL.md                 gotchas: building against DKAN, core contribution, metadata, frontend
-  skills/dkan/reference/dkan-workflows.md   cross-class call chains
-  hooks/                               commit-gate, dependency-gate
-bin/test                               hook tests (also run in CI)
+  skills/dkan/SKILL.md   gotchas: building against DKAN, pipeline behavior, core contribution, metadata, frontend
+  hooks/                 commit-gate, dependency-gate
+bin/test                 hook tests (also run in CI)
 ```
 
 ## Content policy
 
-The skill holds only what the installed source will not tell an agent quickly: concepts, traps, and decisions. It does not hold version pins, signature or service tables, command lists, or code templates — those are read from the checkout (`composer show`, `grep`, `drush list`), which is never stale.
+The skill holds only what the installed source will not tell an agent quickly: concepts, traps, and decisions. It does not hold version pins, signature or service tables, command lists, call-chain walkthroughs, or code templates — those are read from the checkout (`composer show`, `grep`, `drush list`), which is never stale.
 
 Add an entry when a real session gets something wrong that the source alone did not prevent. Verify it against the installed code first.
 

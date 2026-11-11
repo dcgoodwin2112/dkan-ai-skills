@@ -1,6 +1,6 @@
 {
   "name": "drupal-dkan-ai",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "DKAN 4.x skill (non-obvious concepts for building against DKAN, contributing to DKAN core, DCAT-US / Project Open Data metadata, and the decoupled frontend) plus commit-gate and dependency-gate hooks.",
   "author": {
     "name": "dcgoodwin2112"
