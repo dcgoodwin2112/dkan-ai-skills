@@ -1,7 +1,7 @@
 {
   "name": "drupal-dkan-ai",
-  "version": "0.11.22",
-  "description": "Skills and slash commands for general Drupal 10.2+ / 11 module development and for authoring custom Drupal modules that extend DKAN 4.x, the Drupal AI module (drupal/ai, ai_agents), and the MCP Server module (drupal/mcp_server), for contributing to DKAN core itself, for the DCAT-US / open-data metadata specs DKAN implements, and for DKAN's decoupled JavaScript frontend (the dkan_js_frontend module + React catalog app). Auto-loading reference docs, scaffolding commands, commit-gate and dependency-gate hooks, and plan-review and plan-diff-review subagents.",
+  "version": "0.12.0",
+  "description": "DKAN 4.x skill (non-obvious concepts for building against DKAN, contributing to DKAN core, DCAT-US / Project Open Data metadata, and the decoupled frontend) plus commit-gate and dependency-gate hooks.",
   "author": {
     "name": "dcgoodwin2112"
   },

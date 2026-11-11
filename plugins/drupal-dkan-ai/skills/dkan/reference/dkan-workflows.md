@@ -1,5 +1,9 @@
 # DKAN Workflows & Data Flows
 
+Call chains across classes. Class, method, and constant names were checked against
+DKAN 4.1.5; step order within a chain was not re-traced — confirm in source before
+relying on it.
+
 ## Dataset CRUD Lifecycle
 
 ### Create (POST)
@@ -114,11 +118,12 @@ PostImportResourceProcessor (queue: 'post_import')
 
 | Queue | Worker | Purpose |
 |---|---|---|
-| `localize_import` | ResourceLocalizer | Download remote files |
+| `localize_import` | LocalizeQueueWorker | Download remote files |
 | `datastore_import` | ImportQueueWorker | Parse CSV into database |
 | `post_import` | PostImportResourceProcessor | Apply data dictionary, enforce types |
-| `orphan_resource_remover` | — | Clean up unused resources |
-| `orphan_reference_processor` | OrphanChecker | Remove unreferenced nodes |
+| `resource_purger` | ResourcePurgerWorker | Drop datastores for superseded resource versions |
+| `orphan_resource_remover` | OrphanResourceRemover | Clean up unused resources |
+| `orphan_reference_processor` | OrphanReferenceProcessor | Remove unreferenced nodes |
 
 ## Harvest ETL
 

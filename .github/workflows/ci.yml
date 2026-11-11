@@ -1,6 +1,3 @@
-# Free, deterministic gates only — no model calls, no site. Real live-gate
-# runs (need a DDEV site) stay local; the live step here only guards its
-# unconfigured SKIP path. See docs/EVALS.md "CI".
 name: CI
 
 on:
@@ -14,19 +11,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: bin/test (install, adapter sync, hook gates)
+      - name: bin/test (hook gates)
         run: bin/test
-
-      - name: Scaffold-correctness gate
-        run: bin/eval scaffolds
-
-      - name: Task regrade reproduces committed benchmark
-        run: |
-          bin/eval task
-          git diff --exit-code evals/tasks/
-
-      - name: Live gate skips cleanly when unconfigured
-        run: bin/eval live
-
-      - name: Currency staleness (warn-only, no network)
-        run: bin/currency-staleness
